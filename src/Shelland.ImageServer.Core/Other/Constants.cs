@@ -1,0 +1,12 @@
+﻿// Created on 11/02/2021 16:30 by Andrey Laserson
+
+namespace Shelland.ImageServer.Core.Other
+{
+    public class Constants
+    {
+        public const int DefaultJpegQuality = 100;
+        public const int DefaultCacheDuration = 86400;
+
+        public const string AppDatabaseName = "AppDatabase.db";
+    }
+}
