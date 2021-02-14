@@ -12,6 +12,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
         {
             builder.RegisterModule<DataAccessModule>();
             builder.RegisterModule<AppServicesModule>();
+            builder.RegisterModule<WebModule>();
         }
     }
 }

@@ -32,9 +32,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private readonly IFileService fileService;
 
         private readonly IImageUploadRepository imageUploadRepository;
-
-        private readonly IOptions<AppSettingsModel> appOptions;
-        private readonly IOptions<ImageProcessingSettingsModel> imageProcessingOptions;
+        private readonly IOptions<AppSettingsModel> appSettings;
 
         private readonly ILogger<ImageUploadService> logger;
         private readonly IMediator mediator;
@@ -43,18 +41,16 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             IImageProcessingService imageProcessingService,
             IFileService fileService,
             IImageUploadRepository imageUploadRepository,
-            IOptions<AppSettingsModel> appOptions,
-            IOptions<ImageProcessingSettingsModel> imageProcessingOptions,
             ILogger<ImageUploadService> logger, 
-            IMediator mediator)
+            IMediator mediator, 
+            IOptions<AppSettingsModel> appSettings)
         {
             this.imageProcessingService = imageProcessingService;
             this.fileService = fileService;
             this.imageUploadRepository = imageUploadRepository;
-            this.appOptions = appOptions;
-            this.imageProcessingOptions = imageProcessingOptions;
             this.logger = logger;
             this.mediator = mediator;
+            this.appSettings = appSettings;
         }
 
         /// <summary>
@@ -71,10 +67,12 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             this.logger.LogInformation($"A new upload with id {result.Id} was created");
 
-            if (this.appOptions.Value.SaveOriginalFile)
+            if (this.appSettings.Value.Common.SaveOriginalFile)
             {
                 await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath);
                 uploadJob.Stream.Reset();
+
+                result.OriginalFileUrl = this.fileService.NormalizeUrl(storagePath.UrlPath);
             }
 
             // Load a new image and save it since loading it each time is extremely expensive
@@ -87,6 +85,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 await HandleImage(thumbParam, sourceImage, storagePath, result);
             }
             
+            // Send a notification about finished job to all listeners
             await this.mediator.Send(new ImageProcessingFinishedPayload
             {
                 Result = result
@@ -114,7 +113,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             var job = new ImageProcessingJob
             {
                 Image = sourceImage,
-                Settings = this.imageProcessingOptions.Value,
+                Settings = this.appSettings.Value.ImageProcessing,
                 ThumbnailParams = thumpParam
             };
 
@@ -146,7 +145,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             await image.SaveAsJpegAsync(imageStream, new JpegEncoder
             {
-                Quality = this.imageProcessingOptions.Value.JpegQuality ?? Constants.DefaultJpegQuality
+                Quality = this.appSettings.Value.ImageProcessing.JpegQuality ?? Constants.DefaultJpegQuality
             });
 
             imageStream.Reset();

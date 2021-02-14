@@ -13,28 +13,29 @@ namespace Shelland.ImageServer.AppServices.Services.Messaging.Handlers
 {
     public class ImageProcessingFinishedHandler : AsyncRequestHandler<ImageProcessingFinishedPayload>
     {
-        private readonly IOptions<WebHooksSettingsModel> webHooksOptions;
+        private readonly IOptions<AppSettingsModel> appSettings;
         private readonly INetworkService networkService;
         private readonly ILogger<ImageProcessingFinishedHandler> logger;
 
         public ImageProcessingFinishedHandler(
-            IOptions<WebHooksSettingsModel> webHooksOptions, 
             INetworkService networkService, 
-            ILogger<ImageProcessingFinishedHandler> logger)
+            ILogger<ImageProcessingFinishedHandler> logger, IOptions<AppSettingsModel> appSettings)
         {
-            this.webHooksOptions = webHooksOptions;
             this.networkService = networkService;
             this.logger = logger;
+            this.appSettings = appSettings;
         }
 
         protected override async Task Handle(ImageProcessingFinishedPayload request, CancellationToken cancellationToken)
         {
             this.logger.LogInformation($"Entering an image processing finished handler");
 
-            if (this.webHooksOptions.Value.IsEnabled)
+            var webHooksOptions = this.appSettings.Value.WebHooks;
+
+            if (webHooksOptions.IsEnabled)
             {
-                this.logger.LogInformation($"Sending a web hook to {this.webHooksOptions.Value.PostUrl}");
-                await this.networkService.MakeRequest(this.webHooksOptions.Value.PostUrl, request.Result);
+                this.logger.LogInformation($"Sending a web hook to {webHooksOptions.PostUrl}");
+                await this.networkService.MakeRequest(webHooksOptions.PostUrl, request.Result);
             }
         }
     }

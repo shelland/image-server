@@ -1,6 +1,5 @@
 ﻿// Created on 11/02/2021 21:13 by Andrey Laserson
 
-using System.Reflection;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Shelland.ImageServer.AppServices;
@@ -14,7 +13,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
         public static IServiceCollection AddHelperServices(this IServiceCollection services)
         {
             services.AddHttpClient<INetworkService, NetworkService>();
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(Startup).Assembly);
             services.AddMediatR(typeof(Startup), typeof(AppServicesModule));
 
             return services;

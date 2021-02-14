@@ -10,14 +10,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
     {
         public static IServiceCollection AddConfigOptions(this IServiceCollection collection, IConfiguration configuration)
         {
-            collection.Configure<CorsSettingsModel>(configuration.GetSection("Cors"));
-            collection.Configure<DirectorySettingsModel>(configuration.GetSection("Directory"));
-            collection.Configure<RateLimitingSettingsModel>(configuration.GetSection("RateLimiting"));
-            collection.Configure<WebHooksSettingsModel>(configuration.GetSection("WebHooks"));
-            collection.Configure<ImageProcessingSettingsModel>(configuration.GetSection("ImageProcessing"));
-            collection.Configure<StaticCacheSettingsModel>(configuration.GetSection("StaticCache"));
-            collection.Configure<AppSettingsModel>(configuration.GetSection("AppSettings"));
-
+            collection.Configure<AppSettingsModel>(configuration);
             return collection;
         }
     }

@@ -13,9 +13,9 @@ namespace Shelland.ImageServer.DataAccess.Context
     /// </summary>
     public class AppDbContext : IAppDbContext<LiteDatabaseAsync>
     {
-        public AppDbContext(IOptions<DirectorySettingsModel> options)
+        public AppDbContext(IOptions<AppSettingsModel> options)
         {
-            this.Database = new LiteDatabaseAsync($"{options.Value.AppDataDirectory}/{Constants.AppDatabaseName}");
+            this.Database = new LiteDatabaseAsync($"{options.Value.Directory.AppDataDirectory}/{Constants.AppDatabaseName}");
         }
 
         public LiteDatabaseAsync Database { get; }

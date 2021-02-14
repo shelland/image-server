@@ -3,10 +3,12 @@
 using System;
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Shelland.ImageServer.Core.Other;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace Shelland.ImageServer.Infrastructure.Extensions.Pipeline
 {
@@ -17,16 +19,24 @@ namespace Shelland.ImageServer.Infrastructure.Extensions.Pipeline
         /// </summary>
         /// <param name="app"></param>
         /// <param name="configuration"></param>
-        public static void AddCachedStaticFiles(this IApplicationBuilder app, IConfiguration configuration)
+        /// <param name="webHostEnvironment"></param>
+        public static void AddCachedStaticFiles(this IApplicationBuilder app, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
-            var workingDirectory = configuration["Directory:WorkingDirectory"];
-            var cacheTimeSeconds = configuration["StaticCache:CacheTimeSeconds"];
-            var routePrefix = configuration["AppSettings:RoutePrefix"];
+            var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory");
+            var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");
+            var routePrefix = configuration.GetValue<string>("Common:RoutePrefix");
+            var isOnDemandProcessingEnabled = configuration.GetValue<bool>("OnDemandProcessing:IsEnabled");
+
+            if (isOnDemandProcessingEnabled)
+            {
+                app.UseImageSharp();
+            }
 
             // Check if working directory is defined. Otherwise, fail fast
+
             Guard.Against.NullOrEmpty(workingDirectory, nameof(workingDirectory));
             
-            var cacheDuration = int.TryParse(cacheTimeSeconds, out var value) ? value : default(int?);
+            // Add static files middleware
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -36,10 +46,12 @@ namespace Shelland.ImageServer.Infrastructure.Extensions.Pipeline
                 {
                     var headers = ctx.Context.Response.GetTypedHeaders();
 
+                    // Add caching headers
+
                     headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
                     {
                         Public = true,
-                        MaxAge = TimeSpan.FromSeconds(cacheDuration ?? Constants.DefaultCacheDuration)
+                        MaxAge = TimeSpan.FromSeconds(cacheTimeSeconds ?? Constants.DefaultCacheDuration)
                     };
                 }
             });

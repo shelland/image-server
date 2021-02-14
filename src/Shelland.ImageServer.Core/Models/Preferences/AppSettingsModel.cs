@@ -1,13 +1,21 @@
-﻿// Created on 09/02/2021 22:32 by Andrey Laserson
+﻿// Created on 14/02/2021 12:20 by Andrey Laserson
 
 namespace Shelland.ImageServer.Core.Models.Preferences
 {
     public class AppSettingsModel
     {
-        public string ServerUrl { get; set; }
+        public CommonSettingsModel Common { get; set; }
 
-        public string RoutePrefix { get; set; }
+        public DirectorySettingsModel Directory { get; set; }
 
-        public bool SaveOriginalFile { get; set; }
+        public RateLimitingSettingsModel RateLimiting { get; set; }
+
+        public WebHooksSettingsModel WebHooks { get; set; }
+
+        public ImageProcessingSettingsModel ImageProcessing { get; set; }
+
+        public StaticCacheSettingsModel StaticCache { get; set; }
+
+        public OnDemandProcessingSettingsModel OnDemandProcessing { get; set; }
     }
 }

@@ -34,5 +34,7 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// <param name="filePath"></param>
         /// <returns></returns>
         Task<bool> WriteFile(Stream stream, string filePath);
+
+        string NormalizeUrl(string originalUrl);
     }
 }

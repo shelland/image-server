@@ -13,9 +13,12 @@ namespace Shelland.ImageServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment webHostEnvironment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             Configuration = configuration;
+            this.webHostEnvironment = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
@@ -25,6 +28,7 @@ namespace Shelland.ImageServer
         {
             services.AddApi();
             services.AddConfigOptions(Configuration);
+            services.AddImageProcessing(Configuration, this.webHostEnvironment);
             services.AddHelperServices();
         }
 
@@ -35,9 +39,9 @@ namespace Shelland.ImageServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
+        public void Configure(IApplicationBuilder app, IMapper mapper)
         {
-            if (env.IsDevelopment())
+            if (this.webHostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -47,7 +51,7 @@ namespace Shelland.ImageServer
             app.UseRouting();
             app.UseAuthorization();
 
-            app.AddCachedStaticFiles(Configuration);
+            app.AddCachedStaticFiles(Configuration, this.webHostEnvironment);
 
             app.UseEndpoints(endpoints =>
             {

@@ -4,6 +4,7 @@ namespace Shelland.ImageServer.Core.Models.Enums
 {
     public enum AppFlowExceptionType
     {
+        GenericError,
         DiskWriteFailed,
         InvalidImageFormat,
         InvalidParameters,

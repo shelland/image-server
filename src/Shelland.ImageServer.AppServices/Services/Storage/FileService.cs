@@ -19,19 +19,15 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
     /// </summary>
     public class FileService : IFileService
     {
-        private readonly IOptions<DirectorySettingsModel> options;
         private readonly IOptions<AppSettingsModel> appSettings;
-
         private readonly ILogger<FileService> logger;
 
         public FileService(
-            IOptions<DirectorySettingsModel> options,
-            IOptions<AppSettingsModel> appSettings,
-            ILogger<FileService> logger)
+            ILogger<FileService> logger,
+            IOptions<AppSettingsModel> appSettings)
         {
-            this.options = options;
-            this.appSettings = appSettings;
             this.logger = logger;
+            this.appSettings = appSettings;
         }
 
         /// <summary>
@@ -42,11 +38,11 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             var uploadKeyGuid = Guid.NewGuid();
             var uploadKey = uploadKeyGuid.ToString("N");
 
-            var basePath = this.options.Value.WorkingDirectory;
+            var basePath = this.appSettings.Value.Directory.WorkingDirectory;
 
             var segmentsPath = Path.Combine(
-                uploadKey[0].ToString(), 
-                uploadKey[1].ToString(), 
+                uploadKey[0].ToString(),
+                uploadKey[1].ToString(),
                 uploadKey[2].ToString());
 
             var baseDirectoryPath = Path.Combine(basePath, segmentsPath);
@@ -73,11 +69,10 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, int width, int height)
         {
             var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.jpg";
-            var url = $"{this.appSettings.Value.ServerUrl}" +
-                      $"{this.appSettings.Value.RoutePrefix}" +
+            var url = this.NormalizeUrl(originalPath.UrlPath) +
                       $"{Path.ChangeExtension(originalPath.UrlPath, null)}" +
                       $"_thumb_{width}x{height}.jpg";
-            
+
             return new ImageThumbPathsModel
             {
                 DiskPath = diskPath,
@@ -104,6 +99,14 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 this.logger.LogError(ex, "WriteFile", filePath);
                 throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed, filePath);
             }
+        }
+
+        public string NormalizeUrl(string originalUrl)
+        {
+            var url = $"{this.appSettings.Value.Common.ServerUrl}" +
+                      $"{this.appSettings.Value.Common.RoutePrefix}" + originalUrl;
+
+            return url;
         }
     }
 }

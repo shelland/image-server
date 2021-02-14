@@ -57,7 +57,7 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
+                throw new AppFlowException(AppFlowExceptionType.GenericError);
             }
         }
         
@@ -66,7 +66,15 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
         /// </summary>
         public async Task<Image> Load(Stream stream)
         {
-            return await Image.LoadAsync(stream);
+            try
+            {
+                return await Image.LoadAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
+            }
         }
 
         private void ApplyEffect(Image image, ThumbnailEffectType effect)

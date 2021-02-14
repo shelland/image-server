@@ -9,6 +9,8 @@ namespace Shelland.ImageServer.Core.Models.Domain
     {
         public Guid Id { get; set; }
 
+        public string OriginalFileUrl { get; set; }
+
         public List<ImageThumbnailResultModel> Thumbnails { get; set; } = new();
     }
 }
