@@ -3,7 +3,6 @@
 using System;
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
@@ -19,8 +18,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions.Pipeline
         /// </summary>
         /// <param name="app"></param>
         /// <param name="configuration"></param>
-        /// <param name="webHostEnvironment"></param>
-        public static void AddCachedStaticFiles(this IApplicationBuilder app, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public static void UseAppCachedStaticFiles(this IApplicationBuilder app, IConfiguration configuration)
         {
             var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory");
             var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");

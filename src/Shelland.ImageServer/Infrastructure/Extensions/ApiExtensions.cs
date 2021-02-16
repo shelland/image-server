@@ -1,5 +1,6 @@
 ﻿// Created on 10/02/2021 17:54 by Andrey Laserson
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -9,8 +10,11 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
 {
     public static class ApiExtensions
     {
-        public static IServiceCollection AddApi(this IServiceCollection services)
+        public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
         {
+            var isCorsEnabled = configuration.GetValue<bool>("Cors:IsEnabled");
+
+            // Add controllers and JSON support
             services.AddControllers(opts =>
             {
                 opts.Filters.Add<ExceptionFilter>();
@@ -21,6 +25,12 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             });
 
             services.AddHttpContextAccessor();
+
+            // Check if CORS settings were enable
+            if (isCorsEnabled)
+            {
+                services.AddCors();
+            }
 
             return services;
         }

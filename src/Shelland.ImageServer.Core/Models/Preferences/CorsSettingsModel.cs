@@ -5,5 +5,7 @@ namespace Shelland.ImageServer.Core.Models.Preferences
     public class CorsSettingsModel
     {
         public bool IsEnabled { get; set; }
+
+        public string AllowedDomain { get; set; }
     }
 }

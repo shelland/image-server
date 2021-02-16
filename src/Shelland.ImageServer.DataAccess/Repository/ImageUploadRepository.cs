@@ -45,5 +45,14 @@ namespace Shelland.ImageServer.DataAccess.Repository
 
             return dbModel;
         }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task Delete(int id)
+        {
+            var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
+            await collection.DeleteAsync(id);
+        }
     }
 }

@@ -1,7 +1,9 @@
 ﻿// Created on 08/02/2021 15:52 by Andrey Laserson
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -69,8 +71,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, int width, int height)
         {
             var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.jpg";
-            var url = this.NormalizeUrl(originalPath.UrlPath) +
-                      $"{Path.ChangeExtension(originalPath.UrlPath, null)}" +
+            var url = this.NormalizeUrl(Path.ChangeExtension(originalPath.UrlPath, null)) +
                       $"_thumb_{width}x{height}.jpg";
 
             return new ImageThumbPathsModel
@@ -101,12 +102,35 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             }
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public string NormalizeUrl(string originalUrl)
         {
             var url = $"{this.appSettings.Value.Common.ServerUrl}" +
                       $"{this.appSettings.Value.Common.RoutePrefix}" + originalUrl;
 
             return url;
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Delete(List<string> paths)
+        {
+            try
+            {
+                foreach (var path in paths.Where(File.Exists))
+                {
+                    File.Delete(path);
+                    this.logger.LogInformation($"File {path} was deleted");
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed);
+            }
         }
     }
 }

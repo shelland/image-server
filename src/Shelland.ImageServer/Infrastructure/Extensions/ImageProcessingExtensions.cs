@@ -37,10 +37,10 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
                 opts.Configuration = Configuration.Default;
                 opts.BrowserMaxAge = TimeSpan.FromSeconds(cacheTimeSeconds ?? Constants.DefaultCacheDuration);
 
-                opts.OnParseCommandsAsync = (cmd) =>
-                {
-                    return Task.CompletedTask; // todo
-                };
+                //opts.OnParseCommandsAsync = (cmd) =>
+                //{
+                //    return Task.CompletedTask; // todo
+                //};
             }).Configure<PhysicalFileSystemCacheOptions>(cacheConfig =>
             {
                 cacheConfig.CacheRoot = workingDirectory;

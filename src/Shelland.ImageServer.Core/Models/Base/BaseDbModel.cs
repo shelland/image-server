@@ -9,7 +9,5 @@ namespace Shelland.ImageServer.Core.Models.Base
         public int Id { get; set; }
 
         public DateTimeOffset CreateDate { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

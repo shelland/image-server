@@ -26,7 +26,7 @@ namespace Shelland.ImageServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApi();
+            services.AddApi(Configuration);
             services.AddConfigOptions(Configuration);
             services.AddImageProcessing(Configuration, this.webHostEnvironment);
             services.AddHelperServices();
@@ -48,10 +48,12 @@ namespace Shelland.ImageServer
 
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
+            app.UseAppCors(Configuration);
+
             app.UseRouting();
             app.UseAuthorization();
 
-            app.AddCachedStaticFiles(Configuration, this.webHostEnvironment);
+            app.UseAppCachedStaticFiles(Configuration);
 
             app.UseEndpoints(endpoints =>
             {

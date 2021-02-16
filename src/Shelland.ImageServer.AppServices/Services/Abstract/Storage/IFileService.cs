@@ -1,5 +1,6 @@
 ﻿// Created on 08/02/2021 15:42 by Andrey Laserson
 
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Domain;
@@ -35,6 +36,18 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// <returns></returns>
         Task<bool> WriteFile(Stream stream, string filePath);
 
+        /// <summary>
+        /// URL normalization (slashes, etc.)
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
         string NormalizeUrl(string originalUrl);
+
+        /// <summary>
+        /// Delete selected file from the disk
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        void Delete(List<string> paths);
     }
 }

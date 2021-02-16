@@ -8,5 +8,6 @@ namespace Shelland.ImageServer.Core.Other
         public const int DefaultCacheDuration = 86400;
 
         public const string AppDatabaseName = "AppDatabase.db";
+        public const string Base64ImagePrefix = "data:image/jpg;base64,";
     }
 }

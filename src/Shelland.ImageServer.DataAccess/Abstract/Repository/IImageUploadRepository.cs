@@ -24,5 +24,12 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// <param name="dbModel"></param>
         /// <returns></returns>
         Task<ImageUploadDbModel> Create(ImageUploadDbModel dbModel);
+
+        /// <summary>
+        /// Deletes (physically) a selected record
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task Delete(int id);
     }
 }
