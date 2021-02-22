@@ -67,25 +67,30 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             this.logger.LogInformation($"A new upload with id {result.Id} was created");
 
+            // Save original file depending on the app settings
+
             if (this.appSettings.Value.Common.SaveOriginalFile)
             {
                 await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath);
                 uploadJob.Stream.Reset();
 
-                result.OriginalFileUrl = this.fileService.NormalizeUrl(storagePath.UrlPath);
+                result.OriginalFileUrl = this.fileService.NormalizeWebPath(storagePath.UrlPath);
             }
 
             // Load a new image and save it since loading it each time is extremely expensive
             // All image processing routines will clone it and use - it is about 10x times faster
+
             using var sourceImage = await this.imageProcessingService.Load(uploadJob.Stream);
 
             // Process requested thumbnails
+
             foreach (var thumbParam in uploadJob.Params.Thumbnails)
             {
                 await HandleImage(thumbParam, sourceImage, storagePath, result);
             }
             
             // Send a notification about finished job to all listeners
+
             await this.mediator.Send(new ImageProcessingFinishedPayload
             {
                 Result = result
@@ -101,27 +106,39 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// Performs an image handling (resizing, effects, etc) and flushing to disk
         /// </summary>
-        /// <param name="thumpParam"></param>
+        /// <param name="thumbParam"></param>
         /// <param name="sourceImage"></param>
         /// <param name="storagePath"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private async Task HandleImage(ImageThumbnailParamsModel thumpParam, Image sourceImage, StoragePathModel storagePath, ImageUploadResultModel result)
+        private async Task HandleImage(ImageThumbnailParamsModel thumbParam, Image sourceImage, StoragePathModel storagePath, ImageUploadResultModel result)
         {
-            this.logger.LogInformation($"Begin a thumbnail processing with params ({thumpParam.Width}, {thumpParam.Height})");
+            this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
 
+            // Prepare an image processing job
             var job = new ImageProcessingJob
             {
                 Image = sourceImage,
                 Settings = this.appSettings.Value.ImageProcessing,
-                ThumbnailParams = thumpParam
+                ThumbnailParams = thumbParam
             };
 
+            // Run an image processing job
             var processedImage = this.imageProcessingService.Process(job);
+
+            // Prepare disk paths to be used to save images
             var paths = this.fileService.PrepareThumbFilePath(storagePath, processedImage.Width, processedImage.Height);
 
-            await this.SaveImage(processedImage, paths.DiskPath);
+            // Quality can be defined for each thumbnail individually
+            // Otherwise a JPEG quality value will be loaded from the application settings or app default value
+            var quality = thumbParam.Quality ?? 
+                          this.appSettings.Value.ImageProcessing.JpegQuality ?? 
+                          Constants.DefaultJpegQuality;
 
+            // Save a processed image to the disk
+            await this.SaveImage(processedImage, paths.DiskPath, quality);
+
+            // Add a job result to the output list
             result.Thumbnails.Add(new ImageThumbnailResultModel
             {
                 Width = processedImage.Width,
@@ -138,14 +155,15 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// </summary>
         /// <param name="image"></param>
         /// <param name="path"></param>
+        /// <param name="quality"></param>
         /// <returns></returns>
-        private async Task SaveImage(Image image, string path)
+        private async Task SaveImage(Image image, string path, int quality)
         {
             await using var imageStream = new MemoryStream();
 
             await image.SaveAsJpegAsync(imageStream, new JpegEncoder
             {
-                Quality = this.appSettings.Value.ImageProcessing.JpegQuality ?? Constants.DefaultJpegQuality
+                Quality = quality
             });
 
             imageStream.Reset();

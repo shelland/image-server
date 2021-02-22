@@ -9,5 +9,7 @@ namespace Shelland.ImageServer.Core.Models.Preferences
         public string RoutePrefix { get; set; }
 
         public bool SaveOriginalFile { get; set; }
+
+        public bool IsServerEnabled { get; set; }
     }
 }

@@ -30,6 +30,7 @@ namespace Shelland.ImageServer
             services.AddConfigOptions(Configuration);
             services.AddImageProcessing(Configuration, this.webHostEnvironment);
             services.AddHelperServices();
+            services.AddRateLimiting(Configuration);
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -41,6 +42,8 @@ namespace Shelland.ImageServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IMapper mapper)
         {
+            app.AddRateLimitingPipeline(Configuration);
+
             if (this.webHostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -49,12 +52,10 @@ namespace Shelland.ImageServer
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
             app.UseAppCors(Configuration);
-
             app.UseRouting();
             app.UseAuthorization();
-
             app.UseAppCachedStaticFiles(Configuration);
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

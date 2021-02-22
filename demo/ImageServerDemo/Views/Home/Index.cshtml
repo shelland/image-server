@@ -1,0 +1,129 @@
+﻿@using Microsoft.Extensions.Options
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@inject IOptions<AppSettings> options
+
+<div class="alert alert-success d-none" id="alertOk">
+    <b>ImageServer is up and running.</b>
+</div>
+
+<div class="alert alert-danger d-none" id="alertError">
+    <b>ImageServer is unavailable. Please, check your setup.</b>
+</div>
+
+<div class="row">
+
+    <div class="col-md-12">
+        
+        <div class="form-group">
+            <label for="inputFile">Image file</label>
+            <input type="file" id="inputFile" class="form-control-file"/>
+        </div>
+        
+        <div class="form-group">
+            <h3>Thumbmail params</h3>
+            
+
+            <div id="thumbsParams" class="mt-2"></div>
+            <a class="btn btn-primary" href="javascript:;" id="addThumbRowBtn">Add thumbnail</a>
+        </div>
+        
+        <div class="form-group">
+            <a class="btn btn-primary" id="uploadBtn">Upload</a>
+        </div>
+
+    </div>
+
+</div>
+<hr/>
+<div class="row">
+    
+    <div class="col-md-12">
+        <h3>Results</h3>
+    </div>
+    
+    <div class="col-md-12 mb-2" id="resultsContainer">
+        <b>No results yet</b>
+    </div>
+
+</div>
+
+<div id="thumbRowTemplate" class="d-none">
+
+    <div class="col-md-12 row row-item">
+
+        <div class="col">
+            <label>
+                Width
+                <input type="number" class="thumb-width" class="form-control"/>
+            </label>
+
+        </div>
+
+        <div class="col">
+            <label>
+                Height
+                <input type="number" class="thumb-height" class="form-control"/>
+            </label>
+
+        </div>
+
+        <div class="col">
+            <label>
+                Quality
+                <input type="number" class="thumb-quality" class="form-control"/>
+            </label>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script id="resultItemTemplate" type="text/x-handlebars-template">
+
+    <div class="col-md-12 mb-3">
+    
+        <p>
+            <b>Thumbnail {{width}}x{{height}}px</b>
+        </p>
+
+        <img src="{{url}}" />
+    
+    </div>
+
+</script>
+
+
+
+<style>
+
+    body { padding-top: 3.5rem; }
+
+</style>
+
+@section Scripts
+{
+    <script src="~/lib/handlebars.js/handlebars.min.js"></script>
+    <script src="~/js/simpleUpload.min.js"></script>
+    <script src="~/js/ImageServerDemo.js"></script>
+
+    <script>
+
+        $(function() {
+
+            var data = {
+                urls: {
+                    imageServerUrl: '@options.Value.ImageServerUrl'
+                }
+            };
+
+            ImageServerDemo.init(data);
+
+        });
+
+    </script>
+}

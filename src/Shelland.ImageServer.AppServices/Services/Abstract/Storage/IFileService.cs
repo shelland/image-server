@@ -41,7 +41,7 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        string NormalizeUrl(string originalUrl);
+        string NormalizeWebPath(string originalUrl); // TODO: move to another service
 
         /// <summary>
         /// Delete selected file from the disk

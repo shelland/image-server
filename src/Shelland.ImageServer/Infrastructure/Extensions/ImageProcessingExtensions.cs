@@ -1,7 +1,6 @@
 ﻿// Created on 13/02/2021 18:14 by Andrey Laserson
 
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

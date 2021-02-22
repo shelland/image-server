@@ -18,6 +18,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             services.AddControllers(opts =>
             {
                 opts.Filters.Add<ExceptionFilter>();
+                opts.Filters.Add<ServerEnabledFilter>();
             }).AddNewtonsoftJson(opts =>
             {
                 opts.SerializerSettings.Converters.Add(new StringEnumConverter());

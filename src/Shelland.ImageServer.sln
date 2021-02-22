@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{166E3EBF-0
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{A45E49F6-4D51-44A9-B050-885FC420E750}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageServerDemo", "..\demo\ImageServerDemo\ImageServerDemo.csproj", "{130F921A-4646-459C-9112-8589DDE01EEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,10 @@ Global
 		{5F29D04E-64A0-411F-8AC0-B013F46FB605}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F29D04E-64A0-411F-8AC0-B013F46FB605}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F29D04E-64A0-411F-8AC0-B013F46FB605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{130F921A-4646-459C-9112-8589DDE01EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{130F921A-4646-459C-9112-8589DDE01EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{130F921A-4646-459C-9112-8589DDE01EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{130F921A-4646-459C-9112-8589DDE01EEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +56,7 @@ Global
 		{E029D101-9975-421E-99EB-E025B003636C} = {7AA58758-D58E-45EA-82F9-6ED53C1D5AB0}
 		{157D1C0E-7350-424F-BA46-C2C1CAB8C735} = {7AA58758-D58E-45EA-82F9-6ED53C1D5AB0}
 		{5F29D04E-64A0-411F-8AC0-B013F46FB605} = {7AA58758-D58E-45EA-82F9-6ED53C1D5AB0}
+		{130F921A-4646-459C-9112-8589DDE01EEE} = {A45E49F6-4D51-44A9-B050-885FC420E750}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4CDE9149-E386-4291-80E4-6B5E9BF28B19}

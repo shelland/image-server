@@ -11,5 +11,7 @@ namespace Shelland.ImageServer.Models.Dto.Request
         public int? Height { get; set; }
 
         public ThumbnailEffectType? Effect { get; set; }
+
+        public int? Quality { get; set; }
     }
 }

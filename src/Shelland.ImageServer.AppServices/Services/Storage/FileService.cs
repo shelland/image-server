@@ -71,7 +71,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, int width, int height)
         {
             var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.jpg";
-            var url = this.NormalizeUrl(Path.ChangeExtension(originalPath.UrlPath, null)) +
+            var url = this.NormalizeWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
                       $"_thumb_{width}x{height}.jpg";
 
             return new ImageThumbPathsModel
@@ -105,7 +105,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public string NormalizeUrl(string originalUrl)
+        public string NormalizeWebPath(string originalUrl)
         {
             var url = $"{this.appSettings.Value.Common.ServerUrl}" +
                       $"{this.appSettings.Value.Common.RoutePrefix}" + originalUrl;

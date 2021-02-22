@@ -8,6 +8,7 @@ namespace Shelland.ImageServer.Core.Models.Enums
         DiskWriteFailed,
         InvalidImageFormat,
         InvalidParameters,
-        NetworkCallFailed
+        NetworkCallFailed,
+        MalformedRequest
     }
 }

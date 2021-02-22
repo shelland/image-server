@@ -31,11 +31,9 @@ namespace Shelland.ImageServer.Infrastructure.Extensions.Pipeline
             }
 
             // Check if working directory is defined. Otherwise, fail fast
-
             Guard.Against.NullOrEmpty(workingDirectory, nameof(workingDirectory));
             
             // Add static files middleware
-
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(workingDirectory),

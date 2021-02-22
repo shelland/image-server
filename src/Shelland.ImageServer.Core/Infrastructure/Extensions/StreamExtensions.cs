@@ -7,6 +7,11 @@ namespace Shelland.ImageServer.Core.Infrastructure.Extensions
 {
     public static class StreamExtensions
     {
+        /// <summary>
+        ///  Converts a stream to the byte array form
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public static async Task<byte[]> ToByteArray(this Stream stream)
         {
             await using var memoryStream = new MemoryStream();
@@ -17,6 +22,10 @@ namespace Shelland.ImageServer.Core.Infrastructure.Extensions
             return buffer;
         }
 
+        /// <summary>
+        /// Resets a stream to the start
+        /// </summary>
+        /// <param name="stream"></param>
         public static void Reset(this Stream stream)
         {
             stream.Seek(0, SeekOrigin.Begin);

@@ -11,5 +11,7 @@ namespace Shelland.ImageServer.Core.Models.Domain
         public int? Height { get; set; }
 
         public ThumbnailEffectType? Effect { get; set; }
+
+        public int? Quality { get; set; }
     }
 }
