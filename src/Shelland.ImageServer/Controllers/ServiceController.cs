@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Shelland.ImageServer.Controllers
 {
-    [Route("service")]
     public class ServiceController : BaseAppController
     {
-        [HttpGet("health")]
-        public IActionResult Index()
+        public IActionResult Health()
         {
             return Ok();
         }

@@ -8,6 +8,9 @@ using Shelland.ImageServer.Core.Models.Domain;
 
 namespace Shelland.ImageServer.Core.Models.Data
 {
+    /// <summary>
+    /// Database entity that represents a thumbnail processing result
+    /// </summary>
     public class ImageUploadDbModel : BaseDbModel
     {
         public ImageUploadDbModel()

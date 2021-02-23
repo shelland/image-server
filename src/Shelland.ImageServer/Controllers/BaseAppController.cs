@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Shelland.ImageServer.Controllers
 {
     [ApiController]
+    [Route("[controller]")]
     public class BaseAppController : Controller
     {
         /// <summary>

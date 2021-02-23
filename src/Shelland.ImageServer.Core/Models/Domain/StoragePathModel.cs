@@ -4,6 +4,9 @@ using System;
 
 namespace Shelland.ImageServer.Core.Models.Domain
 {
+    /// <summary>
+    /// Represents a single image thumbnail storage
+    /// </summary>
     public class StoragePathModel
     {
         public Guid Key { get; set; }

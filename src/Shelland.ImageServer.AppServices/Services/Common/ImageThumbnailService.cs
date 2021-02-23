@@ -27,7 +27,7 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace Shelland.ImageServer.AppServices.Services.Common
 {
-    public class ImageUploadService : IImageUploadService
+    public class ImageThumbnailService : IImageThumbnailService
     {
         private readonly IImageProcessingService imageProcessingService;
         private readonly IFileService fileService;
@@ -35,14 +35,14 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private readonly IImageUploadRepository imageUploadRepository;
         private readonly IOptions<AppSettingsModel> appSettings;
 
-        private readonly ILogger<ImageUploadService> logger;
+        private readonly ILogger<ImageThumbnailService> logger;
         private readonly IMediator mediator;
 
-        public ImageUploadService(
+        public ImageThumbnailService(
             IImageProcessingService imageProcessingService,
             IFileService fileService,
             IImageUploadRepository imageUploadRepository,
-            ILogger<ImageUploadService> logger,
+            ILogger<ImageThumbnailService> logger,
             IMediator mediator,
             IOptions<AppSettingsModel> appSettings)
         {
@@ -57,7 +57,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<ImageUploadResultModel> RunProcessingJob(ImageUploadJob uploadJob)
+        public async Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob)
         {
             var storagePath = this.fileService.PrepareStoragePath();
 
@@ -84,7 +84,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             // Process requested thumbnails
             foreach (var thumbParam in uploadJob.Params.Thumbnails)
             {
-                await ProcessImage(thumbParam, sourceImage, storagePath, result);
+                var thumbnail = await GenerateThumbnails(thumbParam, sourceImage, storagePath);
+                result.Thumbnails.Add(thumbnail);
             }
 
             // Send a notification about finished job to all listeners
@@ -106,13 +107,11 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="thumbParam"></param>
         /// <param name="sourceImage"></param>
         /// <param name="storagePath"></param>
-        /// <param name="result"></param>
         /// <returns></returns>
-        private async Task ProcessImage(
+        private async Task<ImageThumbnailResultModel> GenerateThumbnails(
             ImageThumbnailParamsModel thumbParam, 
             Image sourceImage, 
-            StoragePathModel storagePath, 
-            ImageUploadResultModel result)
+            StoragePathModel storagePath)
         {
             this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
 
@@ -138,17 +137,18 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             // Save a processed image to the disk
             await this.SaveImage(processedImage, paths.DiskPath, quality);
+            
+            this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
 
-            // Add a job result to the output list
-            result.Thumbnails.Add(new ImageThumbnailResultModel
+            var thumbnailResult = new ImageThumbnailResultModel
             {
                 Width = processedImage.Width,
                 Height = processedImage.Height,
                 Url = paths.Url,
                 DiskPath = paths.DiskPath
-            });
+            };
 
-            this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
+            return thumbnailResult;
         }
 
         /// <summary>

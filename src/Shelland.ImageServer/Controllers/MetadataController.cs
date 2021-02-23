@@ -8,7 +8,6 @@ using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
 namespace Shelland.ImageServer.Controllers
 {
-    [Route("metadata")]
     public class MetadataController : BaseAppController
     {
         private readonly IImageProcessingService imageProcessingService;

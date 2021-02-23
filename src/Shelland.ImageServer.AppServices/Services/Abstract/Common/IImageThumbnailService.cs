@@ -6,13 +6,13 @@ using Shelland.ImageServer.Core.Models.Other;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
 {
-    public interface IImageUploadService
+    public interface IImageThumbnailService
     {
         /// <summary>
         /// Starts a processing of uploaded image
         /// </summary>
         /// <param name="uploadJob"></param>
         /// <returns></returns>
-        Task<ImageUploadResultModel> RunProcessingJob(ImageUploadJob uploadJob);
+        Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob);
     }
 }

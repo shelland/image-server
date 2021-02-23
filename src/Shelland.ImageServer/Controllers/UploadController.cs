@@ -16,22 +16,21 @@ using Shelland.ImageServer.Models.Dto.Response;
 
 namespace Shelland.ImageServer.Controllers
 {
-    [Route("upload")]
     public class UploadController : BaseAppController
     {
-        private readonly IImageUploadService imageUploadService;
+        private readonly IImageThumbnailService imageThumbnailService;
         private readonly IImageUploadRepository imageUploadRepository;
         private readonly IFileService fileService;
 
         private readonly IMapper mapper;
 
         public UploadController(
-            IImageUploadService imageUploadService,
+            IImageThumbnailService imageThumbnailService,
             IImageUploadRepository imageUploadRepository,
             IMapper mapper,
             IFileService fileService)
         {
-            this.imageUploadService = imageUploadService;
+            this.imageThumbnailService = imageThumbnailService;
             this.imageUploadRepository = imageUploadRepository;
             this.mapper = mapper;
             this.fileService = fileService;
@@ -48,21 +47,21 @@ namespace Shelland.ImageServer.Controllers
             }
 
             var userIpAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
-            var thumbnailInputModel = this.mapper.Map<ImageUploadParamsModel>(paramsDto);
+            var requestParamsModel = this.mapper.Map<ImageUploadParamsModel>(paramsDto);
 
             await using var imageStream = file.OpenReadStream();
 
             var job = new ImageUploadJob
             {
                 IpAddress = userIpAddress,
-                Params = thumbnailInputModel,
+                Params = requestParamsModel,
                 Stream = imageStream,
-                ExpirationDate = thumbnailInputModel.Lifetime.HasValue ? 
-                    DateTimeOffset.UtcNow.AddSeconds(thumbnailInputModel.Lifetime.Value) : 
+                ExpirationDate = requestParamsModel.Lifetime.HasValue ? 
+                    DateTimeOffset.UtcNow.AddSeconds(requestParamsModel.Lifetime.Value) : 
                     null
             };
 
-            var response = await this.imageUploadService.RunProcessingJob(job);
+            var response = await this.imageThumbnailService.ProcessThumbnails(job);
 
             return Ok(new Response<ImageUploadResultModel>(response));
         }

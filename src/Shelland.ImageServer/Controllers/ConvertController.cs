@@ -7,7 +7,6 @@ using Shelland.ImageServer.Models.Dto.Response;
 
 namespace Shelland.ImageServer.Controllers
 {
-    [Route("convert")]
     public class ConvertController : BaseAppController
     {
         private readonly IImageConvertingService imageConvertingService;
