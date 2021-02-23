@@ -2,6 +2,7 @@
 
 #region Usings
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -41,8 +42,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             IImageProcessingService imageProcessingService,
             IFileService fileService,
             IImageUploadRepository imageUploadRepository,
-            ILogger<ImageUploadService> logger, 
-            IMediator mediator, 
+            ILogger<ImageUploadService> logger,
+            IMediator mediator,
             IOptions<AppSettingsModel> appSettings)
         {
             this.imageProcessingService = imageProcessingService;
@@ -56,7 +57,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<ImageUploadResultModel> Process(ImageUploadJob uploadJob)
+        public async Task<ImageUploadResultModel> RunProcessingJob(ImageUploadJob uploadJob)
         {
             var storagePath = this.fileService.PrepareStoragePath();
 
@@ -68,7 +69,6 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             this.logger.LogInformation($"A new upload with id {result.Id} was created");
 
             // Save original file depending on the app settings
-
             if (this.appSettings.Value.Common.SaveOriginalFile)
             {
                 await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath);
@@ -79,25 +79,22 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             // Load a new image and save it since loading it each time is extremely expensive
             // All image processing routines will clone it and use - it is about 10x times faster
-
             using var sourceImage = await this.imageProcessingService.Load(uploadJob.Stream);
 
             // Process requested thumbnails
-
             foreach (var thumbParam in uploadJob.Params.Thumbnails)
             {
-                await HandleImage(thumbParam, sourceImage, storagePath, result);
+                await ProcessImage(thumbParam, sourceImage, storagePath, result);
             }
-            
-            // Send a notification about finished job to all listeners
 
+            // Send a notification about finished job to all listeners
             await this.mediator.Send(new ImageProcessingFinishedPayload
             {
                 Result = result
             });
 
-            await this.AddDbEntry(storagePath, result.Thumbnails, uploadJob.IpAddress);
-            
+            await this.AddDbEntry(storagePath, result.Thumbnails, uploadJob.IpAddress, uploadJob.ExpirationDate);
+
             return result;
         }
 
@@ -111,7 +108,11 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="storagePath"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private async Task HandleImage(ImageThumbnailParamsModel thumbParam, Image sourceImage, StoragePathModel storagePath, ImageUploadResultModel result)
+        private async Task ProcessImage(
+            ImageThumbnailParamsModel thumbParam, 
+            Image sourceImage, 
+            StoragePathModel storagePath, 
+            ImageUploadResultModel result)
         {
             this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
 
@@ -131,8 +132,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             // Quality can be defined for each thumbnail individually
             // Otherwise a JPEG quality value will be loaded from the application settings or app default value
-            var quality = thumbParam.Quality ?? 
-                          this.appSettings.Value.ImageProcessing.JpegQuality ?? 
+            var quality = thumbParam.Quality ??
+                          this.appSettings.Value.ImageProcessing.JpegQuality ??
                           Constants.DefaultJpegQuality;
 
             // Save a processed image to the disk
@@ -177,20 +178,26 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="storagePath"></param>
         /// <param name="thumbnails"></param>
         /// <param name="ipAddress"></param>
+        /// <param name="expirationDate"></param>
         /// <returns></returns>
-        private async Task AddDbEntry(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress)
+        private async Task AddDbEntry(
+            StoragePathModel storagePath,
+            List<ImageThumbnailResultModel> thumbnails,
+            string ipAddress,
+            DateTimeOffset? expirationDate)
         {
             var dbModel = new ImageUploadDbModel
             {
                 UploadId = storagePath.Key,
                 OriginalFilePath = storagePath.FilePath,
                 Thumbnails = thumbnails,
-                IpAddress = ipAddress
+                IpAddress = ipAddress,
+                ExpiresAt = expirationDate
             };
 
             await this.imageUploadRepository.Create(dbModel);
         }
-        
+
         #endregion
     }
 }

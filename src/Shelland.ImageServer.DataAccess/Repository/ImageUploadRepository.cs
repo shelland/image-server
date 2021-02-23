@@ -1,6 +1,7 @@
 ﻿// Created on 08/02/2021 17:09 by Andrey Laserson
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
@@ -53,6 +54,17 @@ namespace Shelland.ImageServer.DataAccess.Repository
         {
             var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
             await collection.DeleteAsync(id);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<List<ImageUploadDbModel>> GetExpiredUploads()
+        {
+            var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
+            var expiredUploads = await collection.Query().Where(x => x.ExpiresAt != null && x.ExpiresAt <= DateTimeOffset.UtcNow).ToListAsync();
+
+            return expiredUploads;
         }
     }
 }

@@ -8,5 +8,7 @@ namespace Shelland.ImageServer.Core.Models.Other
     public class ImageUploadParamsModel
     {
         public List<ImageThumbnailParamsModel> Thumbnails { get; set; }
+
+        public int? Lifetime { get; set; }
     }
 }

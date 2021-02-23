@@ -10,10 +10,7 @@ namespace Shelland.ImageServer.Controllers
         [HttpGet("health")]
         public IActionResult Index()
         {
-            return Json(new
-            {
-                ok = true
-            });
+            return Ok();
         }
     }
 }

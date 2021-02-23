@@ -56,10 +56,13 @@ namespace Shelland.ImageServer.Controllers
             {
                 IpAddress = userIpAddress,
                 Params = thumbnailInputModel,
-                Stream = imageStream
+                Stream = imageStream,
+                ExpirationDate = thumbnailInputModel.Lifetime.HasValue ? 
+                    DateTimeOffset.UtcNow.AddSeconds(thumbnailInputModel.Lifetime.Value) : 
+                    null
             };
 
-            var response = await this.imageUploadService.Process(job);
+            var response = await this.imageUploadService.RunProcessingJob(job);
 
             return Ok(new Response<ImageUploadResultModel>(response));
         }
@@ -87,11 +90,8 @@ namespace Shelland.ImageServer.Controllers
                 return NotFound();
             }
 
-            // Get all files from the upload entity
-            var filePaths = upload.GetAllFilePaths();
-
             // Delete files from the disk
-            this.fileService.Delete(filePaths);
+            this.fileService.Delete(upload.GetAllFilePaths());
 
             // Remove a database record
             await this.imageUploadRepository.Delete(upload.Id);

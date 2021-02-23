@@ -1,6 +1,7 @@
 ﻿// Created on 08/02/2021 17:07 by Andrey Laserson
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
 
@@ -31,5 +32,11 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// <param name="id"></param>
         /// <returns></returns>
         Task Delete(int id);
+
+        /// <summary>
+        /// Returns a list of uploads that were expired
+        /// </summary>
+        /// <returns></returns>
+        Task<List<ImageUploadDbModel>> GetExpiredUploads();
     }
 }

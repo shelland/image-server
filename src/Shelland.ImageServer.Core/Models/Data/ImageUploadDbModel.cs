@@ -15,14 +15,35 @@ namespace Shelland.ImageServer.Core.Models.Data
             CreateDate = DateTimeOffset.UtcNow;
         }
 
+        /// <summary>
+        /// Unique upload ID
+        /// </summary>
         public Guid UploadId { get; set; }
 
+        /// <summary>
+        /// User IP address
+        /// </summary>
         public string IpAddress { get; set; }
 
+        /// <summary>
+        /// Original file path
+        /// </summary>
         public string OriginalFilePath { get; set; }
 
+        /// <summary>
+        /// Generated thumbnails
+        /// </summary>
         public List<ImageThumbnailResultModel> Thumbnails { get; set; }
 
+        /// <summary>
+        /// Expiration date
+        /// </summary>
+        public DateTimeOffset? ExpiresAt { get; set; }
+
+        /// <summary>
+        /// Returns a list of disk paths for original image (if exists) and generated thumbnails
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetAllFilePaths()
         {
             var paths = new List<string>();

@@ -31,6 +31,7 @@ namespace Shelland.ImageServer
             services.AddImageProcessing(Configuration, this.webHostEnvironment);
             services.AddHelperServices();
             services.AddRateLimiting(Configuration);
+            services.AddHostedServices();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

@@ -13,6 +13,6 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
         /// </summary>
         /// <param name="uploadJob"></param>
         /// <returns></returns>
-        Task<ImageUploadResultModel> Process(ImageUploadJob uploadJob);
+        Task<ImageUploadResultModel> RunProcessingJob(ImageUploadJob uploadJob);
     }
 }
