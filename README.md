@@ -15,4 +15,4 @@ Supported features:
 
 All actual documentation will be located at the [project wiki](https://github.com/shelland/image-server/wiki).
 
-*Currently we are working hard to deliver the latest release and documentation.**
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/shelland/image-server/commits/master)

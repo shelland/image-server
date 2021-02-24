@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  imageserver:
+    image: shelland/image-server:latest
+    restart: always
+    volumes:
+      - /tmp:/tmp
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5000:5000"
