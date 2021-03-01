@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ImageMagick;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,8 +21,6 @@ using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.Core.Models.Preferences;
 using Shelland.ImageServer.Core.Other;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
 
 #endregion
 
@@ -110,7 +109,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <returns></returns>
         private async Task<ImageThumbnailResultModel> GenerateThumbnails(
             ImageThumbnailParamsModel thumbParam, 
-            Image sourceImage, 
+            MagickImage sourceImage, 
             StoragePathModel storagePath)
         {
             this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
@@ -124,7 +123,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             };
 
             // Run an image processing job
-            var processedImage = this.imageProcessingService.Process(job);
+            using var processedImage = this.imageProcessingService.Process(job);
 
             // Prepare disk paths to be used to save images
             var paths = this.fileService.PrepareThumbFilePath(storagePath, processedImage.Width, processedImage.Height);
@@ -158,14 +157,14 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="path"></param>
         /// <param name="quality"></param>
         /// <returns></returns>
-        private async Task SaveImage(Image image, string path, int quality)
+        private async Task SaveImage(IMagickImage image, string path, int quality)
         {
             await using var imageStream = new MemoryStream();
 
-            await image.SaveAsJpegAsync(imageStream, new JpegEncoder
-            {
-                Quality = quality
-            });
+            image.Format = MagickFormat.Jpeg;
+            image.Quality = quality;
+
+            await image.WriteAsync(imageStream);
 
             imageStream.Reset();
 

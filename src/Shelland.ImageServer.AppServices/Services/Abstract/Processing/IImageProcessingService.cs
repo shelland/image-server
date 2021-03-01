@@ -2,8 +2,8 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using ImageMagick;
 using Shelland.ImageServer.Core.Models.Other;
-using SixLabors.ImageSharp;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
 {
@@ -17,13 +17,13 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
         /// </summary>
         /// <param name="job">Job description</param>
         /// <returns></returns>
-        Image Process(ImageProcessingJob job);
-        
+        MagickImage Process(ImageProcessingJob job);
+
         /// <summary>
         /// Loads an image from input stream
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        Task<Image> Load(Stream stream);
+        Task<MagickImage> Load(Stream stream);
     }
 }

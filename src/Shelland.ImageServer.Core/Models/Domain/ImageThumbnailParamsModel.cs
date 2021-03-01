@@ -13,5 +13,7 @@ namespace Shelland.ImageServer.Core.Models.Domain
         public ThumbnailEffectType? Effect { get; set; }
 
         public int? Quality { get; set; }
+
+        public bool IsFixedSize => Width.HasValue && Height.HasValue;
     }
 }

@@ -88,6 +88,14 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         {
             try
             {
+                if (File.Exists(filePath))
+                {
+                    // It's okay if file exists, really.
+
+                    this.logger.LogWarning($"File already exists {filePath}. Skipping...");
+                    return true;
+                }
+
                 await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
 
                 await stream.CopyToAsync(fileStream);

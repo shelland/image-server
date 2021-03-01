@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using ExifDataType = ImageMagick.ExifDataType;
 
 namespace Shelland.ImageServer.Controllers
 {
@@ -30,7 +31,7 @@ namespace Shelland.ImageServer.Controllers
             await using var imageStream = file.OpenReadStream();
             var image = await this.imageProcessingService.Load(imageStream);
 
-            var profile = image.Metadata.ExifProfile;
+            var profile = image.GetExifProfile();
 
             if (profile == null)
             {
