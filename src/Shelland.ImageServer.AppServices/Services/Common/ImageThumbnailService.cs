@@ -2,8 +2,6 @@
 
 #region Usings
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ImageMagick;
@@ -15,7 +13,6 @@ using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.AppServices.Services.Messaging.Payload;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
-using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.Core.Models.Preferences;
@@ -37,13 +34,16 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private readonly ILogger<ImageThumbnailService> logger;
         private readonly IMediator mediator;
 
+        private readonly IImageLoadingService imageLoadingService;
+
         public ImageThumbnailService(
             IImageProcessingService imageProcessingService,
             IFileService fileService,
             IImageUploadRepository imageUploadRepository,
             ILogger<ImageThumbnailService> logger,
             IMediator mediator,
-            IOptions<AppSettingsModel> appSettings)
+            IOptions<AppSettingsModel> appSettings,
+            IImageLoadingService imageLoadingService)
         {
             this.imageProcessingService = imageProcessingService;
             this.fileService = fileService;
@@ -51,6 +51,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             this.logger = logger;
             this.mediator = mediator;
             this.appSettings = appSettings;
+            this.imageLoadingService = imageLoadingService;
         }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             // Load a new image and save it since loading it each time is extremely expensive
             // All image processing routines will clone it and use - it is about 10x times faster
-            using var sourceImage = await this.imageProcessingService.Load(uploadJob.Stream);
+            using var sourceImage = await this.imageLoadingService.Load(uploadJob.Stream);
 
             // Process requested thumbnails
             foreach (var thumbParam in uploadJob.Params.Thumbnails)
@@ -93,7 +94,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 Result = result
             });
 
-            await this.AddDbEntry(storagePath, result.Thumbnails, uploadJob.IpAddress, uploadJob.ExpirationDate);
+            // Create a database record
+            await this.imageUploadRepository.Create(storagePath, result.Thumbnails, uploadJob.IpAddress, uploadJob.ExpirationDate);
 
             return result;
         }
@@ -108,8 +110,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="storagePath"></param>
         /// <returns></returns>
         private async Task<ImageThumbnailResultModel> GenerateThumbnails(
-            ImageThumbnailParamsModel thumbParam, 
-            MagickImage sourceImage, 
+            ImageThumbnailParamsModel thumbParam,
+            MagickImage sourceImage,
             StoragePathModel storagePath)
         {
             this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
@@ -123,7 +125,13 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             };
 
             // Run an image processing job
-            using var processedImage = this.imageProcessingService.Process(job);
+            var processedImage = this.imageProcessingService.Process(job);
+
+            if (thumbParam.Watermark != null)
+            {
+                using var watermarkImage = await this.imageLoadingService.Load(thumbParam.Watermark.Url);
+                processedImage = this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
+            }
 
             // Prepare disk paths to be used to save images
             var paths = this.fileService.PrepareThumbFilePath(storagePath, processedImage.Width, processedImage.Height);
@@ -136,7 +144,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             // Save a processed image to the disk
             await this.SaveImage(processedImage, paths.DiskPath, quality);
-            
+
             this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
 
             var thumbnailResult = new ImageThumbnailResultModel
@@ -146,6 +154,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 Url = paths.Url,
                 DiskPath = paths.DiskPath
             };
+
+            processedImage.Dispose();
 
             return thumbnailResult;
         }
@@ -157,7 +167,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="path"></param>
         /// <param name="quality"></param>
         /// <returns></returns>
-        private async Task SaveImage(IMagickImage image, string path, int quality)
+        private async Task SaveImage(MagickImage image, string path, int quality)
         {
             await using var imageStream = new MemoryStream();
 
@@ -169,32 +179,6 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             imageStream.Reset();
 
             await this.fileService.WriteFile(imageStream, path);
-        }
-
-        /// <summary>
-        /// Create a database entry for this upload
-        /// </summary>
-        /// <param name="storagePath"></param>
-        /// <param name="thumbnails"></param>
-        /// <param name="ipAddress"></param>
-        /// <param name="expirationDate"></param>
-        /// <returns></returns>
-        private async Task AddDbEntry(
-            StoragePathModel storagePath,
-            List<ImageThumbnailResultModel> thumbnails,
-            string ipAddress,
-            DateTimeOffset? expirationDate)
-        {
-            var dbModel = new ImageUploadDbModel
-            {
-                UploadId = storagePath.Key,
-                OriginalFilePath = storagePath.FilePath,
-                Thumbnails = thumbnails,
-                IpAddress = ipAddress,
-                ExpiresAt = expirationDate
-            };
-
-            await this.imageUploadRepository.Create(dbModel);
         }
 
         #endregion

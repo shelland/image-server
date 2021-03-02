@@ -1,6 +1,7 @@
 ﻿// Created on 09/02/2021 21:37 by Andrey Laserson
 
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -34,6 +35,27 @@ namespace Shelland.ImageServer.AppServices.Services.Networking
             {
                 using var client = this.httpClientFactory.CreateClient();
                 await client.PostAsJsonAsync(url, payload);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                throw new AppFlowException(AppFlowExceptionType.NetworkCallFailed);
+            }
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<Stream> DownloadAsStream(string url)
+        {
+            try
+            {
+                using var client = this.httpClientFactory.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(2);
+
+                var stream = await client.GetStreamAsync(url);
+
+                return stream;
             }
             catch (Exception ex)
             {

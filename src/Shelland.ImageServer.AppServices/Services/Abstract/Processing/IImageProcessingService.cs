@@ -1,7 +1,5 @@
 ﻿// Created on 08/02/2021 18:27 by Andrey Laserson
 
-using System.IO;
-using System.Threading.Tasks;
 using ImageMagick;
 using Shelland.ImageServer.Core.Models.Other;
 
@@ -20,10 +18,11 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
         MagickImage Process(ImageProcessingJob job);
 
         /// <summary>
-        /// Loads an image from input stream
+        /// 
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="srcImage"></param>
+        /// <param name="watermarkImage"></param>
         /// <returns></returns>
-        Task<MagickImage> Load(Stream stream);
+        MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage);
     }
 }

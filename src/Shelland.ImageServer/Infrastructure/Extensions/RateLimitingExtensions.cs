@@ -47,7 +47,9 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
 
         public static void AddRateLimitingPipeline(this IApplicationBuilder appBuilder, IConfiguration configuration)
         {
-            if (configuration.GetValue<bool>("RateLimiting:IsEnabled"))
+            var isEnabled = configuration.GetValue<bool>("RateLimiting:IsEnabled");
+
+            if (isEnabled)
             {
                 appBuilder.UseIpRateLimiting();
             }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
+using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
 using Shelland.ImageServer.DataAccess.Context;
 
@@ -65,6 +66,25 @@ namespace Shelland.ImageServer.DataAccess.Repository
             var expiredUploads = await collection.Query().Where(x => x.ExpiresAt != null && x.ExpiresAt <= DateTimeOffset.UtcNow).ToListAsync();
 
             return expiredUploads;
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress, DateTimeOffset? expirationDate)
+        {
+            var dbModel = new ImageUploadDbModel
+            {
+                UploadId = storagePath.Key,
+                OriginalFilePath = storagePath.FilePath,
+                Thumbnails = thumbnails,
+                IpAddress = ipAddress,
+                ExpiresAt = expirationDate
+            };
+
+            await this.Create(dbModel);
+
+            return dbModel;
         }
     }
 }

@@ -13,8 +13,11 @@ namespace Shelland.ImageServer.Infrastructure.Mapping
     {
         public ThumbnailModelMapperProfile()
         {
-            CreateMap<ImageThumbnailParamsDto, ImageThumbnailParamsModel>();
+            CreateMap<ImageThumbnailParamsDto, ImageThumbnailParamsModel>()
+                .ForMember(x => x.Watermark, x => x.MapFrom((src, _, _, ctx) => ctx.Mapper.Map<WatermarkParams>(src.Watermark)));
+
             CreateMap<ImageThumbnailResultModel, ImageThumbnailResultDto>();
+            CreateMap<WatermarkParamsDto, WatermarkParams>();
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿// Created on 08/02/2021 18:26 by Andrey Laserson
 
 using System;
-using System.IO;
-using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using ImageMagick;
 using Microsoft.Extensions.Logging;
@@ -67,23 +65,24 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
             }
         }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<MagickImage> Load(Stream stream)
+        public MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage)
         {
-            try
-            {
-                var image = new MagickImage();
-                await image.ReadAsync(stream);
-                
-                return image;
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
-            }
+            /*using var image = new MagickImage(inputStream);
+            using var watermark = new MagickImage(watermarkStream);
+
+            watermark.Evaluate(Channels.Alpha, EvaluateOperator.Divide, 4);
+            image.Composite(watermark, Gravity.Southwest, CompositeOperator.Over);
+
+            using var memoryStream = new MemoryStream();
+
+            image.Write(memoryStream, MagickFormat.Jpeg);*/
+
+
+            watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Divide, 4);
+            srcImage.Composite(watermarkImage,Gravity.Southwest,CompositeOperator.Over);
+
+
+            return srcImage;
         }
 
         private void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)
@@ -100,20 +99,6 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
                     image.SepiaTone();
                     break;
             }
-        }
-
-        // TODO
-        private void EmbedWatermark(Stream inputStream, Stream watermarkStream)
-        {
-            using var image = new MagickImage(inputStream);
-            using var watermark = new MagickImage(watermarkStream);
-
-            watermark.Evaluate(Channels.Alpha, EvaluateOperator.Divide, 4);
-            image.Composite(watermark, Gravity.Southwest, CompositeOperator.Over);
-
-            using var memoryStream = new MemoryStream();
-
-            image.Write(memoryStream, MagickFormat.Jpeg);
         }
     }
 }
