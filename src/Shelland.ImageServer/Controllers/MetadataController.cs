@@ -2,19 +2,19 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using ImageMagick;
 using Microsoft.AspNetCore.Mvc;
-using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
 namespace Shelland.ImageServer.Controllers
 {
     public class MetadataController : BaseAppController
     {
-        private readonly IImageProcessingService imageProcessingService;
+        private readonly IImageLoadingService imageLoadingService;
 
-        public MetadataController(IImageProcessingService imageProcessingService)
+        public MetadataController(IImageLoadingService imageLoadingService)
         {
-            this.imageProcessingService = imageProcessingService;
+            this.imageLoadingService = imageLoadingService;
         }
 
         [HttpPost]
@@ -28,9 +28,9 @@ namespace Shelland.ImageServer.Controllers
             }
 
             await using var imageStream = file.OpenReadStream();
-            var image = await this.imageProcessingService.Load(imageStream);
+            var image = await this.imageLoadingService.Load(imageStream);
 
-            var profile = image.Metadata.ExifProfile;
+            var profile = image.GetExifProfile();
 
             if (profile == null)
             {

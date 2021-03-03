@@ -1,5 +1,6 @@
 ﻿// Created on 09/02/2021 21:36 by Andrey Laserson
 
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Networking
@@ -16,5 +17,12 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Networking
         /// <param name="payload"></param>
         /// <returns></returns>
         Task MakeRequest(string url, object payload);
+
+        /// <summary>
+        /// Download a file to stream
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        Task<Stream> DownloadAsStream(string url);
     }
 }

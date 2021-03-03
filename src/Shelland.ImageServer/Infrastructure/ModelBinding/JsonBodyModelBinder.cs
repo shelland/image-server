@@ -50,7 +50,7 @@ namespace Shelland.ImageServer.Infrastructure.ModelBinding
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex,ex.Message);
+                this.logger.LogError(ex, ex.Message);
                 throw new AppFlowException(AppFlowExceptionType.MalformedRequest);
             }
         }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
+using Shelland.ImageServer.Core.Models.Domain;
 
 namespace Shelland.ImageServer.DataAccess.Abstract.Repository
 {
@@ -38,5 +39,15 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// </summary>
         /// <returns></returns>
         Task<List<ImageUploadDbModel>> GetExpiredUploads();
+
+        /// <summary>
+        /// Create a database entry for this upload
+        /// </summary>
+        /// <param name="storagePath"></param>
+        /// <param name="thumbnails"></param>
+        /// <param name="ipAddress"></param>
+        /// <param name="expirationDate"></param>
+        /// <returns></returns>
+        Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress, DateTimeOffset? expirationDate);
     }
 }
