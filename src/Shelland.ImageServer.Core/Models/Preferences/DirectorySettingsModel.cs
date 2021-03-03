@@ -7,5 +7,7 @@ namespace Shelland.ImageServer.Core.Models.Preferences
        public string WorkingDirectory { get; set; }
 
        public string AppDataDirectory { get; set; }
+
+       public string CacheDirectory { get; set; }
     }
 }

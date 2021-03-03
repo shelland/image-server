@@ -19,11 +19,16 @@ namespace Shelland.ImageServer.AppServices.Services.Common
     {
         private readonly INetworkService networkService;
         private readonly ILogger<ImageLoadingService> logger;
+        private readonly IDiskCacheService diskCacheService;
 
-        public ImageLoadingService(INetworkService networkService, ILogger<ImageLoadingService> logger)
+        public ImageLoadingService(
+            INetworkService networkService,
+            ILogger<ImageLoadingService> logger,
+            IDiskCacheService diskCacheService)
         {
             this.networkService = networkService;
             this.logger = logger;
+            this.diskCacheService = diskCacheService;
         }
 
         /// <summary>
@@ -35,8 +40,6 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             {
                 var image = new MagickImage();
                 await image.ReadAsync(stream);
-
-                // this.logger.LogDebug($"Image was loaded. Length: {stream.Length}");
 
                 return image;
             }
@@ -54,7 +57,9 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         {
             try
             {
-                await using var imageStream = await this.networkService.DownloadAsStream(url);
+                await using var imageStream = await this.diskCacheService.GetOrAdd(url, async () => 
+                    await this.networkService.DownloadAsStream(url));
+
                 return await this.Load(imageStream);
             }
             catch (Exception ex)

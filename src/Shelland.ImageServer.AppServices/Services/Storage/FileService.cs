@@ -140,5 +140,22 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed);
             }
         }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<Stream> ReadFile(string path)
+        {
+            var isFileExists = File.Exists(path);
+
+            if (!isFileExists)
+            {
+                return null;
+            }
+
+            var fileStream = new FileStream(path, FileMode.Open);
+            
+            return await Task.FromResult(fileStream);
+        }
     }
 }

@@ -49,5 +49,12 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// <param name="paths"></param>
         /// <returns></returns>
         void Delete(List<string> paths);
+
+        /// <summary>
+        /// Read a file from the local file system
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>File stream if file exists, null otherwise</returns>
+        Task<Stream> ReadFile(string path);
     }
 }

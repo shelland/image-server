@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Shelland.ImageServer.AppServices.Services.Abstract.Networking;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
+using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Enums;
 
 namespace Shelland.ImageServer.AppServices.Services.Networking
@@ -53,9 +54,13 @@ namespace Shelland.ImageServer.AppServices.Services.Networking
                 using var client = this.httpClientFactory.CreateClient();
                 client.Timeout = TimeSpan.FromSeconds(2);
 
-                var stream = await client.GetStreamAsync(url);
+                await using var stream = await client.GetStreamAsync(url);
+                var memoryStream = new MemoryStream();
 
-                return stream;
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Reset();
+                
+                return memoryStream;
             }
             catch (Exception ex)
             {

@@ -14,6 +14,8 @@ namespace Shelland.ImageServer.Models.Dto.Request
 
         public int? Quality { get; set; }
 
+        public OutputImageFormat? OutputFormat { get; set; }
+
         public WatermarkParamsDto Watermark { get; set; }
     }
 

@@ -18,7 +18,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
         public static IServiceCollection AddImageProcessing(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             var isEnabled = configuration.GetValue<bool>("OnDemandProcessing:IsEnabled");
-            var onDemandCacheDirectory = configuration.GetValue<string>("OnDemandProcessing:CacheFolderName");
+            var onDemandCacheDirectory = configuration.GetValue<string>("Directory:CacheDirectory");
             var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory");
             var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");
 
