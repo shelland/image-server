@@ -67,21 +67,9 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
 
         public MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage)
         {
-            /*using var image = new MagickImage(inputStream);
-            using var watermark = new MagickImage(watermarkStream);
-
-            watermark.Evaluate(Channels.Alpha, EvaluateOperator.Divide, 4);
-            image.Composite(watermark, Gravity.Southwest, CompositeOperator.Over);
-
-            using var memoryStream = new MemoryStream();
-
-            image.Write(memoryStream, MagickFormat.Jpeg);*/
-
-
             watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Divide, 4);
-            srcImage.Composite(watermarkImage,Gravity.Southwest,CompositeOperator.Over);
-
-
+            srcImage.Composite(watermarkImage, Gravity.Southwest, CompositeOperator.Over);
+            
             return srcImage;
         }
 

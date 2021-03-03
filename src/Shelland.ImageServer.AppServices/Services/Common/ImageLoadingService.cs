@@ -54,7 +54,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         {
             try
             {
-                var imageStream = await this.networkService.DownloadAsStream(url);
+                await using var imageStream = await this.networkService.DownloadAsStream(url);
                 return await this.Load(imageStream);
             }
             catch (Exception ex)
