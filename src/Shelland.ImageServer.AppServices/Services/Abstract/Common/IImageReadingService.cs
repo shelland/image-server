@@ -6,20 +6,20 @@ using ImageMagick;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
 {
-    public interface IImageLoadingService
+    public interface IImageReadingService
     {
         /// <summary>
         /// Loads an image from input stream
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        Task<MagickImage> Load(Stream stream);
+        Task<MagickImage> Read(Stream stream);
 
         /// <summary>
         /// Loads an image from URL
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        Task<MagickImage> Load(string url);
+        Task<MagickImage> Read(string url);
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
+using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
@@ -35,7 +36,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public StoragePathModel PrepareStoragePath()
+        public StoragePathModel PrepareStoragePath(OutputImageFormat format)
         {
             var uploadKeyGuid = Guid.NewGuid();
             var uploadKey = uploadKeyGuid.ToString("N");
@@ -48,10 +49,11 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 uploadKey[2].ToString());
 
             var baseDirectoryPath = Path.Combine(basePath, segmentsPath);
-            var finalPath = $"{Path.Combine(baseDirectoryPath, uploadKey)}.jpg";
+            var finalPath = $"{Path.Combine(baseDirectoryPath, uploadKey)}.{format.GetDescription()}";
 
-            var urlPath = $"/{segmentsPath}/{uploadKey}.jpg";
+            var urlPath = $"/{segmentsPath}/{uploadKey}.{format.GetDescription()}";
 
+            // If storage directory doesn't exists, create it
             if (!Directory.Exists(baseDirectoryPath))
             {
                 Directory.CreateDirectory(baseDirectoryPath);
@@ -68,11 +70,14 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, int width, int height)
+        public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, int width, int height)
         {
-            var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.jpg";
+            // Prepare a disk path
+            var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.{format.GetDescription()}";
+
+            // Prepare an URL path
             var url = this.NormalizeWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
-                      $"_thumb_{width}x{height}.jpg";
+                      $"_thumb_{width}x{height}.{format.GetDescription()}";
 
             return new ImageThumbPathsModel
             {
@@ -84,7 +89,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<bool> WriteFile(Stream stream, string filePath)
+        public async Task WriteFile(Stream stream, string filePath)
         {
             try
             {
@@ -93,15 +98,13 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                     // It's okay if file exists, really.
 
                     this.logger.LogWarning($"File already exists {filePath}. Skipping...");
-                    return true;
+                    return;
                 }
 
                 await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
 
                 await stream.CopyToAsync(fileStream);
                 await fileStream.FlushAsync();
-
-                return true;
             }
             catch (Exception ex)
             {

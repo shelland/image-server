@@ -14,23 +14,22 @@ namespace Shelland.ImageServer
     public class Startup
     {
         private readonly IWebHostEnvironment webHostEnvironment;
+        private readonly IConfiguration configuration;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
-            Configuration = configuration;
+            this.configuration = configuration;
             this.webHostEnvironment = webHostEnvironment;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApi(Configuration);
-            services.AddConfigOptions(Configuration);
-            services.AddImageProcessing(Configuration, this.webHostEnvironment);
+            services.AddApi(this.configuration);
+            services.AddConfigOptions(this.configuration);
+            services.AddImageProcessing(this.configuration, this.webHostEnvironment);
             services.AddHelperServices();
-            services.AddRateLimiting(Configuration);
+            services.AddRateLimiting(this.configuration);
             services.AddHostedServices();
         }
 
@@ -43,7 +42,7 @@ namespace Shelland.ImageServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IMapper mapper)
         {
-            app.AddRateLimitingPipeline(Configuration);
+            app.AddRateLimitingPipeline(this.configuration);
 
             if (this.webHostEnvironment.IsDevelopment())
             {
@@ -52,10 +51,10 @@ namespace Shelland.ImageServer
 
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
-            app.UseAppCors(Configuration);
+            app.UseAppCors(this.configuration);
             app.UseRouting();
             app.UseAuthorization();
-            app.UseAppCachedStaticFiles(Configuration);
+            app.UseAppCachedStaticFiles(this.configuration);
             
             app.UseEndpoints(endpoints =>
             {

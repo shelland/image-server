@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Domain;
+using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
@@ -17,16 +18,17 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// Prepares a paths object to be used to save an image
         /// </summary>
         /// <returns></returns>
-        StoragePathModel PrepareStoragePath();
+        StoragePathModel PrepareStoragePath(OutputImageFormat format);
 
         /// <summary>
         /// Prepares a path object for thumbnails
         /// </summary>
         /// <param name="originalPath"></param>
+        /// <param name="format"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, int width, int height);
+        ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, int width, int height);
 
         /// <summary>
         /// Write a memory stream to the disk
@@ -34,7 +36,7 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// <param name="stream"></param>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        Task<bool> WriteFile(Stream stream, string filePath);
+        Task WriteFile(Stream stream, string filePath);
 
         /// <summary>
         /// URL normalization (slashes, etc.)

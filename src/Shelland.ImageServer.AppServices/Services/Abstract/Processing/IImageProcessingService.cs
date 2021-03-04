@@ -2,6 +2,7 @@
 
 using ImageMagick;
 using Shelland.ImageServer.Core.Models.Other;
+using Shelland.ImageServer.Core.Other;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
 {
@@ -22,7 +23,8 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
         /// </summary>
         /// <param name="srcImage"></param>
         /// <param name="watermarkImage"></param>
+        /// <param name="opacity"></param>
         /// <returns></returns>
-        MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage);
+        MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity = Constants.DefaultWatermarkOpacity);
     }
 }

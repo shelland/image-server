@@ -20,5 +20,10 @@ namespace Shelland.ImageServer.Controllers
             var files = Request.Form.Files;
             return files.Any() ? files[0] : null;
         }
+
+        /// <summary>
+        /// IP address
+        /// </summary>
+        public string IpAddress => Request.HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

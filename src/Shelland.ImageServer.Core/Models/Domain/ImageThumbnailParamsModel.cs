@@ -34,12 +34,7 @@ namespace Shelland.ImageServer.Core.Models.Domain
         /// Defines if we should ignore aspect ration while processing
         /// </summary>
         public bool IsFixedSize => Width.HasValue && Height.HasValue;
-
-        /// <summary>
-        /// Output image format. JPEG is used by default
-        /// </summary>
-        public OutputImageFormat? OutputFormat { get; set; }
-
+        
         /// <summary>
         /// Watermarks params
         /// </summary>

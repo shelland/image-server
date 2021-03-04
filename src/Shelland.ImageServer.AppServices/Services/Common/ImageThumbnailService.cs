@@ -2,7 +2,6 @@
 
 #region Usings
 
-using System.IO;
 using System.Threading.Tasks;
 using ImageMagick;
 using MediatR;
@@ -14,6 +13,7 @@ using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.AppServices.Services.Messaging.Payload;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Domain;
+using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.Core.Models.Preferences;
 using Shelland.ImageServer.Core.Other;
@@ -34,7 +34,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private readonly ILogger<ImageThumbnailService> logger;
         private readonly IMediator mediator;
 
-        private readonly IImageLoadingService imageLoadingService;
+        private readonly IImageReadingService imageReadingService;
+        private readonly IImageWritingService imageWritingService;
 
         public ImageThumbnailService(
             IImageProcessingService imageProcessingService,
@@ -43,7 +44,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             ILogger<ImageThumbnailService> logger,
             IMediator mediator,
             IOptions<AppSettingsModel> appSettings,
-            IImageLoadingService imageLoadingService)
+            IImageReadingService imageReadingService,
+            IImageWritingService imageWritingService)
         {
             this.imageProcessingService = imageProcessingService;
             this.fileService = fileService;
@@ -51,7 +53,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             this.logger = logger;
             this.mediator = mediator;
             this.appSettings = appSettings;
-            this.imageLoadingService = imageLoadingService;
+            this.imageReadingService = imageReadingService;
+            this.imageWritingService = imageWritingService;
         }
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// </summary>
         public async Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob)
         {
-            var storagePath = this.fileService.PrepareStoragePath();
+            var storagePath = this.fileService.PrepareStoragePath(uploadJob.Params.OutputFormat);
 
             var result = new ImageUploadResultModel
             {
@@ -79,12 +82,12 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             // Load a new image and save it since loading it each time is extremely expensive
             // All image processing routines will clone it and use - it is about 10x times faster
-            using var sourceImage = await this.imageLoadingService.Load(uploadJob.Stream);
+            using var sourceImage = await this.imageReadingService.Read(uploadJob.Stream);
 
             // Process requested thumbnails
             foreach (var thumbParam in uploadJob.Params.Thumbnails)
             {
-                var thumbnail = await GenerateThumbnails(thumbParam, sourceImage, storagePath);
+                var thumbnail = await GenerateThumbnails(thumbParam, uploadJob.Params.OutputFormat, sourceImage, storagePath);
                 result.Thumbnails.Add(thumbnail);
             }
 
@@ -95,7 +98,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             });
 
             // Create a database record
-            await this.imageUploadRepository.Create(storagePath, result.Thumbnails, uploadJob.IpAddress, uploadJob.ExpirationDate);
+            await this.imageUploadRepository.Create(storagePath, result.Thumbnails, uploadJob.IpAddress, uploadJob.Params.Lifetime);
 
             return result;
         }
@@ -106,11 +109,13 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// Performs an image handling (resizing, effects, etc) and flushing to disk
         /// </summary>
         /// <param name="thumbParam"></param>
+        /// <param name="outputImageFormat"></param>
         /// <param name="sourceImage"></param>
         /// <param name="storagePath"></param>
         /// <returns></returns>
         private async Task<ImageThumbnailResultModel> GenerateThumbnails(
             ImageThumbnailParamsModel thumbParam,
+            OutputImageFormat outputImageFormat,
             MagickImage sourceImage,
             StoragePathModel storagePath)
         {
@@ -127,14 +132,15 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             // Run an image processing job
             var processedImage = this.imageProcessingService.Process(job);
 
+            // If watermark parameters were provided then apply a watermark
             if (thumbParam.Watermark != null)
             {
-                using var watermarkImage = await this.imageLoadingService.Load(thumbParam.Watermark.Url);
+                using var watermarkImage = await this.imageReadingService.Read(thumbParam.Watermark.Url);
                 processedImage = this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
             }
 
             // Prepare disk paths to be used to save images
-            var paths = this.fileService.PrepareThumbFilePath(storagePath, processedImage.Width, processedImage.Height);
+            var paths = this.fileService.PrepareThumbFilePath(storagePath, outputImageFormat, processedImage.Width, processedImage.Height);
 
             // Quality can be defined for each thumbnail individually
             // Otherwise a JPEG quality value will be loaded from the application settings or app default value
@@ -143,7 +149,13 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                           Constants.DefaultJpegQuality;
 
             // Save a processed image to the disk
-            await this.SaveImage(processedImage, paths.DiskPath, quality);
+            await this.imageWritingService.Write(new ImageSavingParamsModel
+            {
+                Format = outputImageFormat,
+                Image = processedImage,
+                Path = paths.DiskPath,
+                Quality = quality
+            });
 
             this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
 
@@ -158,27 +170,6 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             processedImage.Dispose();
 
             return thumbnailResult;
-        }
-
-        /// <summary>
-        /// Write an image to the disk
-        /// </summary>
-        /// <param name="image"></param>
-        /// <param name="path"></param>
-        /// <param name="quality"></param>
-        /// <returns></returns>
-        private async Task SaveImage(MagickImage image, string path, int quality)
-        {
-            await using var imageStream = new MemoryStream();
-
-            image.Format = MagickFormat.Jpeg;
-            image.Quality = quality;
-
-            await image.WriteAsync(imageStream);
-
-            imageStream.Reset();
-
-            await this.fileService.WriteFile(imageStream, path);
         }
 
         #endregion

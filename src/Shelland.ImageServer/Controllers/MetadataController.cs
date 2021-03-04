@@ -10,11 +10,11 @@ namespace Shelland.ImageServer.Controllers
 {
     public class MetadataController : BaseAppController
     {
-        private readonly IImageLoadingService imageLoadingService;
+        private readonly IImageReadingService imageReadingService;
 
-        public MetadataController(IImageLoadingService imageLoadingService)
+        public MetadataController(IImageReadingService imageReadingService)
         {
-            this.imageLoadingService = imageLoadingService;
+            this.imageReadingService = imageReadingService;
         }
 
         [HttpPost]
@@ -28,7 +28,7 @@ namespace Shelland.ImageServer.Controllers
             }
 
             await using var imageStream = file.OpenReadStream();
-            var image = await this.imageLoadingService.Load(imageStream);
+            var image = await this.imageReadingService.Read(imageStream);
 
             var profile = image.GetExifProfile();
 

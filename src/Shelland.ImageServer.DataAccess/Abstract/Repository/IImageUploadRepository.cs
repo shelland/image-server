@@ -46,8 +46,8 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// <param name="storagePath"></param>
         /// <param name="thumbnails"></param>
         /// <param name="ipAddress"></param>
-        /// <param name="expirationDate"></param>
+        /// <param name="lifetime"></param>
         /// <returns></returns>
-        Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress, DateTimeOffset? expirationDate);
+        Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress, int? lifetime);
     }
 }

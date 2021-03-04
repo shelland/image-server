@@ -13,6 +13,9 @@ using Shelland.ImageServer.DataAccess.Abstract.Repository;
 
 namespace Shelland.ImageServer.Infrastructure.HostedServices
 {
+    /// <summary>
+    /// Background service to check and remove expired image uploads
+    /// </summary>
     public class UploadExpirationHandlingService : BackgroundService
     {
         private readonly ILogger<UploadExpirationHandlingService> logger;
@@ -35,6 +38,7 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
             {
                 this.logger.LogInformation($"Running a job");
 
+                // Fetch all uploads that are expired at this time
                 var expiredUploads = await this.imageUploadRepository.GetExpiredUploads();
 
                 if (expiredUploads.Any())

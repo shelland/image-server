@@ -34,6 +34,7 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
                 // Check if both sizes are valid.
                 Guard.Against.PositiveCondition(job.ThumbnailParams.Width == null && job.ThumbnailParams.Height == null);
 
+                // Clone a source image
                 var image = (MagickImage) job.Image.Clone();
 
                 // If any parameter of Resize function == 0 then another size will be used in respect with aspect ratio
@@ -42,18 +43,19 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
                     IgnoreAspectRatio = job.ThumbnailParams.IsFixedSize
                 };
 
+                // Resize the image
                 image.Resize(imageSize);
 
                 // Check if any effect was requested and apply it if so
                 if (job.ThumbnailParams.Effect.HasValue)
                 {
-                    this.ApplyEffect(image, job.ThumbnailParams.Effect.Value);
+                    ApplyEffect(image, job.ThumbnailParams.Effect.Value);
                 }
 
                 // Remove image metadata if such setting is set
                 if (!job.Settings.KeepMetadata ?? true)
                 {
-                    // image.Metadata.ExifProfile = null;
+                    image.Strip();
                 }
 
                 return image;
@@ -65,15 +67,21 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
             }
         }
 
-        public MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage)
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity)
         {
-            watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Divide, 4);
+            // Check if opacity is between 0 and 100
+            Guard.Against.OutOfRange(opacity, nameof(opacity), 0, 100);
+
+            watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (double) opacity / 100);
             srcImage.Composite(watermarkImage, Gravity.Southwest, CompositeOperator.Over);
-            
+
             return srcImage;
         }
 
-        private void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)
+        private static void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)
         {
             switch (effect)
             {

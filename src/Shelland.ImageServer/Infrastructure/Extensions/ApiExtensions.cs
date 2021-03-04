@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Shelland.ImageServer.Infrastructure.Filters;
@@ -23,6 +24,8 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             {
                 opts.SerializerSettings.Converters.Add(new StringEnumConverter());
                 opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+                JsonConvert.DefaultSettings = () => opts.SerializerSettings;
             });
 
             services.AddHttpContextAccessor();

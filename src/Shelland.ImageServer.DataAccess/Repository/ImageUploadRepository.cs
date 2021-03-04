@@ -71,8 +71,13 @@ namespace Shelland.ImageServer.DataAccess.Repository
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress, DateTimeOffset? expirationDate)
+        public async Task<ImageUploadDbModel> Create(
+            StoragePathModel storagePath, 
+            List<ImageThumbnailResultModel> thumbnails, 
+            string ipAddress, int? lifetime)
         {
+            DateTimeOffset? expirationDate = lifetime.HasValue ? DateTimeOffset.UtcNow.AddSeconds(lifetime.Value) : null;
+
             var dbModel = new ImageUploadDbModel
             {
                 UploadId = storagePath.Key,

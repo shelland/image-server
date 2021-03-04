@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Infrastructure.ModelBinding;
 
 namespace Shelland.ImageServer.Models.Dto.Request
@@ -12,5 +13,7 @@ namespace Shelland.ImageServer.Models.Dto.Request
         public List<ImageThumbnailParamsDto> Thumbnails { get; set; }
 
         public int? Lifetime { get; set; }
+
+        public OutputImageFormat? OutputFormat { get; set; }
     }
 }

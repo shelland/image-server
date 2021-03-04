@@ -7,7 +7,7 @@ namespace Shelland.ImageServer.Core.Other
         public const int DefaultJpegQuality = 100;
         public const int DefaultCacheDuration = 86400;
         public const int ExpiredUploadsServiceRunInterval = 60; // seconds
-        public const double DefaultWatermarkOpacity = 0.5;
+        public const int DefaultWatermarkOpacity = 50; // %s
 
         public const string AppDatabaseName = "AppDatabase.db";
         public const string Base64ImagePrefix = "data:image/jpg;base64,";

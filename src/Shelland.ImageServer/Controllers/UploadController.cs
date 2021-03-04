@@ -46,19 +46,15 @@ namespace Shelland.ImageServer.Controllers
                 return BadRequest();
             }
 
-            var userIpAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
             var requestParamsModel = this.mapper.Map<ImageUploadParamsModel>(paramsDto);
 
             await using var imageStream = file.OpenReadStream();
 
             var job = new ImageUploadJob
             {
-                IpAddress = userIpAddress,
+                IpAddress = IpAddress,
                 Params = requestParamsModel,
-                Stream = imageStream,
-                ExpirationDate = requestParamsModel.Lifetime.HasValue ? 
-                    DateTimeOffset.UtcNow.AddSeconds(requestParamsModel.Lifetime.Value) : 
-                    null
+                Stream = imageStream
             };
 
             var response = await this.imageThumbnailService.ProcessThumbnails(job);

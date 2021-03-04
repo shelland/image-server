@@ -12,6 +12,8 @@ Supported features:
 - Web hooks support
 - Output cache customization support
 - Image conversion into base64 format
+- Watermarking support
+- Output image format conversion
 
 All actual documentation will be located at the [project wiki](https://github.com/shelland/image-server/wiki).
 

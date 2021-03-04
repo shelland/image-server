@@ -15,15 +15,15 @@ namespace Shelland.ImageServer.AppServices.Services.Common
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public class ImageLoadingService : IImageLoadingService
+    public class ImageReadingService : IImageReadingService
     {
         private readonly INetworkService networkService;
-        private readonly ILogger<ImageLoadingService> logger;
+        private readonly ILogger<ImageReadingService> logger;
         private readonly IDiskCacheService diskCacheService;
 
-        public ImageLoadingService(
+        public ImageReadingService(
             INetworkService networkService,
-            ILogger<ImageLoadingService> logger,
+            ILogger<ImageReadingService> logger,
             IDiskCacheService diskCacheService)
         {
             this.networkService = networkService;
@@ -34,7 +34,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<MagickImage> Load(Stream stream)
+        public async Task<MagickImage> Read(Stream stream)
         {
             try
             {
@@ -53,14 +53,14 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<MagickImage> Load(string url)
+        public async Task<MagickImage> Read(string url)
         {
             try
             {
                 await using var imageStream = await this.diskCacheService.GetOrAdd(url, async () => 
                     await this.networkService.DownloadAsStream(url));
 
-                return await this.Load(imageStream);
+                return await this.Read(imageStream);
             }
             catch (Exception ex)
             {

@@ -29,7 +29,8 @@
             "commandName": "Docker",
             "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
             "publishAllPorts": true,
-            "httpPort": 5000
+            "httpPort": 5000,
+            "sslPort": 5001
         }
     }
 }
