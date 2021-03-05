@@ -1,6 +1,6 @@
 ﻿// Created on 03/03/2021 17:23 by Andrey Laserson
 
-using System.ComponentModel;
+using Shelland.ImageServer.Core.Infrastructure.Attributes;
 
 namespace Shelland.ImageServer.Core.Models.Enums
 {
@@ -9,13 +9,16 @@ namespace Shelland.ImageServer.Core.Models.Enums
     /// </summary>
     public enum OutputImageFormat
     {
-        [Description("jpg")]
+        [ImageFormat("jpg")]
+        [MimeType("image/jpeg")]
         Jpeg,
 
-        [Description("png")]
+        [ImageFormat("png")]
+        [MimeType("image/png")]
         Png,
 
-        [Description("gif")]
+        [ImageFormat("gif")]
+        [MimeType("image/gif")]
         Gif
     }
 }

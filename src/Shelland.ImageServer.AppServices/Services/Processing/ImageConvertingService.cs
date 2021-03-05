@@ -3,8 +3,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
+using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.Core.Other;
 
 namespace Shelland.ImageServer.AppServices.Services.Processing
@@ -14,6 +16,17 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
     /// </summary>
     public class ImageConvertingService : IImageConvertingService
     {
+        private readonly IImageWritingService imageWritingService;
+        private readonly IImageReadingService imageReadingService;
+
+        public ImageConvertingService(
+            IImageWritingService imageWritingService, 
+            IImageReadingService imageReadingService)
+        {
+            this.imageWritingService = imageWritingService;
+            this.imageReadingService = imageReadingService;
+        }
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>
@@ -23,6 +36,15 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
             var imageBase64String = Convert.ToBase64String(streamBytes);
 
             return $"{Constants.Base64ImagePrefix}{imageBase64String}";
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task ImageToFormat(Stream inputStream, StreamImageSavingParamsModel savingParams)
+        {
+            var inputImage = await this.imageReadingService.Read(inputStream);
+            await this.imageWritingService.WriteToStream(inputImage, savingParams);
         }
     }
 }

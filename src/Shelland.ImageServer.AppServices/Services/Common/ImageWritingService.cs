@@ -1,5 +1,7 @@
 ﻿// Created on 04/03/2021 12:36 by Andrey Laserson
 
+#region Usings
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,6 +13,8 @@ using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
+
+#endregion
 
 namespace Shelland.ImageServer.AppServices.Services.Common
 {
@@ -28,28 +32,58 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             this.logger = logger;
         }
 
-        public async Task Write(ImageSavingParamsModel savingParams)
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task WriteToDisk(IMagickImage image, DiskImageSavingParamsModel savingParams)
         {
             try
             {
-                await using var imageStream = new MemoryStream();
-                var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
-                
-                savingParams.Image.Format = ToMagickFormat(outputFormat);
-                savingParams.Image.Quality = savingParams.Quality;
-
-                await savingParams.Image.WriteAsync(imageStream);
-                imageStream.Reset();
-
+                await using var imageStream = await GetOutputStream(image, savingParams);
                 await this.fileService.WriteFile(imageStream, savingParams.Path);
 
                 this.logger.LogInformation($"Image was saved to {savingParams.Path}");
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex,ex.Message);
+                this.logger.LogError(ex, ex.Message);
                 throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed, savingParams.Path);
             }
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task WriteToStream(IMagickImage image, StreamImageSavingParamsModel savingParams)
+        {
+            try
+            {
+                await using var imageStream = await GetOutputStream(image, savingParams);
+                await imageStream.CopyToAsync(savingParams.OutputStream);
+
+                savingParams.OutputStream.Reset();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed);
+            }
+        }
+
+        #region Private methods
+
+        private static async Task<MemoryStream> GetOutputStream(IMagickImage image, BaseImageSavingParamsModel savingParams)
+        {
+            var imageStream = new MemoryStream();
+            var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
+
+            image.Format = ToMagickFormat(outputFormat);
+            image.Quality = savingParams.Quality;
+
+            await image.WriteAsync(imageStream);
+            imageStream.Reset();
+
+            return imageStream;
         }
 
         private static MagickFormat ToMagickFormat(OutputImageFormat outputFormat)
@@ -63,5 +97,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             return magickFormat;
         }
+
+        #endregion
     }
 }

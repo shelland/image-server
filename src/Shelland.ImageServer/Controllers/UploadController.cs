@@ -1,5 +1,7 @@
 ﻿// Created on 08/02/2021 15:59 by Andrey Laserson
 
+#region Usings
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -13,6 +15,8 @@ using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
 using Shelland.ImageServer.Models.Dto.Request;
 using Shelland.ImageServer.Models.Dto.Response;
+
+#endregion
 
 namespace Shelland.ImageServer.Controllers
 {

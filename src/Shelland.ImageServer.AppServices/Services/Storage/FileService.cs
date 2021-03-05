@@ -49,9 +49,9 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 uploadKey[2].ToString());
 
             var baseDirectoryPath = Path.Combine(basePath, segmentsPath);
-            var finalPath = $"{Path.Combine(baseDirectoryPath, uploadKey)}.{format.GetDescription()}";
+            var finalPath = $"{Path.Combine(baseDirectoryPath, uploadKey)}.{format.GetImageFormat()}";
 
-            var urlPath = $"/{segmentsPath}/{uploadKey}.{format.GetDescription()}";
+            var urlPath = $"/{segmentsPath}/{uploadKey}.{format.GetImageFormat()}";
 
             // If storage directory doesn't exists, create it
             if (!Directory.Exists(baseDirectoryPath))
@@ -73,11 +73,11 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, int width, int height)
         {
             // Prepare a disk path
-            var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.{format.GetDescription()}";
+            var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.{format.GetImageFormat()}";
 
             // Prepare an URL path
             var url = this.NormalizeWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
-                      $"_thumb_{width}x{height}.{format.GetDescription()}";
+                      $"_thumb_{width}x{height}.{format.GetImageFormat()}";
 
             return new ImageThumbPathsModel
             {

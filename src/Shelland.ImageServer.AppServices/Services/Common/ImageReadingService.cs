@@ -1,5 +1,7 @@
 ﻿// Created on 02/03/2021 22:10 by Andrey Laserson
 
+#region Usings
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,6 +11,8 @@ using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Networking;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Models.Enums;
+
+#endregion
 
 namespace Shelland.ImageServer.AppServices.Services.Common
 {

@@ -1,5 +1,7 @@
 ﻿// Created on 03/03/2021 18:36 by Andrey Laserson
 
+#region Usings
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,7 +10,9 @@ using Microsoft.Extensions.Options;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
-using Shelland.ImageServer.Core.Models.Preferences;
+using Shelland.ImageServer.Core.Models.Preferences; 
+
+#endregion
 
 namespace Shelland.ImageServer.AppServices.Services.Common
 {

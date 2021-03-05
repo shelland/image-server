@@ -4,6 +4,8 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Shelland.ImageServer.Core.Infrastructure.Attributes;
+using Shelland.ImageServer.Core.Models.Enums;
 
 namespace Shelland.ImageServer.Core.Infrastructure.Extensions
 {
@@ -20,6 +22,26 @@ namespace Shelland.ImageServer.Core.Infrastructure.Extensions
                        .GetMember(val.ToString())
                        .FirstOrDefault()
                        ?.GetCustomAttribute<DescriptionAttribute>(false)
+                       ?.Description
+                   ?? val.ToString();
+        }
+
+        public static string GetImageFormat(this OutputImageFormat val)
+        {
+            return val.GetType()
+                       .GetMember(val.ToString())
+                       .FirstOrDefault()
+                       ?.GetCustomAttribute<ImageFormatAttribute>(false)
+                       ?.Description
+                   ?? val.ToString();
+        }
+
+        public static string GetMimeType(this OutputImageFormat val)
+        {
+            return val.GetType()
+                       .GetMember(val.ToString())
+                       .FirstOrDefault()
+                       ?.GetCustomAttribute<MimeTypeAttribute>(false)
                        ?.Description
                    ?? val.ToString();
         }

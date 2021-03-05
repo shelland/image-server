@@ -149,10 +149,9 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                           Constants.DefaultJpegQuality;
 
             // Save a processed image to the disk
-            await this.imageWritingService.Write(new ImageSavingParamsModel
+            await this.imageWritingService.WriteToDisk(processedImage, new DiskImageSavingParamsModel
             {
                 Format = outputImageFormat,
-                Image = processedImage,
                 Path = paths.DiskPath,
                 Quality = quality
             });

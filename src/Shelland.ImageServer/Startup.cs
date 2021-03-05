@@ -1,3 +1,5 @@
+#region Usings
+
 using Autofac;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Shelland.ImageServer.Infrastructure.Extensions;
 using Shelland.ImageServer.Infrastructure.Extensions.Pipeline;
 using Shelland.ImageServer.Infrastructure.Filters;
+
+#endregion
 
 namespace Shelland.ImageServer
 {

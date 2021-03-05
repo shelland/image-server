@@ -1,9 +1,19 @@
 ﻿// Created on 15/02/2021 20:29 by Andrey Laserson
 
+#region Usings
+
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
+using Shelland.ImageServer.Core.Infrastructure.Extensions;
+using Shelland.ImageServer.Core.Models.Enums;
+using Shelland.ImageServer.Core.Models.Other;
+using Shelland.ImageServer.Core.Other;
 using Shelland.ImageServer.Models.Dto.Response;
+
+#endregion
 
 namespace Shelland.ImageServer.Controllers
 {
@@ -30,6 +40,34 @@ namespace Shelland.ImageServer.Controllers
             var imgResult = await this.imageConvertingService.ImageToBase64(imageStream);
 
             return Json(new Response<string>(imgResult));
+        }
+
+        [HttpPost("format/{type}")]
+        public async Task<IActionResult> ToJpeg(OutputImageFormat type)
+        {
+            var file = this.GetDefaultFile();
+
+            if (file == null)
+            {
+                return BadRequest();
+            }
+
+            return await File(file, type);
+        }
+        
+        private async Task<IActionResult> File(IFormFile file, OutputImageFormat format)
+        {
+            var outputStream = new MemoryStream();
+            await using var imageStream = file.OpenReadStream();
+            
+            await this.imageConvertingService.ImageToFormat(imageStream, new StreamImageSavingParamsModel
+            {
+                Format = OutputImageFormat.Jpeg,
+                Quality = Constants.DefaultJpegQuality,
+                OutputStream = outputStream
+            });
+
+            return File(outputStream, format.GetMimeType());
         }
     }
 }
