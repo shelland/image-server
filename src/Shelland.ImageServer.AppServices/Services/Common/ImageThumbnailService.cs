@@ -2,6 +2,7 @@
 
 #region Usings
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ImageMagick;
 using MediatR;
@@ -13,7 +14,6 @@ using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.AppServices.Services.Messaging.Payload;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Domain;
-using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.Core.Models.Preferences;
 using Shelland.ImageServer.Core.Other;
@@ -85,11 +85,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             using var sourceImage = await this.imageReadingService.Read(uploadJob.Stream);
 
             // Process requested thumbnails
-            foreach (var thumbParam in uploadJob.Params.Thumbnails)
-            {
-                var thumbnail = await GenerateThumbnails(thumbParam, uploadJob.Params.OutputFormat, sourceImage, storagePath);
-                result.Thumbnails.Add(thumbnail);
-            }
+            var processedThumbnails = await this.GenerateThumbnails(uploadJob, sourceImage, storagePath);
+            result.Thumbnails = processedThumbnails;
 
             // Send a notification about finished job to all listeners
             await this.mediator.Send(new ImageProcessingFinishedPayload
@@ -108,67 +105,71 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// Performs an image handling (resizing, effects, etc) and flushing to disk
         /// </summary>
-        /// <param name="thumbParam"></param>
-        /// <param name="outputImageFormat"></param>
+        /// <param name="uploadJob"></param>
         /// <param name="sourceImage"></param>
         /// <param name="storagePath"></param>
         /// <returns></returns>
-        private async Task<ImageThumbnailResultModel> GenerateThumbnails(
-            ImageThumbnailParamsModel thumbParam,
-            OutputImageFormat outputImageFormat,
+        private async Task<List<ImageThumbnailResultModel>> GenerateThumbnails(
+            ImageUploadJob uploadJob,
             MagickImage sourceImage,
             StoragePathModel storagePath)
         {
-            this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
+            var resultsList = new List<ImageThumbnailResultModel>();
 
-            // Prepare an image processing job
-            var job = new ImageProcessingJob
+            foreach (var thumbParam in uploadJob.Params.Thumbnails)
             {
-                Image = sourceImage,
-                Settings = this.appSettings.Value.ImageProcessing,
-                ThumbnailParams = thumbParam
-            };
+                this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
 
-            // Run an image processing job
-            var processedImage = this.imageProcessingService.Process(job);
+                // Prepare an image processing job
+                var job = new ImageProcessingJob
+                {
+                    Image = sourceImage,
+                    Settings = this.appSettings.Value.ImageProcessing,
+                    ThumbnailParams = thumbParam
+                };
 
-            // If watermark parameters were provided then apply a watermark
-            if (thumbParam.Watermark != null)
-            {
-                using var watermarkImage = await this.imageReadingService.Read(thumbParam.Watermark.Url);
-                processedImage = this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
+                // Run an image processing job
+                var processedImage = this.imageProcessingService.Process(job);
+
+                // If watermark parameters were provided then apply a watermark
+                if (thumbParam.Watermark != null)
+                {
+                    using var watermarkImage = await this.imageReadingService.Read(thumbParam.Watermark.Url);
+                    processedImage = this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
+                }
+
+                // Prepare disk paths to be used to save images
+                var paths = this.fileService.PrepareThumbFilePath(storagePath, uploadJob.Params.OutputFormat, processedImage.Width, processedImage.Height);
+
+                // Quality can be defined for each thumbnail individually
+                // Otherwise a JPEG quality value will be loaded from the application settings or app default value
+                var quality = thumbParam.Quality ??
+                              this.appSettings.Value.ImageProcessing.JpegQuality ??
+                              Constants.DefaultJpegQuality;
+
+                // Save a processed image to the disk
+                await this.imageWritingService.WriteToDisk(processedImage, new DiskImageSavingParamsModel
+                {
+                    Format = uploadJob.Params.OutputFormat,
+                    Path = paths.DiskPath,
+                    Quality = quality
+                });
+
+                this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
+
+                var thumbnailResult = new ImageThumbnailResultModel
+                {
+                    Width = processedImage.Width,
+                    Height = processedImage.Height,
+                    Url = paths.Url,
+                    DiskPath = paths.DiskPath
+                };
+
+                processedImage.Dispose();
+                resultsList.Add(thumbnailResult);
             }
 
-            // Prepare disk paths to be used to save images
-            var paths = this.fileService.PrepareThumbFilePath(storagePath, outputImageFormat, processedImage.Width, processedImage.Height);
-
-            // Quality can be defined for each thumbnail individually
-            // Otherwise a JPEG quality value will be loaded from the application settings or app default value
-            var quality = thumbParam.Quality ??
-                          this.appSettings.Value.ImageProcessing.JpegQuality ??
-                          Constants.DefaultJpegQuality;
-
-            // Save a processed image to the disk
-            await this.imageWritingService.WriteToDisk(processedImage, new DiskImageSavingParamsModel
-            {
-                Format = outputImageFormat,
-                Path = paths.DiskPath,
-                Quality = quality
-            });
-
-            this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
-
-            var thumbnailResult = new ImageThumbnailResultModel
-            {
-                Width = processedImage.Width,
-                Height = processedImage.Height,
-                Url = paths.Url,
-                DiskPath = paths.DiskPath
-            };
-
-            processedImage.Dispose();
-
-            return thumbnailResult;
+            return resultsList;
         }
 
         #endregion

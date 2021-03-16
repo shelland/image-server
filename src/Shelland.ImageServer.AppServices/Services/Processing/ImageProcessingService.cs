@@ -43,6 +43,8 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
                     IgnoreAspectRatio = job.ThumbnailParams.IsFixedSize
                 };
 
+                image.Interpolate = PixelInterpolateMethod.Bilinear;
+
                 // Resize the image
                 image.Resize(imageSize);
 

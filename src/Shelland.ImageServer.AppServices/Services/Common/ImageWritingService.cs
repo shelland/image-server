@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using ImageMagick;
 using Microsoft.Extensions.Logging;
+using Shelland.ImageServer.AppServices.Logic;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
@@ -35,7 +36,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task WriteToDisk(IMagickImage image, DiskImageSavingParamsModel savingParams)
+        public async Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams)
         {
             try
             {
@@ -54,7 +55,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task WriteToStream(IMagickImage image, StreamImageSavingParamsModel savingParams)
+        public async Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams)
         {
             try
             {
@@ -72,15 +73,19 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
         #region Private methods
 
-        private static async Task<MemoryStream> GetOutputStream(IMagickImage image, BaseImageSavingParamsModel savingParams)
+        private static async Task<MemoryStream> GetOutputStream(MagickImage image, BaseImageSavingParamsModel savingParams)
         {
             var imageStream = new MemoryStream();
             var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
 
             image.Format = ToMagickFormat(outputFormat);
-            image.Quality = savingParams.Quality;
 
-            await image.WriteAsync(imageStream);
+            var imageWritingContext = new ImageWritingContext(image.Format == MagickFormat.Jpeg ? 
+                new JpegWritingStrategy(savingParams.Quality) : 
+                new GenericWritingStrategy());
+
+            await imageWritingContext.Write(image, imageStream);
+
             imageStream.Reset();
 
             return imageStream;

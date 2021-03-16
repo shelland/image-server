@@ -14,7 +14,7 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
         /// <param name="image"></param>
         /// <param name="savingParams"></param>
         /// <returns></returns>
-        Task WriteToDisk(IMagickImage image, DiskImageSavingParamsModel savingParams);
+        Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams);
 
         /// <summary>
         /// Writes an image to the provided stream
@@ -22,6 +22,6 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
         /// <param name="image"></param>
         /// <param name="savingParams"></param>
         /// <returns></returns>
-        Task WriteToStream(IMagickImage image, StreamImageSavingParamsModel savingParams);
+        Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams);
     }
 }
