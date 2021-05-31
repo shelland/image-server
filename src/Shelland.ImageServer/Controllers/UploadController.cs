@@ -9,7 +9,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
-using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
@@ -76,21 +75,25 @@ namespace Shelland.ImageServer.Controllers
                 return NotFound();
             }
 
-            return Ok(new Response<ImageUploadDbModel>(upload));
+            var uploadModel = this.mapper.Map<ImageUploadModel>(upload);
+
+            return Ok(new Response<ImageUploadModel>(uploadModel));
         }
 
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var upload = await this.imageUploadRepository.GetById(id);
-
+            
             if (upload == null)
             {
                 return NotFound();
             }
 
+            var uploadModel = this.mapper.Map<ImageUploadModel>(upload);
+
             // Delete files from the disk
-            this.fileService.Delete(upload.GetAllFilePaths());
+            this.fileService.Delete(uploadModel.GetAllFilePaths());
 
             // Remove a database record
             await this.imageUploadRepository.Delete(upload.Id);

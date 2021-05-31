@@ -1,13 +1,15 @@
 ﻿// Created on 23/02/2021 11:28 by Andrey Laserson
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
-using Shelland.ImageServer.Core.Models.Data;
+using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Other;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
 
@@ -21,15 +23,18 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
         private readonly ILogger<UploadExpirationHandlingService> logger;
         private readonly IImageUploadRepository imageUploadRepository;
         private readonly IFileService fileService;
+        private readonly IMapper mapper;
 
         public UploadExpirationHandlingService(
             ILogger<UploadExpirationHandlingService> logger,
             IImageUploadRepository imageUploadRepository,
-            IFileService fileService)
+            IFileService fileService,
+            IMapper mapper)
         {
             this.logger = logger;
             this.imageUploadRepository = imageUploadRepository;
             this.fileService = fileService;
+            this.mapper = mapper;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -40,12 +45,13 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
 
                 // Fetch all uploads that are expired at this time
                 var expiredUploads = await this.imageUploadRepository.GetExpiredUploads();
+                var expiredUploadModels = this.mapper.Map<List<ImageUploadModel>>(expiredUploads);
 
-                if (expiredUploads.Any())
+                if (expiredUploadModels.Any())
                 {
                     this.logger.LogInformation($"Found {expiredUploads.Count} expired uploads");
 
-                    foreach (var upload in expiredUploads)
+                    foreach (var upload in expiredUploadModels)
                     {
                         await this.Delete(upload);
                     }
@@ -59,17 +65,17 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
             }
         }
 
-        private async Task Delete(ImageUploadDbModel upload)
+        private async Task Delete(ImageUploadModel uploadDb)
         {
             try
             {
-                this.logger.LogInformation($"Deleting a record with id {upload.Id} and expiration date {upload.ExpiresAt.Value}");
+                this.logger.LogInformation($"Deleting a record with id {uploadDb.Id} and expiration date {uploadDb.ExpiresAt.Value}");
 
                 // Delete files
-                this.fileService.Delete(upload.GetAllFilePaths());
+                this.fileService.Delete(uploadDb.GetAllFilePaths());
 
                 // Delete a DB record
-                await this.imageUploadRepository.Delete(upload.Id);
+                await this.imageUploadRepository.Delete(uploadDb.Id);
             }
             catch (Exception ex)
             {
