@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
+using Shelland.ImageServer.Models.Dto.Request;
 using Shelland.ImageServer.Models.Dto.Response;
 
 namespace Shelland.ImageServer.Controllers
@@ -46,9 +48,9 @@ namespace Shelland.ImageServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ProcessingProfileModel model)
+        public async Task<IActionResult> Post([Required, FromForm] ProcessingProfileDto model)
         {
-            var profile = await this.processingProfileRepository.Create(model);
+            var profile = await this.processingProfileRepository.Create(this.mapper.Map<ProcessingProfileModel>(model));
             var profileModel = this.mapper.Map<ProcessingProfileModel>(profile);
 
             return Ok(new Response<ProcessingProfileModel>(profileModel));

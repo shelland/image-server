@@ -3,6 +3,7 @@
 using AutoMapper;
 using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
+using Shelland.ImageServer.Models.Dto.Request;
 
 namespace Shelland.ImageServer.Infrastructure.Mapping
 {
@@ -11,6 +12,10 @@ namespace Shelland.ImageServer.Infrastructure.Mapping
         public ProcessingProfileModelMapperProfile()
         {
             CreateMap<ProcessingProfileDbModel, ProcessingProfileModel>().ReverseMap();
+            CreateMap<ProcessingProfileDto, ProcessingProfileModel>()
+                .ForMember(x => x.ProfileId, x => x.Ignore())
+                .ForMember(x => x.Id, x => x.Ignore())
+                .ForMember(x => x.CreateDate, x => x.Ignore());
         }
     }
 }

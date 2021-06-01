@@ -2,17 +2,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Shelland.ImageServer.Core.Models.Base;
 
 namespace Shelland.ImageServer.Core.Models.Domain
 {
     public class ProcessingProfileModel : BaseModel
     {
-        [Required]
+        public ProcessingProfileModel()
+        {
+            this.ProfileId = Guid.NewGuid();
+        }
+
         public string Name { get; set; }
 
-        [Required]
         public List<ImageThumbnailParamsModel> Parameters { get; set; }
         
         public Guid ProfileId { get; set; }
