@@ -5,9 +5,9 @@ using System;
 namespace Shelland.ImageServer.Core.Models.Base
 {
     /// <summary>
-    /// Base model for database entities
+    /// Base model for all entities
     /// </summary>
-    public class BaseDbModel
+    public class BaseModel
     {
         /// <summary>
         /// Entity unique identifier

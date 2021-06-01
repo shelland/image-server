@@ -12,8 +12,10 @@ using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.AppServices.Services.Messaging.Payload;
+using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Domain;
+using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.Core.Models.Preferences;
 using Shelland.ImageServer.Core.Other;
@@ -29,6 +31,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private readonly IFileService fileService;
 
         private readonly IImageUploadRepository imageUploadRepository;
+        private readonly IProcessingProfileRepository processingProfileRepository;
         private readonly IOptions<AppSettingsModel> appSettings;
 
         private readonly ILogger<ImageThumbnailService> logger;
@@ -45,7 +48,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             IMediator mediator,
             IOptions<AppSettingsModel> appSettings,
             IImageReadingService imageReadingService,
-            IImageWritingService imageWritingService)
+            IImageWritingService imageWritingService,
+            IProcessingProfileRepository processingProfileRepository)
         {
             this.imageProcessingService = imageProcessingService;
             this.fileService = fileService;
@@ -55,6 +59,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             this.appSettings = appSettings;
             this.imageReadingService = imageReadingService;
             this.imageWritingService = imageWritingService;
+            this.processingProfileRepository = processingProfileRepository;
         }
 
         /// <summary>
@@ -115,8 +120,9 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             StoragePathModel storagePath)
         {
             var resultsList = new List<ImageThumbnailResultModel>();
+            var thumbnailParams = await GetThumbnailParams(uploadJob);
 
-            foreach (var thumbParam in uploadJob.Params.Thumbnails)
+            foreach (var thumbParam in thumbnailParams)
             {
                 this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
 
@@ -170,6 +176,28 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             }
 
             return resultsList;
+        }
+
+        /// <summary>
+        /// Returns a thumbnails processing params depending on the provided processing profile
+        /// </summary>
+        /// <param name="uploadJob"></param>
+        /// <returns></returns>
+        private async Task<List<ImageThumbnailParamsModel>> GetThumbnailParams(ImageUploadJob uploadJob)
+        {
+            if (!uploadJob.Params.ProfileId.HasValue)
+            {
+                return uploadJob.Params.Thumbnails;
+            }
+
+            var profile = await this.processingProfileRepository.GetProfileById(uploadJob.Params.ProfileId.Value);
+
+            if (profile != null)
+            {
+                return profile.Parameters;
+            }
+
+            throw new AppFlowException(AppFlowExceptionType.InvalidParameters, uploadJob.Params.ProfileId.Value.ToString());
         }
 
         #endregion

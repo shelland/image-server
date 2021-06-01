@@ -1,5 +1,6 @@
 ﻿// Created on 08/02/2021 15:58 by Andrey Laserson
 
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Shelland.ImageServer.Core.Models.Enums;
@@ -15,5 +16,7 @@ namespace Shelland.ImageServer.Models.Dto.Request
         public int? Lifetime { get; set; }
 
         public OutputImageFormat? OutputFormat { get; set; }
+
+        public Guid? ProfileId { get; set; }
     }
 }
