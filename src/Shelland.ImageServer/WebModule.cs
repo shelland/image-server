@@ -1,17 +1,17 @@
 ﻿// Created on 14/02/2021 17:50 by Andrey Laserson
 
-using Autofac;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Shelland.ImageServer.Infrastructure.Storage;
 
 namespace Shelland.ImageServer
 {
-    public class WebModule : Module
+    public static class WebModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public static IServiceCollection AddWebModule(this IServiceCollection serviceCollection)
         {
-            builder.RegisterType<AppFileProvider>().As<IFileProvider>().SingleInstance();
-            base.Load(builder);
+            serviceCollection.AddSingleton<IFileProvider, AppFileProvider>();
+            return serviceCollection;
         }
     }
 }

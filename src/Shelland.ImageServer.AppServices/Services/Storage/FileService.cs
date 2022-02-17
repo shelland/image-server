@@ -108,7 +108,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "WriteFile", filePath);
+                this.logger.LogError(ex, "WriteFile failed for {0}", filePath);
                 throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed, filePath);
             }
         }

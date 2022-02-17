@@ -2,10 +2,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Shelland.ImageServer.Infrastructure.Filters;
+using Shelland.ImageServer.Infrastructure.ModelBinding;
 
 namespace Shelland.ImageServer.Infrastructure.Extensions
 {
@@ -20,12 +18,11 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             {
                 opts.Filters.Add<ExceptionFilter>();
                 opts.Filters.Add<ServerEnabledFilter>();
-            }).AddNewtonsoftJson(opts =>
+            }).AddJsonOptions(opts =>
             {
-                opts.SerializerSettings.Converters.Add(new StringEnumConverter());
-                opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
-                JsonConvert.DefaultSettings = () => opts.SerializerSettings;
+                opts.JsonSerializerOptions.PropertyNameCaseInsensitive = JsonCommonOptions.Default.JsonSerializerOptions.PropertyNameCaseInsensitive;
+                opts.JsonSerializerOptions.PropertyNamingPolicy = JsonCommonOptions.Default.JsonSerializerOptions.PropertyNamingPolicy;
+                opts.JsonSerializerOptions.NumberHandling = JsonCommonOptions.Default.JsonSerializerOptions.NumberHandling;
             });
 
             services.AddHttpContextAccessor();

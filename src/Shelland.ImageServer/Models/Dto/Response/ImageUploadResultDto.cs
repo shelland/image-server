@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Shelland.ImageServer.Models.Dto.Response
 {
@@ -10,7 +10,7 @@ namespace Shelland.ImageServer.Models.Dto.Response
     {
         public Guid Id { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string OriginalFileUrl { get; set; }
 
         public List<ImageThumbnailResultDto> Thumbnails { get; set; } = new();

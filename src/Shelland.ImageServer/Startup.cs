@@ -1,6 +1,5 @@
 #region Usings
 
-using Autofac;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shelland.ImageServer.Infrastructure.Extensions;
 using Shelland.ImageServer.Infrastructure.Extensions.Pipeline;
-using Shelland.ImageServer.Infrastructure.Filters;
 
 #endregion
 
@@ -35,12 +33,7 @@ namespace Shelland.ImageServer
             services.AddHelperServices();
             services.AddRateLimiting(this.configuration);
             services.AddHostedServices();
-        }
-
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-            builder.AddModules();
-            builder.RegisterType<ExceptionFilter>();
+            services.AddModules();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

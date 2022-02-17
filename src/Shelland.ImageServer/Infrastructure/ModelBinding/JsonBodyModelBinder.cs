@@ -1,10 +1,10 @@
 ﻿// Created on 09/02/2021 16:53 by Andrey Laserson
 
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Models.Enums;
 
@@ -38,11 +38,19 @@ namespace Shelland.ImageServer.Infrastructure.ModelBinding
                     bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
 
                     var stringValue = valueProviderResult.FirstValue;
-                    var result = JsonConvert.DeserializeObject(stringValue, bindingContext.ModelType);
 
-                    if (result != null)
+                    if (!string.IsNullOrEmpty(stringValue))
                     {
-                        bindingContext.Result = ModelBindingResult.Success(result);
+                        var result = JsonSerializer.Deserialize(stringValue, bindingContext.ModelType, JsonCommonOptions.Default.JsonSerializerOptions);
+
+                        if (result != null)
+                        {
+                            bindingContext.Result = ModelBindingResult.Success(result);
+                        }
+                    }
+                    else
+                    {
+                        bindingContext.Result = ModelBindingResult.Failed();
                     }
                 }
 

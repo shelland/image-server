@@ -1,21 +1,22 @@
 ﻿// Created on 08/02/2021 16:08 by Andrey Laserson
 
-using Autofac;
+using Microsoft.Extensions.DependencyInjection;
+using Shelland.ImageServer.DataAccess.Abstract.Repository;
 using Shelland.ImageServer.DataAccess.Context;
+using Shelland.ImageServer.DataAccess.Repository;
 
 namespace Shelland.ImageServer.DataAccess
 {
-    public class DataAccessModule : Module
+    public static class DataAccessModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public static IServiceCollection AddDataAccessModule(this IServiceCollection serviceCollection)
         {
-            builder.RegisterType<AppDbContext>().SingleInstance();
+            serviceCollection.AddSingleton<AppDbContext>();
 
-            builder.RegisterAssemblyTypes(ThisAssembly)
-                .Where(x => x.Namespace == "Shelland.ImageServer.DataAccess.Repository")
-                .AsImplementedInterfaces();
+            serviceCollection.AddTransient<IImageUploadRepository, ImageUploadRepository>();
+            serviceCollection.AddTransient<IProcessingProfileRepository, ProcessingProfileRepository>();
 
-            base.Load(builder);
+            return serviceCollection;
         }
     }
 }
