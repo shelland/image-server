@@ -46,14 +46,14 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
                 {
                     if (cmd.Commands.Any())
                     {
-                        ValidateParams(cmd.Commands, allowedOnDemandImageSizes);
+                        ValidateParams(cmd.Commands.ToDictionary(x => x.Key, x => x.Value), allowedOnDemandImageSizes);
                     }
 
                     return Task.CompletedTask;
                 };
             }).Configure<PhysicalFileSystemCacheOptions>(cacheConfig =>
             {
-                cacheConfig.CacheRoot = workingDirectory;
+                cacheConfig.CacheRootPath = workingDirectory;
                 cacheConfig.CacheFolder = onDemandCacheDirectory;
             }).RemoveProvider<PhysicalFileSystemProvider>().AddProvider<AppImageProvider>();
 

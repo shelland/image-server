@@ -19,30 +19,32 @@ namespace Shelland.ImageServer.Infrastructure.Storage
     /// </summary>
     public class AppImageProvider : IImageProvider
     {
-        private readonly IOptions<AppSettingsModel> appSettings;
         private readonly IFileProvider fileProvider;
         private readonly FormatUtilities formatUtilities;
         private readonly PathString requestPath;
         private Func<HttpContext, bool> match;
 
-        public AppImageProvider(IOptions<AppSettingsModel> appSettings, IFileProvider fileProvider, FormatUtilities formatUtilities)
+        public AppImageProvider(
+            IOptions<AppSettingsModel> appSettings, 
+            IFileProvider fileProvider, 
+            FormatUtilities formatUtilities)
         {
-            this.appSettings = appSettings;
             this.fileProvider = fileProvider;
             this.formatUtilities = formatUtilities;
-            this.requestPath = this.appSettings.Value.Common.RoutePrefix;
+            this.requestPath = appSettings.Value.Common.RoutePrefix;
         }
 
         public bool IsValidRequest(HttpContext context)
         {
-            return this.formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) != null;
+            return this.formatUtilities.TryGetExtensionFromUri(context.Request.GetDisplayUrl(), out var url) && 
+                   !string.IsNullOrEmpty(url);
         }
 
         public Task<IImageResolver> GetAsync(HttpContext context)
         {
             var path = string.IsNullOrEmpty(requestPath) ? 
                 context.Request.Path.Value : 
-                context.Request.Path.Value.Substring(this.requestPath.Value.Length);
+                context.Request!.Path!.Value![this.requestPath.Value!.Length..];
 
             var fileInfo = this.fileProvider.GetFileInfo(path);
 
@@ -51,11 +53,10 @@ namespace Shelland.ImageServer.Infrastructure.Storage
                 return Task.FromResult<IImageResolver>(null);
             }
 
-            var metadata = new ImageMetadata(fileInfo.LastModified.UtcDateTime, fileInfo.Length);
-            return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
+            return Task.FromResult<IImageResolver>(new FileProviderImageResolver(fileInfo));
         }
 
-        public ProcessingBehavior ProcessingBehavior { get; } = ProcessingBehavior.CommandOnly;
+        public ProcessingBehavior ProcessingBehavior => ProcessingBehavior.CommandOnly;
 
         public Func<HttpContext, bool> Match
         {
