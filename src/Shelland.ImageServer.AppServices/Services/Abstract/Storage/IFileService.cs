@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Enums;
@@ -35,8 +36,9 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="filePath"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task WriteFile(Stream stream, string filePath);
+        Task WriteFile(Stream stream, string filePath, CancellationToken cancellationToken);
 
         /// <summary>
         /// URL normalization (slashes, etc.)
@@ -57,6 +59,6 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         /// </summary>
         /// <param name="path"></param>
         /// <returns>File stream if file exists, null otherwise</returns>
-        Task<Stream> ReadFile(string path);
+        Task<Stream?> ReadFile(string path);
     }
 }

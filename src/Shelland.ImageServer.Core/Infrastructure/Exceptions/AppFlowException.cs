@@ -12,13 +12,13 @@ namespace Shelland.ImageServer.Core.Infrastructure.Exceptions
             this.Type = type;
         }
 
-        public AppFlowException(AppFlowExceptionType type, string parameter)
+        public AppFlowException(AppFlowExceptionType type, string? parameter)
         {
             this.Type = type;
             this.Parameter = parameter;
         }
 
-        public string Parameter { get; set; }
+        public string? Parameter { get; set; }
 
         public AppFlowExceptionType? Type { get; set; }
     }

@@ -11,10 +11,10 @@ namespace Shelland.ImageServer.Core.Models.Other
     /// </summary>
     public class ImageProcessingJob
     {
-        public MagickImage Image { get; set; }
+        public MagickImage Image { get; set; } = null!;
 
-        public ImageProcessingSettingsModel Settings { get; set; }
+        public ImageProcessingSettingsModel Settings { get; set; } = null!;
 
-        public ImageThumbnailParamsModel ThumbnailParams { get; set; }
+        public ImageThumbnailParamsModel ThumbnailParams { get; set; } = null!;
     }
 }

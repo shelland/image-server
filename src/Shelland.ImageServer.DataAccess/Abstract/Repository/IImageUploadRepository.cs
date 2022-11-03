@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
@@ -18,7 +19,7 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// </summary>
         /// <param name="id">ID (Guid) of the entity</param>
         /// <returns></returns>
-        Task<ImageUploadDbModel> GetById(Guid id);
+        Task<ImageUploadDbModel?> GetById(Guid id);
 
         /// <summary>
         /// Saves a processing result into local database for further references
@@ -48,6 +49,6 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// <param name="ipAddress"></param>
         /// <param name="lifetime"></param>
         /// <returns></returns>
-        Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string ipAddress, int? lifetime);
+        Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string? ipAddress, int? lifetime);
     }
 }

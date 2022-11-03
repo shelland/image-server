@@ -11,8 +11,8 @@ namespace Shelland.ImageServer.Core.Models.Domain
     {
         public Guid Key { get; set; }
 
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
 
-        public string UrlPath { get; set; }
+        public string UrlPath { get; set; } = string.Empty;
     }
 }

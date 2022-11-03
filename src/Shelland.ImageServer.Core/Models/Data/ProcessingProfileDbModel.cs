@@ -14,9 +14,9 @@ namespace Shelland.ImageServer.Core.Models.Data
             this.CreateDate = DateTimeOffset.UtcNow;
         }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public List<ImageThumbnailParamsModel> Parameters { get; set; }
+        public List<ImageThumbnailParamsModel> Parameters { get; set; } = new();
 
         public Guid ProfileId { get; set; }
     }

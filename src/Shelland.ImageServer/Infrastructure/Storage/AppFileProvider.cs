@@ -13,7 +13,7 @@ namespace Shelland.ImageServer.Infrastructure.Storage
     public class AppFileProvider : IFileProvider
     {
         private readonly IOptions<AppSettingsModel> appSettings;
-        private PhysicalFileProvider physicalFileProvider;
+        private PhysicalFileProvider? physicalFileProvider;
 
         public AppFileProvider(IOptions<AppSettingsModel> appSettings)
         {

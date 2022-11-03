@@ -4,18 +4,18 @@ namespace Shelland.ImageServer.Core.Models.Preferences
 {
     public class AppSettingsModel
     {
-        public CommonSettingsModel Common { get; set; }
+        public CommonSettingsModel Common { get; set; } = null!;
 
-        public DirectorySettingsModel Directory { get; set; }
+        public DirectorySettingsModel Directory { get; set; } = null!;
 
-        public RateLimitingSettingsModel RateLimiting { get; set; }
+        public RateLimitingSettingsModel RateLimiting { get; set; } = null!;
 
-        public WebHooksSettingsModel WebHooks { get; set; }
+        public WebHooksSettingsModel WebHooks { get; set; } = null!;
 
-        public ImageProcessingSettingsModel ImageProcessing { get; set; }
+        public ImageProcessingSettingsModel ImageProcessing { get; set; } = null!;
 
-        public StaticCacheSettingsModel StaticCache { get; set; }
+        public StaticCacheSettingsModel StaticCache { get; set; } = null!;
 
-        public OnDemandProcessingSettingsModel OnDemandProcessing { get; set; }
+        public OnDemandProcessingSettingsModel OnDemandProcessing { get; set; } = null!;
     }
 }

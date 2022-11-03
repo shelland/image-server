@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
@@ -25,7 +26,7 @@ namespace Shelland.ImageServer.DataAccess.Repository
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<ImageUploadDbModel> GetById(Guid id)
+        public async Task<ImageUploadDbModel?> GetById(Guid id)
         {
             var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
             await collection.EnsureIndexAsync(x => x.UploadId);
@@ -74,7 +75,7 @@ namespace Shelland.ImageServer.DataAccess.Repository
         public async Task<ImageUploadDbModel> Create(
             StoragePathModel storagePath, 
             List<ImageThumbnailResultModel> thumbnails, 
-            string ipAddress, int? lifetime)
+            string? ipAddress, int? lifetime)
         {
             DateTimeOffset? expirationDate = lifetime.HasValue ? DateTimeOffset.UtcNow.AddSeconds(lifetime.Value) : null;
 

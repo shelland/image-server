@@ -7,6 +7,6 @@ namespace Shelland.ImageServer.AppServices.Services.Messaging.Payload
 {
     public class ImageProcessingFinishedPayload : IRequest
     {
-        public ImageUploadResultModel Result { get; set; }
+        public ImageUploadResultModel Result { get; set; } = null!;
     }
 }

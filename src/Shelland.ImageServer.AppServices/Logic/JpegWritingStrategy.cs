@@ -1,6 +1,7 @@
 ﻿// Created on 16/03/2021 21:56 by Andrey Laserson
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using ImageMagick.Formats;
@@ -20,7 +21,7 @@ namespace Shelland.ImageServer.AppServices.Logic
             this.quality = quality;
         }
 
-        public async Task Write(MagickImage image, Stream outputStream)
+        public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
         {
             image.Quality = this.quality;
             image.Interlace = Interlace.Jpeg;
@@ -30,7 +31,7 @@ namespace Shelland.ImageServer.AppServices.Logic
             {
                 SamplingFactor = JpegSamplingFactor.Ratio420,
                 DctMethod = JpegDctMethod.Float
-            });
+            }, cancellationToken);
         }
     }
 }

@@ -25,17 +25,17 @@ namespace Shelland.ImageServer.Core.Models.Data
         /// <summary>
         /// User IP address
         /// </summary>
-        public string IpAddress { get; set; }
+        public string? IpAddress { get; set; }
 
         /// <summary>
         /// Original file path
         /// </summary>
-        public string OriginalFilePath { get; set; }
+        public string OriginalFilePath { get; set; } = string.Empty;
 
         /// <summary>
         /// Generated thumbnails
         /// </summary>
-        public List<ImageThumbnailResultModel> Thumbnails { get; set; }
+        public List<ImageThumbnailResultModel> Thumbnails { get; set; } = new();
 
         /// <summary>
         /// Expiration date

@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
@@ -41,10 +42,10 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task ImageToFormat(Stream inputStream, StreamImageSavingParamsModel savingParams)
+        public async Task ImageToFormat(Stream inputStream, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
         {
             var inputImage = await this.imageReadingService.Read(inputStream);
-            await this.imageWritingService.WriteToStream(inputImage, savingParams);
+            await this.imageWritingService.WriteToStream(inputImage, savingParams, cancellationToken);
         }
     }
 }

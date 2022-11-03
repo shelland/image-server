@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using Microsoft.Extensions.Logging;
@@ -36,12 +37,12 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams)
+        public async Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams, CancellationToken cancellationToken)
         {
             try
             {
-                await using var imageStream = await GetOutputStream(image, savingParams);
-                await this.fileService.WriteFile(imageStream, savingParams.Path);
+                await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
+                await this.fileService.WriteFile(imageStream, savingParams.Path, cancellationToken);
 
                 this.logger.LogInformation($"Image was saved to {savingParams.Path}");
             }
@@ -55,12 +56,12 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams)
+        public async Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
         {
             try
             {
-                await using var imageStream = await GetOutputStream(image, savingParams);
-                await imageStream.CopyToAsync(savingParams.OutputStream);
+                await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
+                await imageStream.CopyToAsync(savingParams.OutputStream, cancellationToken);
 
                 savingParams.OutputStream.Reset();
             }
@@ -73,7 +74,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
         #region Private methods
 
-        private static async Task<MemoryStream> GetOutputStream(MagickImage image, BaseImageSavingParamsModel savingParams)
+        private static async Task<MemoryStream> GetOutputStream(MagickImage image, BaseImageSavingParamsModel savingParams, CancellationToken cancellationToken)
         {
             var imageStream = new MemoryStream();
             var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
@@ -84,7 +85,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 new JpegWritingStrategy(savingParams.Quality) : 
                 new GenericWritingStrategy());
 
-            await imageWritingContext.Write(image, imageStream);
+            await imageWritingContext.Write(image, imageStream, cancellationToken);
 
             imageStream.Reset();
 

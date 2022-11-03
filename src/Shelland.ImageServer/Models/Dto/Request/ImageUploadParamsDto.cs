@@ -11,7 +11,7 @@ namespace Shelland.ImageServer.Models.Dto.Request
     public class ImageUploadParamsDto
     {
         [ModelBinder(BinderType = typeof(JsonBodyModelBinder))]
-        public List<ImageThumbnailParamsDto> Thumbnails { get; set; }
+        public List<ImageThumbnailParamsDto> Thumbnails { get; set; } = new();
 
         public int? Lifetime { get; set; }
 

@@ -8,8 +8,8 @@ namespace Shelland.ImageServer.Models.Dto.Response
 
         public int Height { get; set; }
 
-        public string DiskPath { get; set; }
+        public string DiskPath { get; set; } = string.Empty;
 
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
     }
 }

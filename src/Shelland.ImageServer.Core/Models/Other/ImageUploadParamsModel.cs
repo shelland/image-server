@@ -12,7 +12,7 @@ namespace Shelland.ImageServer.Core.Models.Other
         /// <summary>
         /// Input thumbnails
         /// </summary>
-        public List<ImageThumbnailParamsModel> Thumbnails { get; set; }
+        public List<ImageThumbnailParamsModel> Thumbnails { get; set; } = new();
 
         /// <summary>
         /// Image lifetime

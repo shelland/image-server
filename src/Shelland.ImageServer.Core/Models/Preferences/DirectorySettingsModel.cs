@@ -4,10 +4,10 @@ namespace Shelland.ImageServer.Core.Models.Preferences
 {
     public class DirectorySettingsModel
     {
-       public string WorkingDirectory { get; set; }
+       public string WorkingDirectory { get; set; } = string.Empty;
 
-       public string AppDataDirectory { get; set; }
+       public string AppDataDirectory { get; set; } = string.Empty;
 
-       public string CacheDirectory { get; set; }
+       public string CacheDirectory { get; set; } = string.Empty;
     }
 }

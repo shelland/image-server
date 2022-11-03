@@ -6,10 +6,10 @@ namespace Shelland.ImageServer.Core.Models.Other
 {
     public class ImageUploadJob
     {
-        public Stream Stream { get; set; }
+        public Stream Stream { get; set; } = null!;
 
-        public ImageUploadParamsModel Params { get; set; }
+        public ImageUploadParamsModel Params { get; set; } = null!;
 
-        public string IpAddress { get; set; }
+        public string? IpAddress { get; set; }
     }
 }

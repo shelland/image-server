@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -38,7 +39,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func)
+        public async Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func, CancellationToken cancellationToken)
         {
             var cacheDirectory = this.options.Value.Directory.CacheDirectory;
 
@@ -69,7 +70,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             var newStream = await func();
 
             // Write a new stream to the disk
-            await this.fileService.WriteFile(newStream, cachedFilePath);
+            await this.fileService.WriteFile(newStream, cachedFilePath, cancellationToken);
 
             this.logger.LogInformation($"Disk cache file was written to {cachedFilePath}");
 

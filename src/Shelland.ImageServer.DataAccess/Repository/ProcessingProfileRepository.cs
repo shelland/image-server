@@ -35,7 +35,7 @@ namespace Shelland.ImageServer.DataAccess.Repository
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<ProcessingProfileDbModel> GetProfileById(Guid id)
+        public async Task<ProcessingProfileDbModel?> GetProfileById(Guid id)
         {
             var collection = this.context.Database.GetCollection<ProcessingProfileDbModel>();
             await collection.EnsureIndexAsync(x => x.ProfileId);

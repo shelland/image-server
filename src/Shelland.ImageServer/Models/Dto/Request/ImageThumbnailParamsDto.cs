@@ -14,12 +14,12 @@ namespace Shelland.ImageServer.Models.Dto.Request
 
         public int? Quality { get; set; }
         
-        public WatermarkParamsDto Watermark { get; set; }
+        public WatermarkParamsDto? Watermark { get; set; }
     }
 
     public class WatermarkParamsDto
     {
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
 
         public double? Opacity { get; set; }
     }

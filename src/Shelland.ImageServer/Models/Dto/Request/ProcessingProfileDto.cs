@@ -9,10 +9,10 @@ namespace Shelland.ImageServer.Models.Dto.Request
 {
     public class ProcessingProfileDto
     {
-        [Required]
-        public string Name { get; set; }
+        [Required] 
+        public string Name { get; set; } = string.Empty;
 
         [ModelBinder(BinderType = typeof(JsonBodyModelBinder))]
-        public List<ImageThumbnailParamsDto> Parameters { get; set; }
+        public List<ImageThumbnailParamsDto> Parameters { get; set; } = new();
     }
 }

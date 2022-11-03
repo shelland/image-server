@@ -6,6 +6,6 @@ namespace Shelland.ImageServer.Core.Models.Preferences
     {
         public bool IsEnabled { get; set; }
 
-        public string PostUrl { get; set; }
+        public string PostUrl { get; set; } = string.Empty;
     }
 }

@@ -35,7 +35,7 @@ namespace Shelland.ImageServer.AppServices.Services.Messaging.Handlers
             if (webHooksOptions.IsEnabled)
             {
                 this.logger.LogInformation($"Sending a web hook to {webHooksOptions.PostUrl}");
-                await this.networkService.MakeRequest(webHooksOptions.PostUrl, request.Result);
+                await this.networkService.MakeRequest(webHooksOptions.PostUrl, request.Result, cancellationToken);
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Shelland.ImageServer.Controllers
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        public IFormFile GetDefaultFile()
+        public IFormFile? GetDefaultFile()
         {
             var files = Request.Form.Files;
             return files.Any() ? files[0] : null;
@@ -24,6 +24,6 @@ namespace Shelland.ImageServer.Controllers
         /// <summary>
         /// IP address
         /// </summary>
-        public string IpAddress => Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+        public string? IpAddress => Request.HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

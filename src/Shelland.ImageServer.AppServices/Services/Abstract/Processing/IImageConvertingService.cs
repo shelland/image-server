@@ -1,6 +1,7 @@
 ﻿// Created on 15/02/2021 20:31 by Andrey Laserson
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Other;
 
@@ -23,7 +24,8 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
         /// </summary>
         /// <param name="inputStream"></param>
         /// <param name="savingParams"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task ImageToFormat(Stream inputStream, StreamImageSavingParamsModel savingParams);
+        Task ImageToFormat(Stream inputStream, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken);
     }
 }

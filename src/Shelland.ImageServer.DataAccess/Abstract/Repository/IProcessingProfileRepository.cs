@@ -21,7 +21,7 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<ProcessingProfileDbModel> GetProfileById(Guid id);
+        Task<ProcessingProfileDbModel?> GetProfileById(Guid id);
 
         /// <summary>
         /// Adds a new profile

@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
@@ -16,7 +17,8 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
         /// </summary>
         /// <param name="url"></param>
         /// <param name="func"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func);
+        Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func, CancellationToken cancellationToken);
     }
 }

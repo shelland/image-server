@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using Microsoft.Extensions.Logging;
@@ -57,12 +58,12 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<MagickImage> Read(string url)
+        public async Task<MagickImage> Read(string url, CancellationToken cancellationToken)
         {
             try
             {
                 await using var imageStream = await this.diskCacheService.GetOrAdd(url, async () => 
-                    await this.networkService.DownloadAsStream(url));
+                    await this.networkService.DownloadAsStream(url, cancellationToken), cancellationToken);
 
                 return await this.Read(imageStream);
             }

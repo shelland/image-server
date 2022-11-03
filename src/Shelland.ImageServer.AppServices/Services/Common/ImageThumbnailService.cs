@@ -3,6 +3,7 @@
 #region Usings
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using MediatR;
@@ -65,7 +66,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob)
+        public async Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob, CancellationToken cancellationToken)
         {
             var storagePath = this.fileService.PrepareStoragePath(uploadJob.Params.OutputFormat);
 
@@ -79,7 +80,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             // Save original file depending on the app settings
             if (this.appSettings.Value.Common.SaveOriginalFile)
             {
-                await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath);
+                await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath, cancellationToken);
                 uploadJob.Stream.Reset();
 
                 result.OriginalFileUrl = this.fileService.NormalizeWebPath(storagePath.UrlPath);
@@ -90,14 +91,14 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             using var sourceImage = await this.imageReadingService.Read(uploadJob.Stream);
 
             // Process requested thumbnails
-            var processedThumbnails = await this.GenerateThumbnails(uploadJob, sourceImage, storagePath);
+            var processedThumbnails = await this.GenerateThumbnails(uploadJob, sourceImage, storagePath, cancellationToken);
             result.Thumbnails = processedThumbnails;
 
             // Send a notification about finished job to all listeners
             await this.mediator.Send(new ImageProcessingFinishedPayload
             {
                 Result = result
-            });
+            }, cancellationToken);
 
             // Create a database record
             await this.imageUploadRepository.Create(storagePath, result.Thumbnails, uploadJob.IpAddress, uploadJob.Params.Lifetime);
@@ -113,11 +114,13 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         /// <param name="uploadJob"></param>
         /// <param name="sourceImage"></param>
         /// <param name="storagePath"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         private async Task<List<ImageThumbnailResultModel>> GenerateThumbnails(
             ImageUploadJob uploadJob,
             MagickImage sourceImage,
-            StoragePathModel storagePath)
+            StoragePathModel storagePath, 
+            CancellationToken cancellationToken)
         {
             var resultsList = new List<ImageThumbnailResultModel>();
             var thumbnailParams = await GetThumbnailParams(uploadJob);
@@ -140,7 +143,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 // If watermark parameters were provided then apply a watermark
                 if (thumbParam.Watermark != null)
                 {
-                    using var watermarkImage = await this.imageReadingService.Read(thumbParam.Watermark.Url);
+                    using var watermarkImage = await this.imageReadingService.Read(thumbParam.Watermark!.Url, cancellationToken);
                     processedImage = this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
                 }
 
@@ -159,7 +162,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                     Format = uploadJob.Params.OutputFormat,
                     Path = paths.DiskPath,
                     Quality = quality
-                });
+                }, cancellationToken);
 
                 this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
 

@@ -11,7 +11,7 @@ namespace Shelland.ImageServer.Models.Dto.Response
         public Guid Id { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string OriginalFileUrl { get; set; }
+        public string OriginalFileUrl { get; set; } = string.Empty;
 
         public List<ImageThumbnailResultDto> Thumbnails { get; set; } = new();
     }

@@ -8,8 +8,8 @@ namespace Shelland.ImageServer.Core.Models.Domain
 
         public int Height { get; set; }
 
-        public string DiskPath { get; set; }
+        public string DiskPath { get; set; } = string.Empty;
 
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
     }
 }

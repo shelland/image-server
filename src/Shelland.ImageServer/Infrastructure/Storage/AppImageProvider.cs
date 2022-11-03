@@ -22,7 +22,7 @@ namespace Shelland.ImageServer.Infrastructure.Storage
         private readonly IFileProvider fileProvider;
         private readonly FormatUtilities formatUtilities;
         private readonly PathString requestPath;
-        private Func<HttpContext, bool> match;
+        private Func<HttpContext, bool>? match;
 
         public AppImageProvider(
             IOptions<AppSettingsModel> appSettings, 
@@ -40,20 +40,20 @@ namespace Shelland.ImageServer.Infrastructure.Storage
                    !string.IsNullOrEmpty(url);
         }
 
-        public Task<IImageResolver> GetAsync(HttpContext context)
+        public Task<IImageResolver?> GetAsync(HttpContext context)
         {
             var path = string.IsNullOrEmpty(requestPath) ? 
                 context.Request.Path.Value : 
-                context.Request!.Path!.Value![this.requestPath.Value!.Length..];
+                context.Request.Path.Value![this.requestPath.Value!.Length..];
 
             var fileInfo = this.fileProvider.GetFileInfo(path);
 
             if (!fileInfo.Exists)
             {
-                return Task.FromResult<IImageResolver>(null);
+                return Task.FromResult<IImageResolver?>(null);
             }
 
-            return Task.FromResult<IImageResolver>(new FileProviderImageResolver(fileInfo));
+            return Task.FromResult<IImageResolver?>(new FileProviderImageResolver(fileInfo));
         }
 
         public ProcessingBehavior ProcessingBehavior => ProcessingBehavior.CommandOnly;

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Shelland.ImageServer.AppServices.Services.Abstract.Networking;
@@ -30,12 +31,12 @@ namespace Shelland.ImageServer.AppServices.Services.Networking
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task MakeRequest(string url, object payload)
+        public async Task MakeRequest(string url, object payload, CancellationToken cancellationToken)
         {
             try
             {
                 using var client = this.httpClientFactory.CreateClient();
-                await client.PostAsJsonAsync(url, payload);
+                await client.PostAsJsonAsync(url, payload, cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {
@@ -47,17 +48,17 @@ namespace Shelland.ImageServer.AppServices.Services.Networking
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<Stream> DownloadAsStream(string url)
+        public async Task<Stream> DownloadAsStream(string url, CancellationToken cancellationToken)
         {
             try
             {
                 using var client = this.httpClientFactory.CreateClient();
                 client.Timeout = TimeSpan.FromSeconds(2);
 
-                await using var stream = await client.GetStreamAsync(url);
+                await using var stream = await client.GetStreamAsync(url, cancellationToken);
                 var memoryStream = new MemoryStream();
 
-                await stream.CopyToAsync(memoryStream);
+                await stream.CopyToAsync(memoryStream, cancellationToken);
                 memoryStream.Reset();
                 
                 return memoryStream;

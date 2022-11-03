@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ namespace Shelland.ImageServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload([Required, FromForm] ImageUploadParamsDto paramsDto)
+        public async Task<IActionResult> Upload([Required, FromForm] ImageUploadParamsDto paramsDto, CancellationToken cancellationToken)
         {
             var file = this.GetDefaultFile();
 
@@ -60,7 +61,7 @@ namespace Shelland.ImageServer.Controllers
                 Stream = imageStream
             };
 
-            var response = await this.imageThumbnailService.ProcessThumbnails(job);
+            var response = await this.imageThumbnailService.ProcessThumbnails(job, cancellationToken);
 
             return Ok(new Response<ImageUploadResultModel>(response));
         }

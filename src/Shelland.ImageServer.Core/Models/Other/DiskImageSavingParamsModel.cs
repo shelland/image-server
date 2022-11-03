@@ -4,6 +4,6 @@ namespace Shelland.ImageServer.Core.Models.Other
 {
     public class DiskImageSavingParamsModel : BaseImageSavingParamsModel
     {
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
     }
 }

@@ -3,6 +3,7 @@
 #region Usings
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ namespace Shelland.ImageServer.Controllers
         }
 
         [HttpPost("format/{type}")]
-        public async Task<IActionResult> ToJpeg(OutputImageFormat type)
+        public async Task<IActionResult> ToJpeg(OutputImageFormat type, CancellationToken cancellationToken)
         {
             var file = this.GetDefaultFile();
 
@@ -52,10 +53,10 @@ namespace Shelland.ImageServer.Controllers
                 return BadRequest();
             }
 
-            return await File(file, type);
+            return await File(file, type, cancellationToken);
         }
         
-        private async Task<IActionResult> File(IFormFile file, OutputImageFormat format)
+        private async Task<IActionResult> File(IFormFile file, OutputImageFormat format, CancellationToken cancellationToken)
         {
             var outputStream = new MemoryStream();
             await using var imageStream = file.OpenReadStream();
@@ -65,7 +66,7 @@ namespace Shelland.ImageServer.Controllers
                 Format = OutputImageFormat.Jpeg,
                 Quality = Constants.DefaultJpegQuality,
                 OutputStream = outputStream
-            });
+            }, cancellationToken);
 
             return File(outputStream, format.GetMimeType());
         }

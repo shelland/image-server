@@ -6,6 +6,6 @@ namespace Shelland.ImageServer.Core.Models.Other
 {
     public class StreamImageSavingParamsModel : BaseImageSavingParamsModel
     {
-        public Stream OutputStream { get; set; }
+        public Stream OutputStream { get; set; } = null!;
     }
 }

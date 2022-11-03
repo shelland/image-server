@@ -60,9 +60,9 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             return services;
         }
 
-        private static void ValidateParams(IDictionary<string, string> imgParams, IReadOnlySet<string> allowedParams)
+        private static void ValidateParams(IDictionary<string, string> imgParams, IReadOnlySet<string>? allowedParams)
         {
-            if (!allowedParams.Any())
+            if (allowedParams == null || !allowedParams.Any())
             {
                 return;
             }

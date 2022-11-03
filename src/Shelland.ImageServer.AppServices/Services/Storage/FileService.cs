@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -89,7 +90,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task WriteFile(Stream stream, string filePath)
+        public async Task WriteFile(Stream stream, string filePath, CancellationToken cancellationToken)
         {
             try
             {
@@ -103,8 +104,8 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
 
                 await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
 
-                await stream.CopyToAsync(fileStream);
-                await fileStream.FlushAsync();
+                await stream.CopyToAsync(fileStream, cancellationToken);
+                await fileStream.FlushAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -147,7 +148,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<Stream> ReadFile(string path)
+        public async Task<Stream?> ReadFile(string path)
         {
             var isFileExists = File.Exists(path);
 

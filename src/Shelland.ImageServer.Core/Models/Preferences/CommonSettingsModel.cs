@@ -4,9 +4,9 @@ namespace Shelland.ImageServer.Core.Models.Preferences
 {
     public class CommonSettingsModel
     {
-        public string ServerUrl { get; set; }
+        public string ServerUrl { get; set; } = string.Empty;
 
-        public string RoutePrefix { get; set; }
+        public string? RoutePrefix { get; set; }
 
         public bool SaveOriginalFile { get; set; }
 

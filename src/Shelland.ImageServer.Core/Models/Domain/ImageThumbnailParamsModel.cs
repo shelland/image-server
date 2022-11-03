@@ -38,7 +38,7 @@ namespace Shelland.ImageServer.Core.Models.Domain
         /// <summary>
         /// Watermarks params
         /// </summary>
-        public WatermarkParams Watermark { get; set; }
+        public WatermarkParams? Watermark { get; set; }
     }
 
     public class WatermarkParams
@@ -46,7 +46,7 @@ namespace Shelland.ImageServer.Core.Models.Domain
         /// <summary>
         /// Watermark image URL
         /// </summary>
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
 
         /// <summary>
         /// Default opacity

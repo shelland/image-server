@@ -69,7 +69,7 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
         {
             try
             {
-                this.logger.LogInformation($"Deleting a record with id {uploadDb.Id} and expiration date {uploadDb.ExpiresAt.Value}");
+                this.logger.LogInformation($"Deleting a record with id {uploadDb.Id} and expiration date {uploadDb.ExpiresAt?.Date}");
 
                 // Delete files
                 this.fileService.Delete(uploadDb.GetAllFilePaths());
