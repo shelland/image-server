@@ -43,7 +43,7 @@ namespace Shelland.ImageServer.Infrastructure.Storage
         public Task<IImageResolver?> GetAsync(HttpContext context)
         {
             var path = string.IsNullOrEmpty(requestPath) ? 
-                context.Request.Path.Value : 
+                context.Request.Path.Value! : 
                 context.Request.Path.Value![this.requestPath.Value!.Length..];
 
             var fileInfo = this.fileProvider.GetFileInfo(path);

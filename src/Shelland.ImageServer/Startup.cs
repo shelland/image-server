@@ -34,6 +34,7 @@ namespace Shelland.ImageServer
             services.AddRateLimiting(this.configuration);
             services.AddHostedServices();
             services.AddModules();
+            services.AddLogs();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

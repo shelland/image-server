@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,8 +27,10 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             var onDemandCacheDirectory = configuration.GetValue<string>("Directory:CacheDirectory");
             var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory");
             var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");
-            var allowedOnDemandImageSizes = configuration.GetSection("OnDemandProcessing:AllowedDimensions")?.GetChildren()?.Select(x => x.Value).ToHashSet();
-            
+            var allowedOnDemandImageSizes = configuration.GetSection("OnDemandProcessing:AllowedDimensions").GetChildren().Select(x => x.Value).ToHashSet();
+
+            Guard.Against.Null(workingDirectory);
+
             if (!isEnabled)
             {
                 return services;

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<Platforms>x64</Platforms>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="LiteDB" Version="5.0.12" />
 		<PackageReference Include="LiteDB.Async" Version="0.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
