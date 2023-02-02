@@ -4,23 +4,16 @@ using Shelland.ImageServer.Core.Models.Enums;
 
 namespace Shelland.ImageServer.Models.Dto.Request
 {
-    public class ImageThumbnailParamsDto
-    {
-        public int? Width { get; set; }
+    public record ImageThumbnailParamsDto(
+        int? Width,
+        int? Height,
+        ThumbnailEffectType? Effect,
+        int? Quality,
+        WatermarkParamsDto? Watermark
+    );
 
-        public int? Height { get; set; }
-
-        public ThumbnailEffectType? Effect { get; set; }
-
-        public int? Quality { get; set; }
-        
-        public WatermarkParamsDto? Watermark { get; set; }
-    }
-
-    public class WatermarkParamsDto
-    {
-        public string Url { get; set; } = string.Empty;
-
-        public double? Opacity { get; set; }
-    }
+    public record WatermarkParamsDto(
+        string Url,
+        double? Opacity
+    );
 }

@@ -72,15 +72,13 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity)
+        public void AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity)
         {
             // Check if opacity is between 0 and 100
             Guard.Against.OutOfRange(opacity, nameof(opacity), 0, 100);
 
             watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (double) opacity / 100);
             srcImage.Composite(watermarkImage, Gravity.Southwest, CompositeOperator.Over);
-
-            return srcImage;
         }
 
         private static void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)

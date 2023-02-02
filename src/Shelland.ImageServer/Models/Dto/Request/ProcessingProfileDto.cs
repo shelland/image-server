@@ -7,12 +7,8 @@ using Shelland.ImageServer.Infrastructure.ModelBinding;
 
 namespace Shelland.ImageServer.Models.Dto.Request
 {
-    public class ProcessingProfileDto
-    {
-        [Required] 
-        public string Name { get; set; } = string.Empty;
-
-        [ModelBinder(BinderType = typeof(JsonBodyModelBinder))]
-        public List<ImageThumbnailParamsDto> Parameters { get; set; } = new();
-    }
+    public record ProcessingProfileDto(
+        [Required] string Name,
+        [ModelBinder(BinderType = typeof(JsonBodyModelBinder))] IReadOnlyList<ImageThumbnailParamsDto> Parameters
+    );
 }

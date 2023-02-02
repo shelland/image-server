@@ -21,8 +21,9 @@ namespace Shelland.ImageServer.AppServices.Services.Processing
         private readonly IImageReadingService imageReadingService;
 
         public ImageConvertingService(
-            IImageWritingService imageWritingService, 
-            IImageReadingService imageReadingService)
+            IImageWritingService imageWritingService,
+            IImageReadingService imageReadingService
+        )
         {
             this.imageWritingService = imageWritingService;
             this.imageReadingService = imageReadingService;

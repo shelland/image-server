@@ -12,19 +12,11 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
         /// <summary>
         /// Writes an image to the destination paths using provided parameters
         /// </summary>
-        /// <param name="image"></param>
-        /// <param name="savingParams"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams, CancellationToken cancellationToken);
 
         /// <summary>
         /// Writes an image to the provided stream
         /// </summary>
-        /// <param name="image"></param>
-        /// <param name="savingParams"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken);
     }
 }

@@ -27,7 +27,7 @@ namespace Shelland.ImageServer.Infrastructure.Extensions
             var onDemandCacheDirectory = configuration.GetValue<string>("Directory:CacheDirectory");
             var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory");
             var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");
-            var allowedOnDemandImageSizes = configuration.GetSection("OnDemandProcessing:AllowedDimensions").GetChildren().Select(x => x.Value).ToHashSet();
+            var allowedOnDemandImageSizes = configuration.GetSection("OnDemandProcessing:AllowedDimensions").GetChildren().Select(x => x.Value!).ToHashSet();
 
             Guard.Against.Null(workingDirectory);
 

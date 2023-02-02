@@ -1,6 +1,7 @@
 ﻿// Created on 23/11/2022 9:46 by shell
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -16,7 +17,7 @@ public static class LoggingExtensions
             .Enrich.FromLogContext()
             .WriteTo.Console().CreateLogger();
 
-        services.AddLogging(e => e.AddSerilog(logger));
+        services.AddLogging(e => e.ClearProviders().AddSerilog(logger));
 
         return services;
     }

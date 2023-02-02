@@ -26,11 +26,6 @@ namespace Shelland.ImageServer.Infrastructure.ModelBinding
         {
             try
             {
-                if (bindingContext == null)
-                {
-                    throw new ArgumentNullException(nameof(bindingContext));
-                }
-
                 var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
                 if (valueProviderResult != ValueProviderResult.None)

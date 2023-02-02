@@ -13,8 +13,8 @@ namespace Shelland.ImageServer.DataAccess
         {
             serviceCollection.AddSingleton<AppDbContext>();
 
-            serviceCollection.AddTransient<IImageUploadRepository, ImageUploadRepository>();
-            serviceCollection.AddTransient<IProcessingProfileRepository, ProcessingProfileRepository>();
+            serviceCollection.AddSingleton<IImageUploadRepository, ImageUploadRepository>();
+            serviceCollection.AddSingleton<IProcessingProfileRepository, ProcessingProfileRepository>();
 
             return serviceCollection;
         }

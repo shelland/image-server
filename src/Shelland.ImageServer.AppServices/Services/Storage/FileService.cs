@@ -60,12 +60,11 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 Directory.CreateDirectory(baseDirectoryPath);
             }
 
-            return new StoragePathModel
-            {
-                Key = uploadKeyGuid,
-                FilePath = finalPath,
-                UrlPath = urlPath
-            };
+            return new StoragePathModel(
+                Key: uploadKeyGuid,
+                FilePath: finalPath,
+                UrlPath: urlPath
+            );
         }
 
         /// <summary>
@@ -103,9 +102,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 }
 
                 await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
-
                 await stream.CopyToAsync(fileStream, cancellationToken);
-                await fileStream.FlushAsync(cancellationToken);
             }
             catch (Exception ex)
             {

@@ -68,7 +68,7 @@ namespace Shelland.ImageServer.Controllers
                 OutputStream = outputStream
             }, cancellationToken);
 
-            return File(outputStream, format.GetMimeType());
+            return new FileStreamResult(outputStream, format.GetMimeType());
         }
     }
 }

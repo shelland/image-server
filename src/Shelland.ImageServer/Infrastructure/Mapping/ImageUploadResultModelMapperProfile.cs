@@ -2,13 +2,11 @@
 
 using System.Collections.Generic;
 using AutoMapper;
-using JetBrains.Annotations;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Models.Dto.Response;
 
 namespace Shelland.ImageServer.Infrastructure.Mapping
 {
-    [UsedImplicitly]
     public class ImageUploadResultModelMapperProfile : Profile
     {
         public ImageUploadResultModelMapperProfile()

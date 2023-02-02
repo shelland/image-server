@@ -8,15 +8,10 @@ using Shelland.ImageServer.Infrastructure.ModelBinding;
 
 namespace Shelland.ImageServer.Models.Dto.Request
 {
-    public class ImageUploadParamsDto
-    {
-        [ModelBinder(BinderType = typeof(JsonBodyModelBinder))]
-        public List<ImageThumbnailParamsDto> Thumbnails { get; set; } = new();
-
-        public int? Lifetime { get; set; }
-
-        public OutputImageFormat? OutputFormat { get; set; }
-
-        public Guid? ProfileId { get; set; }
-    }
+    public record ImageUploadParamsDto(
+        [ModelBinder(typeof(JsonBodyModelBinder))] IReadOnlyList<ImageThumbnailParamsDto> Thumbnails,
+        int? Lifetime,
+        OutputImageFormat? OutputFormat,
+        Guid? ProfileId
+    );
 }

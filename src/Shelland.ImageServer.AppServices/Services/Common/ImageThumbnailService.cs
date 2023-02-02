@@ -138,13 +138,13 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 };
 
                 // Run an image processing job
-                var processedImage = this.imageProcessingService.Process(job);
+                using var processedImage = this.imageProcessingService.Process(job);
 
                 // If watermark parameters were provided then apply a watermark
                 if (thumbParam.Watermark != null)
                 {
                     using var watermarkImage = await this.imageReadingService.Read(thumbParam.Watermark!.Url, cancellationToken);
-                    processedImage = this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
+                    this.imageProcessingService.AddWatermark(processedImage, watermarkImage);
                 }
 
                 // Prepare disk paths to be used to save images

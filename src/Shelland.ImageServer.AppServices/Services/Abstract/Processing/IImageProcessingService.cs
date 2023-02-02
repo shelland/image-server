@@ -21,10 +21,6 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Processing
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="srcImage"></param>
-        /// <param name="watermarkImage"></param>
-        /// <param name="opacity"></param>
-        /// <returns></returns>
-        MagickImage AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity = Constants.DefaultWatermarkOpacity);
+        void AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity = Constants.DefaultWatermarkOpacity);
     }
 }

@@ -7,12 +7,9 @@ namespace Shelland.ImageServer.Core.Models.Domain
     /// <summary>
     /// Represents a single image thumbnail storage
     /// </summary>
-    public class StoragePathModel
-    {
-        public Guid Key { get; set; }
-
-        public string FilePath { get; set; } = string.Empty;
-
-        public string UrlPath { get; set; } = string.Empty;
-    }
+    public record StoragePathModel(
+        Guid Key,
+        string FilePath,
+        string UrlPath
+    );
 }
