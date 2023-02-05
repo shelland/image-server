@@ -16,6 +16,7 @@ namespace Shelland.ImageServer.Core.Infrastructure.Extensions
         {
             await using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
+            memoryStream.Reset();
 
             var buffer = memoryStream.ToArray();
 

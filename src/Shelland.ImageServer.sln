@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shelland.ImageServer", "Shelland.ImageServer\Shelland.ImageServer.csproj", "{981BC948-3C56-4DC0-8CF8-FD9CBD8267D3}"
 EndProject
@@ -21,6 +21,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{A45E49F6-4D51-44A9-B050-885FC420E750}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageServerDemo", "..\demo\ImageServerDemo\ImageServerDemo.csproj", "{130F921A-4646-459C-9112-8589DDE01EEE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shelland.ImageServer.FaceDetection", "Shelland.ImageServer.FaceDetection\Shelland.ImageServer.FaceDetection.csproj", "{1BC489A3-AE90-447C-85E5-C1502BA17355}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +72,14 @@ Global
 		{130F921A-4646-459C-9112-8589DDE01EEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{130F921A-4646-459C-9112-8589DDE01EEE}.Release|x64.ActiveCfg = Release|x64
 		{130F921A-4646-459C-9112-8589DDE01EEE}.Release|x64.Build.0 = Release|x64
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Debug|x64.ActiveCfg = Debug|x64
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Debug|x64.Build.0 = Debug|x64
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Release|x64.ActiveCfg = Release|x64
+		{1BC489A3-AE90-447C-85E5-C1502BA17355}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +89,7 @@ Global
 		{157D1C0E-7350-424F-BA46-C2C1CAB8C735} = {7AA58758-D58E-45EA-82F9-6ED53C1D5AB0}
 		{5F29D04E-64A0-411F-8AC0-B013F46FB605} = {7AA58758-D58E-45EA-82F9-6ED53C1D5AB0}
 		{130F921A-4646-459C-9112-8589DDE01EEE} = {A45E49F6-4D51-44A9-B050-885FC420E750}
+		{1BC489A3-AE90-447C-85E5-C1502BA17355} = {7AA58758-D58E-45EA-82F9-6ED53C1D5AB0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4CDE9149-E386-4291-80E4-6B5E9BF28B19}

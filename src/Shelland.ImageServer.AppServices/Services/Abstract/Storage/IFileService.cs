@@ -41,13 +41,6 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Storage
         Task WriteFile(Stream stream, string filePath, CancellationToken cancellationToken);
 
         /// <summary>
-        /// URL normalization (slashes, etc.)
-        /// </summary>
-        /// <param name="originalUrl"></param>
-        /// <returns></returns>
-        string NormalizeWebPath(string originalUrl); // TODO: move to another service
-
-        /// <summary>
         /// Delete selected file from the disk
         /// </summary>
         /// <param name="paths"></param>

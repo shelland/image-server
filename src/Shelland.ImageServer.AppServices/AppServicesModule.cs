@@ -24,6 +24,7 @@ namespace Shelland.ImageServer.AppServices
             serviceCollection.AddTransient<IImageConvertingService, ImageConvertingService>();
             serviceCollection.AddTransient<IImageProcessingService, ImageProcessingService>();
             serviceCollection.AddTransient<IFileService, FileService>();
+            serviceCollection.AddTransient<ILinkService, LinkService>();
 
             return serviceCollection;
         }

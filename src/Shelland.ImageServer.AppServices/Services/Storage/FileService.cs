@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
@@ -24,13 +25,16 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
     public class FileService : IFileService
     {
         private readonly IOptions<AppSettingsModel> appSettings;
+        private readonly ILinkService linkService;
         private readonly ILogger<FileService> logger;
 
         public FileService(
             ILogger<FileService> logger,
+            ILinkService linkService,
             IOptions<AppSettingsModel> appSettings)
         {
             this.logger = logger;
+            this.linkService = linkService;
             this.appSettings = appSettings;
         }
 
@@ -76,7 +80,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.{format.GetImageFormat()}";
 
             // Prepare an URL path
-            var url = this.NormalizeWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
+            var url = this.linkService.NormalizeWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
                       $"_thumb_{width}x{height}.{format.GetImageFormat()}";
 
             return new ImageThumbPathsModel
@@ -111,16 +115,6 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             }
         }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public string NormalizeWebPath(string originalUrl)
-        {
-            var url = $"{this.appSettings.Value.Common.ServerUrl}" +
-                      $"{this.appSettings.Value.Common.RoutePrefix}" + originalUrl;
-
-            return url;
-        }
 
         /// <summary>
         /// <inheritdoc />
@@ -155,7 +149,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             }
 
             var fileStream = new FileStream(path, FileMode.Open);
-            
+
             return await Task.FromResult(fileStream);
         }
     }

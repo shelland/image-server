@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Platforms>x64</Platforms>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="haarcascade_eye_tree_eyeglasses.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="haarcascade_frontalface_alt.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="OpenCvSharp4" Version="4.7.0.20230115" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Shelland.ImageServer.AppServices\Shelland.ImageServer.AppServices.csproj" />
+        <ProjectReference Include="..\Shelland.ImageServer.Core\Shelland.ImageServer.Core.csproj" />
+        <ProjectReference Include="..\Shelland.ImageServer.DataAccess\Shelland.ImageServer.DataAccess.csproj" />
+    </ItemGroup>
+
+</Project>

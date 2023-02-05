@@ -30,6 +30,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
     {
         private readonly IImageProcessingService imageProcessingService;
         private readonly IFileService fileService;
+        private readonly ILinkService linkService;
 
         private readonly IImageUploadRepository imageUploadRepository;
         private readonly IProcessingProfileRepository processingProfileRepository;
@@ -50,7 +51,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             IOptions<AppSettingsModel> appSettings,
             IImageReadingService imageReadingService,
             IImageWritingService imageWritingService,
-            IProcessingProfileRepository processingProfileRepository)
+            IProcessingProfileRepository processingProfileRepository, 
+            ILinkService linkService)
         {
             this.imageProcessingService = imageProcessingService;
             this.fileService = fileService;
@@ -61,6 +63,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             this.imageReadingService = imageReadingService;
             this.imageWritingService = imageWritingService;
             this.processingProfileRepository = processingProfileRepository;
+            this.linkService = linkService;
         }
 
         /// <summary>
@@ -83,7 +86,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath, cancellationToken);
                 uploadJob.Stream.Reset();
 
-                result.OriginalFileUrl = this.fileService.NormalizeWebPath(storagePath.UrlPath);
+                result.OriginalFileUrl = this.linkService.NormalizeWebPath(storagePath.UrlPath);
             }
 
             // Load a new image and save it since loading it each time is extremely expensive

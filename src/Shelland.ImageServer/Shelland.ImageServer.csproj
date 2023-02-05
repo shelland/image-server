@@ -23,6 +23,7 @@
 		<ProjectReference Include="..\Shelland.ImageServer.AppServices\Shelland.ImageServer.AppServices.csproj" />
 		<ProjectReference Include="..\Shelland.ImageServer.Core\Shelland.ImageServer.Core.csproj" />
 		<ProjectReference Include="..\Shelland.ImageServer.DataAccess\Shelland.ImageServer.DataAccess.csproj" />
+		<ProjectReference Include="..\Shelland.ImageServer.FaceDetection\Shelland.ImageServer.FaceDetection.csproj" />
 	</ItemGroup>
 
 </Project>
