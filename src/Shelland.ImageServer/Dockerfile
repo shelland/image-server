@@ -105,6 +105,7 @@ COPY ["Shelland.ImageServer/Shelland.ImageServer.csproj", "Shelland.ImageServer/
 COPY ["Shelland.ImageServer.Core/Shelland.ImageServer.Core.csproj", "Shelland.ImageServer.Core/"]
 COPY ["Shelland.ImageServer.DataAccess/Shelland.ImageServer.DataAccess.csproj", "Shelland.ImageServer.DataAccess/"]
 COPY ["Shelland.ImageServer.AppServices/Shelland.ImageServer.AppServices.csproj", "Shelland.ImageServer.AppServices/"]
+COPY ["Shelland.ImageServer.FaceDetection/Shelland.ImageServer.FaceDetection.csproj", "Shelland.ImageServer.FaceDetection/"]
 RUN dotnet restore "Shelland.ImageServer/Shelland.ImageServer.csproj"
 COPY . .
 WORKDIR "/src/Shelland.ImageServer"
