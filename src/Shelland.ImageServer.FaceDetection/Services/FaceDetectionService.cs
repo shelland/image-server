@@ -22,9 +22,9 @@ public class FaceDetectionService : IFaceDetectionService
         this.linkService = linkService;
     }
 
-    public async Task<IReadOnlyCollection<FaceRecognitionRectModel>> GetFaces(Stream imgStream, bool saveDetectedFaces,CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<FaceDetectionResultModel>> GetFaces(Stream imgStream, bool saveDetectedFaces,CancellationToken cancellationToken)
     {
-        var results = new List<FaceRecognitionRectModel>();
+        var results = new List<FaceDetectionResultModel>();
 
         using var srcImage = Mat.FromStream(imgStream, ImreadModes.Unchanged);
         using var grayImage = new Mat();
@@ -47,7 +47,7 @@ public class FaceDetectionService : IFaceDetectionService
 
         foreach (var face in faces)
         {
-            var outputInfo = new FaceRecognitionRectModel(
+            var outputInfo = new FaceDetectionResultModel(
                 face.TopLeft.X,
                 face.TopLeft.Y,
                 face.BottomRight.X,

@@ -2,7 +2,7 @@
 
 namespace Shelland.ImageServer.Core.Models.Domain;
 
-public record FaceRecognitionRectModel(
+public record FaceDetectionResultModel(
     int X1,
     int Y1,
     int X2,

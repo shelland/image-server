@@ -6,5 +6,5 @@ namespace Shelland.ImageServer.FaceDetection.Services.Abstract;
 
 public interface IFaceDetectionService
 {
-    Task<IReadOnlyCollection<FaceRecognitionRectModel>> GetFaces(Stream imgStream, bool saveDetectedFaces, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<FaceDetectionResultModel>> GetFaces(Stream imgStream, bool saveDetectedFaces, CancellationToken cancellationToken);
 }

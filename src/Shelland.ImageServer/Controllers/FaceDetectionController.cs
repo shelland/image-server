@@ -9,11 +9,11 @@ using Shelland.ImageServer.Models.Dto.Request;
 namespace Shelland.ImageServer.Controllers;
 
 [Route("face-detection")]
-public class FaceRecognitionController : BaseAppController
+public class FaceDetectionController : BaseAppController
 {
     private readonly IFaceDetectionService faceDetectionService;
 
-    public FaceRecognitionController(IFaceDetectionService faceDetectionService)
+    public FaceDetectionController(IFaceDetectionService faceDetectionService)
     {
         this.faceDetectionService = faceDetectionService;
     }
