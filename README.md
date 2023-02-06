@@ -14,6 +14,7 @@ Supported features:
 - Image conversion into base64 format
 - Watermarking support
 - Output image format conversion
+- Face detection support
 
 All actual documentation will be located at the [project wiki](https://github.com/shelland/image-server/wiki).
 
