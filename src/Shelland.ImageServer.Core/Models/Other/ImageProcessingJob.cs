@@ -9,12 +9,9 @@ namespace Shelland.ImageServer.Core.Models.Other
     /// <summary>
     /// Contains information to process a requested image file
     /// </summary>
-    public class ImageProcessingJob
-    {
-        public MagickImage Image { get; set; } = null!;
-
-        public ImageProcessingSettingsModel Settings { get; set; } = null!;
-
-        public ImageThumbnailParamsModel ThumbnailParams { get; set; } = null!;
-    }
+    public record ImageProcessingJob(
+        MagickImage Image,
+        ImageProcessingSettingsModel Settings,
+        ImageThumbnailParamsModel ThumbnailParams
+    );
 }

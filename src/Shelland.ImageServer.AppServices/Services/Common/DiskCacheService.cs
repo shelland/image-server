@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
-using Shelland.ImageServer.Core.Models.Preferences; 
+using Shelland.ImageServer.Core.Models.Preferences;
 
 #endregion
 
@@ -27,8 +27,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private readonly ILogger<DiskCacheService> logger;
 
         public DiskCacheService(
-            IFileService fileService, 
-            IOptions<AppSettingsModel> options, 
+            IFileService fileService,
+            IOptions<AppSettingsModel> options,
             ILogger<DiskCacheService> logger)
         {
             this.fileService = fileService;
@@ -53,18 +53,18 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             var urlHash = url.GetMD5Hash();
             var cachedFilePath = Path.Combine(cacheDirectory, urlHash);
 
-            this.logger.LogInformation($"Looking for file {cachedFilePath}");
+            this.logger.LogInformation("Looking for file {CachedFilePath}", cachedFilePath);
 
             var fileStream = await this.fileService.ReadFile(cachedFilePath);
 
             // If cached file exists, return it
             if (fileStream != null)
             {
-                this.logger.LogInformation($"File was cached locally ({cachedFilePath}). Read it.");
+                this.logger.LogInformation("File was cached locally ({CachedFilePath}). Read it.", cachedFilePath);
                 return fileStream;
             }
 
-            this.logger.LogInformation($"No cached file was found for url {url}. Save it.");
+            this.logger.LogInformation("No cached file was found for url {Url}. Save it.", url);
 
             // If there's no cached file, execute a caching func to read a stream
             var newStream = await func();
@@ -72,7 +72,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             // Write a new stream to the disk
             await this.fileService.WriteFile(newStream, cachedFilePath, cancellationToken);
 
-            this.logger.LogInformation($"Disk cache file was written to {cachedFilePath}");
+            this.logger.LogInformation("Disk cache file was written to {CachedFilePath}", cachedFilePath);
 
             newStream.Reset();
             return newStream;

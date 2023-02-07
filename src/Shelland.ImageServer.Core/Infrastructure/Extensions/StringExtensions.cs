@@ -14,10 +14,8 @@ namespace Shelland.ImageServer.Core.Infrastructure.Extensions
         /// <returns></returns>
         public static string GetMD5Hash(this string src)
         {
-            using var md5 = MD5.Create();
-
             var inputBytes = Encoding.ASCII.GetBytes(src);
-            var hashBytes = md5.ComputeHash(inputBytes);
+            var hashBytes = MD5.HashData(inputBytes);
 
             var sb = new StringBuilder();
 

@@ -2,14 +2,10 @@
 
 namespace Shelland.ImageServer.Core.Models.Domain
 {
-    public class ImageThumbnailResultModel
-    {
-        public int Width { get; set; }
-
-        public int Height { get; set; }
-
-        public string DiskPath { get; set; } = string.Empty;
-
-        public string Url { get; set; } = string.Empty;
-    }
+    public record ImageThumbnailResultModel(
+        int Width,
+        int Height,
+        string DiskPath,
+        string Url
+    );
 }

@@ -51,7 +51,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             IOptions<AppSettingsModel> appSettings,
             IImageReadingService imageReadingService,
             IImageWritingService imageWritingService,
-            IProcessingProfileRepository processingProfileRepository, 
+            IProcessingProfileRepository processingProfileRepository,
             ILinkService linkService)
         {
             this.imageProcessingService = imageProcessingService;
@@ -94,8 +94,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
             using var sourceImage = await this.imageReadingService.Read(uploadJob.Stream);
 
             // Process requested thumbnails
-            var processedThumbnails = await this.GenerateThumbnails(uploadJob, sourceImage, storagePath, cancellationToken);
-            result.Thumbnails = processedThumbnails;
+            result.Thumbnails = await this.GenerateThumbnails(uploadJob, sourceImage, storagePath, cancellationToken);
 
             // Send a notification about finished job to all listeners
             await this.mediator.Send(new ImageProcessingFinishedPayload
@@ -122,7 +121,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
         private async Task<List<ImageThumbnailResultModel>> GenerateThumbnails(
             ImageUploadJob uploadJob,
             MagickImage sourceImage,
-            StoragePathModel storagePath, 
+            StoragePathModel storagePath,
             CancellationToken cancellationToken)
         {
             var resultsList = new List<ImageThumbnailResultModel>();
@@ -130,15 +129,15 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             foreach (var thumbParam in thumbnailParams)
             {
-                this.logger.LogInformation($"Begin a thumbnail processing with params ({thumbParam.Width}, {thumbParam.Height})");
+                this.logger.LogInformation("Begin a thumbnail processing with params ({Width}, {Height})", thumbParam.Width, thumbParam.Height);
 
                 // Prepare an image processing job
                 var job = new ImageProcessingJob
-                {
-                    Image = sourceImage,
-                    Settings = this.appSettings.Value.ImageProcessing,
-                    ThumbnailParams = thumbParam
-                };
+                (
+                    Image: sourceImage,
+                    Settings: this.appSettings.Value.ImageProcessing,
+                    ThumbnailParams: thumbParam
+                );
 
                 // Run an image processing job
                 using var processedImage = this.imageProcessingService.Process(job);
@@ -167,17 +166,16 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                     Quality = quality
                 }, cancellationToken);
 
-                this.logger.LogInformation($"Thumbnail processing finished. File saved as {paths.DiskPath}");
+                this.logger.LogInformation("Thumbnail processing finished. File saved as {DiskPath}", paths.DiskPath);
 
                 var thumbnailResult = new ImageThumbnailResultModel
-                {
-                    Width = processedImage.Width,
-                    Height = processedImage.Height,
-                    Url = paths.Url,
-                    DiskPath = paths.DiskPath
-                };
+                (
+                    Width: processedImage.Width,
+                    Height: processedImage.Height,
+                    Url: paths.Url,
+                    DiskPath: paths.DiskPath
+                );
 
-                processedImage.Dispose();
                 resultsList.Add(thumbnailResult);
             }
 

@@ -16,15 +16,15 @@ namespace Shelland.ImageServer.AppServices
     {
         public static IServiceCollection AddAppServicesModule(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<IDiskCacheService, DiskCacheService>();
-            serviceCollection.AddTransient<IImageReadingService, ImageReadingService>();
-            serviceCollection.AddTransient<IImageThumbnailService, ImageThumbnailService>();
-            serviceCollection.AddTransient<IImageWritingService, ImageWritingService>();
-            serviceCollection.AddTransient<INetworkService, NetworkService>();
-            serviceCollection.AddTransient<IImageConvertingService, ImageConvertingService>();
-            serviceCollection.AddTransient<IImageProcessingService, ImageProcessingService>();
-            serviceCollection.AddTransient<IFileService, FileService>();
-            serviceCollection.AddTransient<ILinkService, LinkService>();
+            serviceCollection.AddSingleton<IDiskCacheService, DiskCacheService>();
+            serviceCollection.AddSingleton<IImageReadingService, ImageReadingService>();
+            serviceCollection.AddSingleton<IImageThumbnailService, ImageThumbnailService>();
+            serviceCollection.AddSingleton<IImageWritingService, ImageWritingService>();
+            serviceCollection.AddSingleton<INetworkService, NetworkService>();
+            serviceCollection.AddSingleton<IImageConvertingService, ImageConvertingService>();
+            serviceCollection.AddSingleton<IImageProcessingService, ImageProcessingService>();
+            serviceCollection.AddSingleton<IFileService, FileService>();
+            serviceCollection.AddSingleton<ILinkService, LinkService>();
 
             return serviceCollection;
         }

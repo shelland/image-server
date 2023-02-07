@@ -101,7 +101,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
                 {
                     // It's okay if file exists, really.
 
-                    this.logger.LogWarning($"File already exists {filePath}. Skipping...");
+                    this.logger.LogWarning("File already exists {FilePath}. Skipping...", filePath);
                     return;
                 }
 

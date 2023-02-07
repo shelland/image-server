@@ -44,7 +44,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
                 await this.fileService.WriteFile(imageStream, savingParams.Path, cancellationToken);
 
-                this.logger.LogInformation($"Image was saved to {savingParams.Path}");
+                this.logger.LogInformation("Image was saved to {Path}", savingParams.Path);
             }
             catch (Exception ex)
             {
@@ -83,7 +83,8 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             var imageWritingContext = new ImageWritingContext(image.Format == MagickFormat.Jpeg ? 
                 new JpegWritingStrategy(savingParams.Quality) : 
-                new GenericWritingStrategy());
+                new GenericWritingStrategy()
+            );
 
             await imageWritingContext.Write(image, imageStream, cancellationToken);
 

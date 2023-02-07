@@ -30,7 +30,7 @@ namespace Shelland.ImageServer.Controllers
             var profiles = await this.processingProfileRepository.GetProfiles();
             var profileModels = this.mapper.Map<List<ProcessingProfileModel>>(profiles);
 
-            return Ok(new Response<List<ProcessingProfileModel>>(profileModels));
+            return Ok(new Response<IReadOnlyCollection<ProcessingProfileModel>>(profileModels));
         }
 
         [HttpGet("{id:guid}")]

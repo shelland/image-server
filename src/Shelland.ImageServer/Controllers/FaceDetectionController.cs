@@ -1,10 +1,13 @@
 ﻿// Created on 03/02/2023 16:47 by shell
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.FaceDetection.Services.Abstract;
 using Shelland.ImageServer.Models.Dto.Request;
+using Shelland.ImageServer.Models.Dto.Response;
 
 namespace Shelland.ImageServer.Controllers;
 
@@ -28,9 +31,9 @@ public class FaceDetectionController : BaseAppController
             return BadRequest();
         }
 
-        var imageStream = file.OpenReadStream(); // todo dispose
+        await using var imageStream = file.OpenReadStream();
         var faces = await this.faceDetectionService.GetFaces(imageStream, request?.SaveDetectedFaces ?? false, cancellationToken);
 
-        return Ok(faces);
+        return Ok(new Response<IReadOnlyCollection<FaceDetectionResultModel>>(faces));
     }
 }

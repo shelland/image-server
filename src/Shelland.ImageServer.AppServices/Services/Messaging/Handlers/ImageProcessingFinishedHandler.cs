@@ -28,13 +28,13 @@ namespace Shelland.ImageServer.AppServices.Services.Messaging.Handlers
 
         protected override async Task Handle(ImageProcessingFinishedPayload request, CancellationToken cancellationToken)
         {
-            this.logger.LogInformation($"Entering an image processing finished handler");
+            this.logger.LogInformation("Entering an image processing finished handler");
 
             var webHooksOptions = this.appSettings.Value.WebHooks;
 
             if (webHooksOptions.IsEnabled)
             {
-                this.logger.LogInformation($"Sending a web hook to {webHooksOptions.PostUrl}");
+                this.logger.LogInformation("Sending a web hook to {PostUrl}", webHooksOptions.PostUrl);
                 await this.networkService.MakeRequest(webHooksOptions.PostUrl, request.Result, cancellationToken);
             }
         }
