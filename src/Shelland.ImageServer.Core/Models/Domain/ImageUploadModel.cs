@@ -38,7 +38,7 @@ namespace Shelland.ImageServer.Core.Models.Domain
         /// Returns a list of disk paths for original image (if exists) and generated thumbnails
         /// </summary>
         /// <returns></returns>
-        public List<string> GetAllFilePaths()
+        public IReadOnlyList<string> GetAllFilePaths()
         {
             var paths = new List<string>();
 

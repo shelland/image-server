@@ -60,10 +60,12 @@ namespace Shelland.ImageServer.DataAccess.Repository
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<List<ImageUploadDbModel>> GetExpiredUploads()
+        public async Task<IReadOnlyList<ImageUploadDbModel>> GetExpiredUploads()
         {
             var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
-            var expiredUploads = await collection.Query().Where(x => x.ExpiresAt != null && x.ExpiresAt <= DateTimeOffset.UtcNow).ToListAsync();
+            var expiredUploads = await collection.Query()
+                .Where(x => x.ExpiresAt != null && x.ExpiresAt <= DateTimeOffset.UtcNow)
+                .ToListAsync();
 
             return expiredUploads;
         }

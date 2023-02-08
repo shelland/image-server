@@ -22,12 +22,14 @@ namespace Shelland.ImageServer.DataAccess.Repository
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<List<ProcessingProfileDbModel>> GetProfiles()
+        public async Task<IReadOnlyList<ProcessingProfileDbModel>> GetProfiles()
         {
             var collection = this.context.Database.GetCollection<ProcessingProfileDbModel>();
             await collection.EnsureIndexAsync(x => x.ProfileId);
 
-            var profiles = await collection.Query().OrderByDescending(x => x.CreateDate).ToListAsync();
+            var profiles = await collection.Query()
+                .OrderByDescending(x => x.CreateDate)
+                .ToListAsync();
 
             return profiles;
         }
@@ -40,8 +42,7 @@ namespace Shelland.ImageServer.DataAccess.Repository
             var collection = this.context.Database.GetCollection<ProcessingProfileDbModel>();
             await collection.EnsureIndexAsync(x => x.ProfileId);
 
-            var profile = await collection.Query().Where(x => x.ProfileId == id).FirstOrDefaultAsync();
-
+            var profile = await collection.Query().Where(x => x.ProfileId == id).SingleOrDefaultAsync();
             return profile;
         }
 
@@ -51,24 +52,20 @@ namespace Shelland.ImageServer.DataAccess.Repository
         public async Task<ProcessingProfileDbModel> Create(ProcessingProfileModel model)
         {
             var collection = this.context.Database.GetCollection<ProcessingProfileDbModel>();
-            var dbModel = ToDbModel(model);
-
-            await collection.EnsureIndexAsync(x => x.ProfileId);
-            await collection.InsertAsync(dbModel);
-
-            return dbModel;
-        }
-
-        private static ProcessingProfileDbModel ToDbModel(ProcessingProfileModel model)
-        {
-            return new()
+            
+            var dbModel = new ProcessingProfileDbModel
             {
-                CreateDate = model.CreateDate,
+                CreateDate = DateTimeOffset.UtcNow,
                 Id = model.Id,
                 ProfileId = model.ProfileId,
                 Name = model.Name,
                 Parameters = model.Parameters
             };
+
+            await collection.EnsureIndexAsync(x => x.ProfileId);
+            await collection.InsertAsync(dbModel);
+
+            return dbModel;
         }
     }
 }

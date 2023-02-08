@@ -78,7 +78,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 Id = storagePath.Key
             };
 
-            this.logger.LogInformation($"A new upload with id {result.Id} was created");
+            this.logger.LogInformation("A new upload with id {Id} was created", result.Id);
 
             // Save original file depending on the app settings
             if (this.appSettings.Value.Common.SaveOriginalFile)
@@ -86,7 +86,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
                 await this.fileService.WriteFile(uploadJob.Stream, storagePath.FilePath, cancellationToken);
                 uploadJob.Stream.Reset();
 
-                result.OriginalFileUrl = this.linkService.NormalizeWebPath(storagePath.UrlPath);
+                result.OriginalFileUrl = this.linkService.PrepareWebPath(storagePath.UrlPath);
             }
 
             // Load a new image and save it since loading it each time is extremely expensive

@@ -80,7 +80,7 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
             var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.{format.GetImageFormat()}";
 
             // Prepare an URL path
-            var url = this.linkService.NormalizeWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
+            var url = this.linkService.PrepareWebPath(Path.ChangeExtension(originalPath.UrlPath, null)) +
                       $"_thumb_{width}x{height}.{format.GetImageFormat()}";
 
             return new ImageThumbPathsModel
@@ -119,14 +119,14 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void Delete(List<string> paths)
+        public void Delete(IReadOnlyList<string> paths)
         {
             try
             {
                 foreach (var path in paths.Where(File.Exists))
                 {
                     File.Delete(path);
-                    this.logger.LogInformation($"File {path} was deleted");
+                    this.logger.LogInformation("File {Path} was deleted", path);
                 }
             }
             catch (Exception ex)
@@ -139,18 +139,10 @@ namespace Shelland.ImageServer.AppServices.Services.Storage
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<Stream?> ReadFile(string path)
+        public Stream? ReadFile(string path)
         {
             var isFileExists = File.Exists(path);
-
-            if (!isFileExists)
-            {
-                return null;
-            }
-
-            var fileStream = new FileStream(path, FileMode.Open);
-
-            return await Task.FromResult(fileStream);
+            return isFileExists ? new FileStream(path, FileMode.Open) : null;
         }
     }
 }

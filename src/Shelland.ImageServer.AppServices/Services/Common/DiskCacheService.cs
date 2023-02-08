@@ -55,7 +55,7 @@ namespace Shelland.ImageServer.AppServices.Services.Common
 
             this.logger.LogInformation("Looking for file {CachedFilePath}", cachedFilePath);
 
-            var fileStream = await this.fileService.ReadFile(cachedFilePath);
+            var fileStream = await Task.Run(() => this.fileService.ReadFile(cachedFilePath), cancellationToken);
 
             // If cached file exists, return it
             if (fileStream != null)

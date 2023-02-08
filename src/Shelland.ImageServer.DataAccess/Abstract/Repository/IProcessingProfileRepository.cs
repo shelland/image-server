@@ -14,7 +14,7 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// Returns a list of saved processing profiles
         /// </summary>
         /// <returns></returns>
-        Task<List<ProcessingProfileDbModel>> GetProfiles();
+        Task<IReadOnlyList<ProcessingProfileDbModel>> GetProfiles();
 
         /// <summary>
         /// Returns a profile by profile ID

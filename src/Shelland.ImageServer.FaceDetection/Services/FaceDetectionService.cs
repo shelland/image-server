@@ -35,7 +35,6 @@ public class FaceDetectionService : IFaceDetectionService
         var currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().NotNull().Location).NotNull();
 
         using var cascade = new CascadeClassifier(Path.Combine(currentPath, "haarcascade_frontalface_alt.xml"));
-        using var nestedCascade = new CascadeClassifier(Path.Combine(currentPath, "haarcascade_eye_tree_eyeglasses.xml"));
 
         var faces = await Task.Run(() => cascade.DetectMultiScale(
             image: grayImage,
@@ -65,7 +64,7 @@ public class FaceDetectionService : IFaceDetectionService
 
                 outputInfo = outputInfo with
                 {
-                    ImageUrl = this.linkService.NormalizeWebPath(path.UrlPath)
+                    ImageUrl = this.linkService.PrepareWebPath(path.UrlPath)
                 };
             }
 

@@ -13,12 +13,13 @@ using Shelland.ImageServer.Models.Dto.Response;
 
 namespace Shelland.ImageServer.Controllers
 {
-    public class ProcessingProfileController : BaseAppController
+    [Route("processing-profiles")]
+    public class ProcessingProfilesController : BaseAppController
     {
         private readonly IProcessingProfileRepository processingProfileRepository;
         private readonly IMapper mapper;
 
-        public ProcessingProfileController(IProcessingProfileRepository processingProfileRepository, IMapper mapper)
+        public ProcessingProfilesController(IProcessingProfileRepository processingProfileRepository, IMapper mapper)
         {
             this.processingProfileRepository = processingProfileRepository;
             this.mapper = mapper;

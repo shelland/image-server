@@ -8,9 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="haarcascade_eye_tree_eyeglasses.xml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="haarcascade_frontalface_alt.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>

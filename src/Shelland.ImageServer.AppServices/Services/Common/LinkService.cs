@@ -18,7 +18,7 @@ public class LinkService : ILinkService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public string NormalizeWebPath(string originalUrl)
+    public string PrepareWebPath(string originalUrl)
     {
         var url = $"{this.appSettings.Value.Common.ServerUrl}" +
                   $"{this.appSettings.Value.Common.RoutePrefix}" + originalUrl;

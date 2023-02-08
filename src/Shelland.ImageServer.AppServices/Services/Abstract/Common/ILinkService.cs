@@ -9,5 +9,5 @@ public interface ILinkService
     /// </summary>
     /// <param name="originalUrl"></param>
     /// <returns></returns>
-    string NormalizeWebPath(string originalUrl);
+    string PrepareWebPath(string originalUrl);
 }

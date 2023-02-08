@@ -38,7 +38,7 @@ namespace Shelland.ImageServer.DataAccess.Abstract.Repository
         /// Returns a list of uploads that were expired
         /// </summary>
         /// <returns></returns>
-        Task<List<ImageUploadDbModel>> GetExpiredUploads();
+        Task<IReadOnlyList<ImageUploadDbModel>> GetExpiredUploads();
 
         /// <summary>
         /// Create a database entry for this upload

@@ -41,15 +41,15 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                this.logger.LogInformation($"Running a job");
+                this.logger.LogInformation("Running a job");
 
                 // Fetch all uploads that are expired at this time
                 var expiredUploads = await this.imageUploadRepository.GetExpiredUploads();
-                var expiredUploadModels = this.mapper.Map<List<ImageUploadModel>>(expiredUploads);
+                var expiredUploadModels = this.mapper.Map<IReadOnlyList<ImageUploadModel>>(expiredUploads);
 
                 if (expiredUploadModels.Any())
                 {
-                    this.logger.LogInformation($"Found {expiredUploads.Count} expired uploads");
+                    this.logger.LogInformation("Found {Count} expired uploads", expiredUploads.Count);
 
                     foreach (var upload in expiredUploadModels)
                     {
@@ -58,7 +58,7 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
                 }
                 else
                 {
-                    this.logger.LogInformation($"No expired uploads to remove");
+                    this.logger.LogInformation("No expired uploads to remove");
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(Constants.ExpiredUploadsServiceRunInterval), stoppingToken);
@@ -69,7 +69,9 @@ namespace Shelland.ImageServer.Infrastructure.HostedServices
         {
             try
             {
-                this.logger.LogInformation($"Deleting a record with id {uploadDb.Id} and expiration date {uploadDb.ExpiresAt?.Date}");
+                this.logger.LogInformation("Deleting a record with id {Id} and expiration date {Date}", 
+                    uploadDb.Id, 
+                    uploadDb.ExpiresAt?.Date);
 
                 // Delete files
                 this.fileService.Delete(uploadDb.GetAllFilePaths());

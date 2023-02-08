@@ -35,12 +35,6 @@ namespace Shelland.ImageServer.Infrastructure.Storage
             return this.Provider.Watch(filter);
         }
 
-        private PhysicalFileProvider Provider
-        {
-            get
-            {
-                return this.physicalFileProvider ??= new PhysicalFileProvider(this.appSettings.Value.Directory.WorkingDirectory);
-            }
-        }
+        private PhysicalFileProvider Provider => this.physicalFileProvider ??= new PhysicalFileProvider(this.appSettings.Value.Directory.WorkingDirectory);
     }
 }

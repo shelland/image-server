@@ -64,9 +64,6 @@ namespace Shelland.ImageServer.Infrastructure.Storage
             set => match = value;
         }
 
-        private bool IsMatch(HttpContext context)
-        {
-            return context.Request.Path.StartsWithNormalizedSegments(requestPath, StringComparison.OrdinalIgnoreCase);
-        }
+        private bool IsMatch(HttpContext context) => context.Request.Path.StartsWithNormalizedSegments(requestPath, StringComparison.OrdinalIgnoreCase);
     }
 }
