@@ -3,10 +3,6 @@
 using MediatR;
 using Shelland.ImageServer.Core.Models.Domain;
 
-namespace Shelland.ImageServer.AppServices.Services.Messaging.Payload
-{
-    public class ImageProcessingFinishedPayload : IRequest
-    {
-        public ImageUploadResultModel Result { get; set; } = null!;
-    }
-}
+namespace Shelland.ImageServer.AppServices.Services.Messaging.Payload;
+
+public record ImageProcessingFinishedPayload(ImageUploadResultModel Result) : IRequest;

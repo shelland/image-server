@@ -13,6 +13,8 @@ namespace Shelland.ImageServer.FaceDetection.Services;
 
 public class FaceDetectionService : IFaceDetectionService
 {
+    private const string HaarCascadeFile = "haarcascade_frontalface_alt.xml";
+
     private readonly IFileService fileService;
     private readonly ILinkService linkService;
 
@@ -22,7 +24,7 @@ public class FaceDetectionService : IFaceDetectionService
         this.linkService = linkService;
     }
 
-    public async Task<IReadOnlyCollection<FaceDetectionResultModel>> GetFaces(Stream imgStream, bool saveDetectedFaces,CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<FaceDetectionResultModel>> GetFaces(Stream imgStream, bool saveDetectedFaces, CancellationToken cancellationToken)
     {
         var results = new List<FaceDetectionResultModel>();
 
@@ -34,7 +36,7 @@ public class FaceDetectionService : IFaceDetectionService
 
         var currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().NotNull().Location).NotNull();
 
-        using var cascade = new CascadeClassifier(Path.Combine(currentPath, "haarcascade_frontalface_alt.xml"));
+        using var cascade = new CascadeClassifier(Path.Combine(currentPath, HaarCascadeFile));
 
         var faces = await Task.Run(() => cascade.DetectMultiScale(
             image: grayImage,

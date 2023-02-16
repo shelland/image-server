@@ -4,14 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Shelland.ImageServer.Infrastructure.Storage;
 
-namespace Shelland.ImageServer
+namespace Shelland.ImageServer;
+
+public static class WebModule
 {
-    public static class WebModule
+    public static IServiceCollection AddWebModule(this IServiceCollection serviceCollection)
     {
-        public static IServiceCollection AddWebModule(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddSingleton<IFileProvider, AppFileProvider>();
-            return serviceCollection;
-        }
+        serviceCollection.AddSingleton<IFileProvider, AppFileProvider>();
+        return serviceCollection;
     }
 }

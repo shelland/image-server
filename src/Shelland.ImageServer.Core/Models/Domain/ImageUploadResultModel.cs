@@ -3,14 +3,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace Shelland.ImageServer.Core.Models.Domain
-{
-    public class ImageUploadResultModel
-    {
-        public Guid Id { get; set; }
+namespace Shelland.ImageServer.Core.Models.Domain;
 
-        public string OriginalFileUrl { get; set; } = string.Empty;
-
-        public List<ImageThumbnailResultModel> Thumbnails { get; set; } = new();
-    }
-}
+public record ImageUploadResultModel(
+    Guid Id,
+    IReadOnlyCollection<ImageThumbnailResultModel> Thumbnails,
+    string? OriginalFileUrl
+);

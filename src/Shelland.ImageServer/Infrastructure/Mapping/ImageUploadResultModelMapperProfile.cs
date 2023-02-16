@@ -5,14 +5,14 @@ using AutoMapper;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Models.Dto.Response;
 
-namespace Shelland.ImageServer.Infrastructure.Mapping
+namespace Shelland.ImageServer.Infrastructure.Mapping;
+
+public class ImageUploadResultModelMapperProfile : Profile
 {
-    public class ImageUploadResultModelMapperProfile : Profile
+    public ImageUploadResultModelMapperProfile()
     {
-        public ImageUploadResultModelMapperProfile()
-        {
-            CreateMap<ImageUploadResultModel, ImageUploadResultDto>()
-                .ForMember(x => x.Thumbnails, x => x.MapFrom((src, _, _, ctx) => ctx.Mapper.Map<List<ImageThumbnailResultDto>>(src.Thumbnails)));
-        }
+        CreateMap<ImageThumbnailResultModel, ImageThumbnailResultDto>();
+        CreateMap<ImageUploadResultModel, ImageUploadResultDto>()
+            .ForMember(x => x.Thumbnails, x => x.MapFrom((src, _, _, ctx) => ctx.Mapper.Map<List<ImageThumbnailResultDto>>(src.Thumbnails)));
     }
 }

@@ -3,27 +3,33 @@
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shelland.ImageServer.Models.Dto.Response;
 
-namespace Shelland.ImageServer.Controllers
+namespace Shelland.ImageServer.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class BaseAppController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class BaseAppController : Controller
+    /// <summary>
+    /// Returns a default uploaded file
+    /// </summary>
+    /// <returns></returns>
+    [NonAction]
+    public IFormFile? GetDefaultFile()
     {
-        /// <summary>
-        /// Returns a default uploaded file
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        public IFormFile? GetDefaultFile()
-        {
-            var files = Request.Form.Files;
-            return files.Any() ? files[0] : null;
-        }
-
-        /// <summary>
-        /// IP address
-        /// </summary>
-        public string? IpAddress => Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+        var files = Request.Form.Files;
+        return files.Any() ? files[0] : null;
     }
+
+    public IActionResult Ok<T>(T data) => base.Ok(new Response<T>(data));
+
+    public IActionResult OkOrNotFound<T>(T? data) => data != null ? 
+        Ok(data) : 
+        NotFound();
+
+    /// <summary>
+    /// IP address
+    /// </summary>
+    public string? IpAddress => Request.HttpContext.Connection.RemoteIpAddress?.ToString();
 }

@@ -3,23 +3,22 @@
 using System;
 using Shelland.ImageServer.Core.Models.Enums;
 
-namespace Shelland.ImageServer.Core.Infrastructure.Exceptions
+namespace Shelland.ImageServer.Core.Infrastructure.Exceptions;
+
+public class AppFlowException : Exception
 {
-    public class AppFlowException : Exception
+    public AppFlowException(AppFlowExceptionType type)
     {
-        public AppFlowException(AppFlowExceptionType type)
-        {
-            this.Type = type;
-        }
-
-        public AppFlowException(AppFlowExceptionType type, string? parameter)
-        {
-            this.Type = type;
-            this.Parameter = parameter;
-        }
-
-        public string? Parameter { get; set; }
-
-        public AppFlowExceptionType? Type { get; set; }
+        this.Type = type;
     }
+
+    public AppFlowException(AppFlowExceptionType type, string? parameter)
+    {
+        this.Type = type;
+        this.Parameter = parameter;
+    }
+
+    public string? Parameter { get; set; }
+
+    public AppFlowExceptionType? Type { get; set; }
 }

@@ -4,50 +4,32 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
-using Shelland.ImageServer.Core.Models.Domain;
+using Shelland.ImageServer.DataAccess.Models;
 
-namespace Shelland.ImageServer.DataAccess.Abstract.Repository
+namespace Shelland.ImageServer.DataAccess.Abstract.Repository;
+
+/// <summary>
+/// Image upload repository gets information about processed images
+/// </summary>
+public interface IImageUploadRepository
 {
     /// <summary>
-    /// Image upload repository gets information about processed images
+    /// Returns an upload entity based on ID
     /// </summary>
-    public interface IImageUploadRepository
-    {
-        /// <summary>
-        /// Returns an upload entity based on ID
-        /// </summary>
-        /// <param name="id">ID (Guid) of the entity</param>
-        /// <returns></returns>
-        Task<ImageUploadDbModel?> GetById(Guid id);
+    Task<ImageUploadDbModel?> GetById(Guid id);
 
-        /// <summary>
-        /// Saves a processing result into local database for further references
-        /// </summary>
-        /// <param name="dbModel"></param>
-        /// <returns></returns>
-        Task<ImageUploadDbModel> Create(ImageUploadDbModel dbModel);
+    /// <summary>
+    /// Deletes (physically) a selected record
+    /// </summary>
+    Task Delete(Guid id);
 
-        /// <summary>
-        /// Deletes (physically) a selected record
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        Task Delete(int id);
+    /// <summary>
+    /// Returns a list of uploads that were expired
+    /// </summary>
+    Task<IReadOnlyCollection<ImageUploadDbModel>> GetExpiredUploads(DateTime utcNow);
 
-        /// <summary>
-        /// Returns a list of uploads that were expired
-        /// </summary>
-        /// <returns></returns>
-        Task<IReadOnlyList<ImageUploadDbModel>> GetExpiredUploads();
-
-        /// <summary>
-        /// Create a database entry for this upload
-        /// </summary>
-        /// <param name="storagePath"></param>
-        /// <param name="thumbnails"></param>
-        /// <param name="ipAddress"></param>
-        /// <param name="lifetime"></param>
-        /// <returns></returns>
-        Task<ImageUploadDbModel> Create(StoragePathModel storagePath, List<ImageThumbnailResultModel> thumbnails, string? ipAddress, int? lifetime);
-    }
+    /// <summary>
+    /// Saves a processing result into local database for further references
+    /// </summary>
+    Task<ImageUploadDbModel> Create(CreateImageUploadContext ctx);
 }

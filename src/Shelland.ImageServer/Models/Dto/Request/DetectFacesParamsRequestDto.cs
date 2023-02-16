@@ -2,6 +2,6 @@
 
 namespace Shelland.ImageServer.Models.Dto.Request;
 
-public record DetectFacesParamsDto(
+public record DetectFacesParamsRequestDto(
     bool SaveDetectedFaces
 );

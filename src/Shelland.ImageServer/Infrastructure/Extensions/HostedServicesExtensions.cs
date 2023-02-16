@@ -3,14 +3,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shelland.ImageServer.Infrastructure.HostedServices;
 
-namespace Shelland.ImageServer.Infrastructure.Extensions
+namespace Shelland.ImageServer.Infrastructure.Extensions;
+
+public static class HostedServicesExtensions
 {
-    public static class HostedServicesExtensions
+    public static IServiceCollection AddHostedServices(this IServiceCollection services)
     {
-        public static IServiceCollection AddHostedServices(this IServiceCollection services)
-        {
-            services.AddHostedService<UploadExpirationHandlingService>();
-            return services;
-        }
+        services.AddHostedService<UploadExpirationHandlingService>();
+        return services;
     }
 }

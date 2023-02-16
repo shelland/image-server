@@ -2,13 +2,12 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Shelland.ImageServer.Controllers
+namespace Shelland.ImageServer.Controllers;
+
+public class ServiceController : BaseAppController
 {
-    public class ServiceController : BaseAppController
+    public IActionResult Health()
     {
-        public IActionResult Health()
-        {
-            return Ok();
-        }
+        return Ok();
     }
 }

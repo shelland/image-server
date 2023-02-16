@@ -8,54 +8,53 @@ using Microsoft.Extensions.Logging;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Models.Enums;
 
-namespace Shelland.ImageServer.Infrastructure.ModelBinding
+namespace Shelland.ImageServer.Infrastructure.ModelBinding;
+
+/// <summary>
+/// Custom model binder to parse a JSON object from multipart request
+/// </summary>
+public class JsonBodyModelBinder : IModelBinder
 {
-    /// <summary>
-    /// Custom model binder to parse a JSON object from multipart request
-    /// </summary>
-    public class JsonBodyModelBinder : IModelBinder
+    private readonly ILogger<JsonBodyModelBinder> logger;
+
+    public JsonBodyModelBinder(ILogger<JsonBodyModelBinder> logger)
     {
-        private readonly ILogger<JsonBodyModelBinder> logger;
+        this.logger = logger;
+    }
 
-        public JsonBodyModelBinder(ILogger<JsonBodyModelBinder> logger)
+    public Task BindModelAsync(ModelBindingContext bindingContext)
+    {
+        try
         {
-            this.logger = logger;
-        }
+            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
-        public Task BindModelAsync(ModelBindingContext bindingContext)
-        {
-            try
+            if (valueProviderResult != ValueProviderResult.None)
             {
-                var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
+                bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
 
-                if (valueProviderResult != ValueProviderResult.None)
+                var stringValue = valueProviderResult.FirstValue;
+
+                if (!string.IsNullOrEmpty(stringValue))
                 {
-                    bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
+                    var result = JsonSerializer.Deserialize(stringValue, bindingContext.ModelType, JsonCommonOptions.Default.JsonSerializerOptions);
 
-                    var stringValue = valueProviderResult.FirstValue;
-
-                    if (!string.IsNullOrEmpty(stringValue))
+                    if (result != null)
                     {
-                        var result = JsonSerializer.Deserialize(stringValue, bindingContext.ModelType, JsonCommonOptions.Default.JsonSerializerOptions);
-
-                        if (result != null)
-                        {
-                            bindingContext.Result = ModelBindingResult.Success(result);
-                        }
-                    }
-                    else
-                    {
-                        bindingContext.Result = ModelBindingResult.Failed();
+                        bindingContext.Result = ModelBindingResult.Success(result);
                     }
                 }
+                else
+                {
+                    bindingContext.Result = ModelBindingResult.Failed();
+                }
+            }
 
-                return Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.MalformedRequest);
-            }
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, ex.Message);
+            throw new AppFlowException(AppFlowExceptionType.MalformedRequest);
         }
     }
 }

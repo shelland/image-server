@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using Microsoft.Extensions.Logging;
+using Microsoft.IO;
 using Shelland.ImageServer.AppServices.Logic;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
@@ -18,93 +19,94 @@ using Shelland.ImageServer.Core.Models.Other;
 
 #endregion
 
-namespace Shelland.ImageServer.AppServices.Services.Common
+namespace Shelland.ImageServer.AppServices.Services.Common;
+
+/// <summary>
+/// <inheritdoc />
+/// </summary>
+public class ImageWritingService : IImageWritingService
 {
+    private readonly IFileService fileService;
+    private readonly RecyclableMemoryStreamManager recyclableMemoryStreamManager;
+    private readonly ILogger<ImageWritingService> logger;
+
+    public ImageWritingService(
+        IFileService fileService, 
+        RecyclableMemoryStreamManager recyclableMemoryStreamManager, 
+        ILogger<ImageWritingService> logger)
+    {
+        this.fileService = fileService;
+        this.recyclableMemoryStreamManager = recyclableMemoryStreamManager;
+        this.logger = logger;
+    }
+
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public class ImageWritingService : IImageWritingService
+    public async Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams, CancellationToken cancellationToken)
     {
-        private readonly IFileService fileService;
-        private readonly ILogger<ImageWritingService> logger;
-
-        public ImageWritingService(IFileService fileService, ILogger<ImageWritingService> logger)
+        try
         {
-            this.fileService = fileService;
-            this.logger = logger;
-        }
+            await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
+            await this.fileService.WriteFile(imageStream, savingParams.Path, cancellationToken);
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams, CancellationToken cancellationToken)
+            this.logger.LogInformation("Image was saved to {Path}", savingParams.Path);
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
-                await this.fileService.WriteFile(imageStream, savingParams.Path, cancellationToken);
-
-                this.logger.LogInformation("Image was saved to {Path}", savingParams.Path);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed, savingParams.Path);
-            }
+            this.logger.LogError(ex, ex.Message);
+            throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed, savingParams.Path);
         }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
-                await imageStream.CopyToAsync(savingParams.OutputStream, cancellationToken);
-
-                savingParams.OutputStream.Reset();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed);
-            }
-        }
-
-        #region Private methods
-
-        private static async Task<MemoryStream> GetOutputStream(MagickImage image, BaseImageSavingParamsModel savingParams, CancellationToken cancellationToken)
-        {
-            var imageStream = new MemoryStream();
-            var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
-
-            image.Format = ToMagickFormat(outputFormat);
-
-            var imageWritingContext = new ImageWritingContext(image.Format == MagickFormat.Jpeg ? 
-                new JpegWritingStrategy(savingParams.Quality) : 
-                new GenericWritingStrategy()
-            );
-
-            await imageWritingContext.Write(image, imageStream, cancellationToken);
-
-            imageStream.Reset();
-
-            return imageStream;
-        }
-
-        private static MagickFormat ToMagickFormat(OutputImageFormat outputFormat)
-        {
-            var magickFormat = outputFormat switch
-            {
-                OutputImageFormat.Gif => MagickFormat.Gif,
-                OutputImageFormat.Png => MagickFormat.Png,
-                _ => MagickFormat.Jpeg
-            };
-
-            return magickFormat;
-        }
-
-        #endregion
     }
+
+    /// <summary>
+    /// <inheritdoc />
+    /// </summary>
+    public async Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var imageStream = await GetOutputStream(image, savingParams, cancellationToken);
+            await imageStream.CopyToAsync(savingParams.OutputStream, cancellationToken);
+
+            savingParams.OutputStream.Reset();
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, ex.Message);
+            throw new AppFlowException(AppFlowExceptionType.DiskWriteFailed);
+        }
+    }
+
+    #region Private methods
+
+    private async Task<RecyclableMemoryStream> GetOutputStream(MagickImage image, BaseImageSavingParamsModel savingParams, CancellationToken cancellationToken)
+    {
+        var imageStream = new RecyclableMemoryStream(this.recyclableMemoryStreamManager);
+        var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
+
+        image.Format = ToMagickFormat(outputFormat);
+
+        var imageWritingContext = new ImageWritingContext(image.Format == MagickFormat.Jpeg ? 
+            new JpegWritingStrategy(savingParams.Quality) : 
+            new GenericWritingStrategy()
+        );
+
+        await imageWritingContext.Write(image, imageStream, cancellationToken);
+        imageStream.Reset();
+
+        return imageStream;
+    }
+
+    private static MagickFormat ToMagickFormat(OutputImageFormat outputFormat)
+    {
+        return outputFormat switch
+        {
+            OutputImageFormat.Gif => MagickFormat.Gif,
+            OutputImageFormat.Png => MagickFormat.Png,
+            _ => MagickFormat.Jpeg
+        };
+    }
+
+    #endregion
 }

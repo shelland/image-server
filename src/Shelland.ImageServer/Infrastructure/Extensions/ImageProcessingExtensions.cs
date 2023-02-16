@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
+using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Other;
 using Shelland.ImageServer.Infrastructure.Storage;
@@ -17,71 +17,68 @@ using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Providers;
 
-namespace Shelland.ImageServer.Infrastructure.Extensions
+namespace Shelland.ImageServer.Infrastructure.Extensions;
+
+public static class ImageProcessingExtensions
 {
-    public static class ImageProcessingExtensions
+    public static IServiceCollection AddImageProcessing(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
-        public static IServiceCollection AddImageProcessing(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        var isEnabled = configuration.GetValue<bool>("OnDemandProcessing:IsEnabled");
+        var onDemandCacheDirectory = configuration.GetValue<string>("Directory:CacheDirectory").NotNull();
+        var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory").NotNull();
+        var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");
+        var allowedOnDemandImageSizes = configuration.GetSection("OnDemandProcessing:AllowedDimensions").GetChildren().Select(x => x.Value!).ToHashSet();
+
+        if (!isEnabled)
         {
-            var isEnabled = configuration.GetValue<bool>("OnDemandProcessing:IsEnabled");
-            var onDemandCacheDirectory = configuration.GetValue<string>("Directory:CacheDirectory");
-            var workingDirectory = configuration.GetValue<string>("Directory:WorkingDirectory");
-            var cacheTimeSeconds = configuration.GetValue<int?>("StaticCache:CacheTimeSeconds");
-            var allowedOnDemandImageSizes = configuration.GetSection("OnDemandProcessing:AllowedDimensions").GetChildren().Select(x => x.Value!).ToHashSet();
-
-            Guard.Against.Null(workingDirectory);
-
-            if (!isEnabled)
-            {
-                return services;
-            }
-
-            environment.WebRootPath = workingDirectory;
-
-            // Add image processing library services
-
-            services.AddImageSharp(opts =>
-            {
-                opts.Configuration = Configuration.Default;
-                opts.BrowserMaxAge = TimeSpan.FromSeconds(cacheTimeSeconds ?? Constants.DefaultCacheDuration);
-
-                opts.OnParseCommandsAsync = cmd =>
-                {
-                    if (cmd.Commands.Any())
-                    {
-                        ValidateParams(cmd.Commands.ToDictionary(x => x.Key, x => x.Value), allowedOnDemandImageSizes);
-                    }
-
-                    return Task.CompletedTask;
-                };
-            }).Configure<PhysicalFileSystemCacheOptions>(cacheConfig =>
-            {
-                cacheConfig.CacheRootPath = workingDirectory;
-                cacheConfig.CacheFolder = onDemandCacheDirectory;
-            }).RemoveProvider<PhysicalFileSystemProvider>().AddProvider<AppImageProvider>();
-
             return services;
         }
 
-        private static void ValidateParams(IDictionary<string, string> imgParams, IReadOnlySet<string>? allowedParams)
+        environment.WebRootPath = workingDirectory;
+
+        // Add image processing library services
+
+        services.AddImageSharp(opts =>
         {
-            if (allowedParams == null || !allowedParams.Any())
+            opts.Configuration = Configuration.Default;
+            opts.BrowserMaxAge = TimeSpan.FromSeconds(cacheTimeSeconds ?? Constants.DefaultCacheDuration);
+
+            opts.OnParseCommandsAsync = cmd =>
             {
-                return;
-            }
+                if (cmd.Commands.Any())
+                {
+                    ValidateParams(cmd.Commands.ToDictionary(x => x.Key, x => x.Value.NotNull()), allowedOnDemandImageSizes);
+                }
 
-            // Image params query for on-demand processing should be as following:
-            // http://.../myimg.jpg?width=w&height=h (width: required, height: optional)
+                return Task.CompletedTask;
+            };
+        }).Configure<PhysicalFileSystemCacheOptions>(cacheConfig =>
+        {
+            cacheConfig.CacheRootPath = workingDirectory;
+            cacheConfig.CacheFolder = onDemandCacheDirectory;
+        }).RemoveProvider<PhysicalFileSystemProvider>().AddProvider<AppImageProvider>();
 
-            imgParams.TryGetValue("width", out var imgWidth);
-            imgParams.TryGetValue("height", out var imgHeight);
+        return services;
+    }
 
-            var paramKey = $"{imgWidth ?? string.Empty}{(string.IsNullOrEmpty(imgHeight) ? string.Empty : "x")}{imgHeight ?? string.Empty}";
+    private static void ValidateParams(IDictionary<string, string> imgParams, IReadOnlySet<string>? allowedParams)
+    {
+        if (allowedParams == null || !allowedParams.Any())
+        {
+            return;
+        }
 
-            if (!allowedParams.Contains(paramKey))
-            {
-                throw new AppFlowException(AppFlowExceptionType.InvalidParameters);
-            }
+        // Image params query for on-demand processing should be as following:
+        // http://.../myimg.jpg?width=w&height=h (width: required, height: optional)
+
+        imgParams.TryGetValue("width", out var imgWidth);
+        imgParams.TryGetValue("height", out var imgHeight);
+
+        var paramKey = $"{imgWidth ?? string.Empty}{(string.IsNullOrEmpty(imgHeight) ? string.Empty : "x")}{imgHeight ?? string.Empty}";
+
+        if (!allowedParams.Contains(paramKey))
+        {
+            throw new AppFlowException(AppFlowExceptionType.InvalidParameters);
         }
     }
 }

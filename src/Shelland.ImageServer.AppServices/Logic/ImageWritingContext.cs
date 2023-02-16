@@ -6,23 +6,22 @@ using System.Threading.Tasks;
 using ImageMagick;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
-namespace Shelland.ImageServer.AppServices.Logic
+namespace Shelland.ImageServer.AppServices.Logic;
+
+/// <summary>
+/// Image writing context that depends on selected strategy
+/// </summary>
+public class ImageWritingContext
 {
-    /// <summary>
-    /// Image writing context that depends on selected strategy
-    /// </summary>
-    public class ImageWritingContext
+    private readonly IImageWritingStrategy writingStrategy;
+
+    public ImageWritingContext(IImageWritingStrategy writingStrategy)
     {
-        private readonly IImageWritingStrategy writingStrategy;
+        this.writingStrategy = writingStrategy;
+    }
 
-        public ImageWritingContext(IImageWritingStrategy writingStrategy)
-        {
-            this.writingStrategy = writingStrategy;
-        }
-
-        public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
-        {
-            await this.writingStrategy.Write(image, outputStream, cancellationToken);
-        }
+    public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
+    {
+        await this.writingStrategy.Write(image, outputStream, cancellationToken);
     }
 }

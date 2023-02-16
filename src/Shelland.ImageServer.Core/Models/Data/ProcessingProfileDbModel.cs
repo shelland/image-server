@@ -5,19 +5,11 @@ using System.Collections.Generic;
 using Shelland.ImageServer.Core.Models.Base;
 using Shelland.ImageServer.Core.Models.Domain;
 
-namespace Shelland.ImageServer.Core.Models.Data
+namespace Shelland.ImageServer.Core.Models.Data;
+
+public class ProcessingProfileDbModel : BaseModel<Guid>
 {
-    public class ProcessingProfileDbModel : BaseModel
-    {
-        public ProcessingProfileDbModel()
-        {
-            this.CreateDate = DateTimeOffset.UtcNow;
-        }
+    public string Name { get; set; } = string.Empty;
 
-        public string Name { get; set; } = string.Empty;
-
-        public List<ImageThumbnailParamsModel> Parameters { get; set; } = new();
-
-        public Guid ProfileId { get; set; }
-    }
+    public IReadOnlyCollection<ImageThumbnailParamsModel> Parameters { get; set; } = null!;
 }

@@ -15,67 +15,66 @@ using Shelland.ImageServer.Core.Models.Preferences;
 
 #endregion
 
-namespace Shelland.ImageServer.AppServices.Services.Common
+namespace Shelland.ImageServer.AppServices.Services.Common;
+
+/// <summary>
+/// <inheritdoc />
+/// </summary>
+public class DiskCacheService : IDiskCacheService
 {
+    private readonly IFileService fileService;
+    private readonly IOptions<AppSettingsModel> options;
+    private readonly ILogger<DiskCacheService> logger;
+
+    public DiskCacheService(
+        IFileService fileService,
+        IOptions<AppSettingsModel> options,
+        ILogger<DiskCacheService> logger)
+    {
+        this.fileService = fileService;
+        this.options = options;
+        this.logger = logger;
+    }
+
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public class DiskCacheService : IDiskCacheService
+    public async Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func, CancellationToken cancellationToken)
     {
-        private readonly IFileService fileService;
-        private readonly IOptions<AppSettingsModel> options;
-        private readonly ILogger<DiskCacheService> logger;
+        var cacheDirectory = this.options.Value.Directory.CacheDirectory;
 
-        public DiskCacheService(
-            IFileService fileService,
-            IOptions<AppSettingsModel> options,
-            ILogger<DiskCacheService> logger)
+        // Check if cache directory exists.
+        if (!Directory.Exists(cacheDirectory))
         {
-            this.fileService = fileService;
-            this.options = options;
-            this.logger = logger;
+            Directory.CreateDirectory(cacheDirectory);
         }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func, CancellationToken cancellationToken)
+        // Calculate a hash from the URL
+        var urlHash = url.GetMD5Hash();
+        var cachedFilePath = Path.Combine(cacheDirectory, urlHash);
+
+        this.logger.LogInformation("Looking for file {CachedFilePath}", cachedFilePath);
+
+        var fileStream = await Task.Run(() => this.fileService.ReadFile(cachedFilePath), cancellationToken);
+
+        // If cached file exists, return it
+        if (fileStream != null)
         {
-            var cacheDirectory = this.options.Value.Directory.CacheDirectory;
-
-            // Check if cache directory exists.
-            if (!Directory.Exists(cacheDirectory))
-            {
-                Directory.CreateDirectory(cacheDirectory);
-            }
-
-            // Calculate a hash from the URL
-            var urlHash = url.GetMD5Hash();
-            var cachedFilePath = Path.Combine(cacheDirectory, urlHash);
-
-            this.logger.LogInformation("Looking for file {CachedFilePath}", cachedFilePath);
-
-            var fileStream = await Task.Run(() => this.fileService.ReadFile(cachedFilePath), cancellationToken);
-
-            // If cached file exists, return it
-            if (fileStream != null)
-            {
-                this.logger.LogInformation("File was cached locally ({CachedFilePath}). Read it.", cachedFilePath);
-                return fileStream;
-            }
-
-            this.logger.LogInformation("No cached file was found for url {Url}. Save it.", url);
-
-            // If there's no cached file, execute a caching func to read a stream
-            var newStream = await func();
-
-            // Write a new stream to the disk
-            await this.fileService.WriteFile(newStream, cachedFilePath, cancellationToken);
-
-            this.logger.LogInformation("Disk cache file was written to {CachedFilePath}", cachedFilePath);
-
-            newStream.Reset();
-            return newStream;
+            this.logger.LogInformation("File was cached locally ({CachedFilePath}). Read it.", cachedFilePath);
+            return fileStream;
         }
+
+        this.logger.LogInformation("No cached file was found for url {Url}. Save it.", url);
+
+        // If there's no cached file, execute a caching func to read a stream
+        var newStream = await func();
+
+        // Write a new stream to the disk
+        await this.fileService.WriteFile(newStream, cachedFilePath, cancellationToken);
+
+        this.logger.LogInformation("Disk cache file was written to {CachedFilePath}", cachedFilePath);
+
+        newStream.Reset();
+        return newStream;
     }
 }

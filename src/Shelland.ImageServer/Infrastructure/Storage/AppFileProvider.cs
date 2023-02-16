@@ -5,36 +5,32 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Shelland.ImageServer.Core.Models.Preferences;
 
-namespace Shelland.ImageServer.Infrastructure.Storage
+namespace Shelland.ImageServer.Infrastructure.Storage;
+
+/// <summary>
+/// Physical file provider
+/// </summary>
+public class AppFileProvider : IFileProvider
 {
-    /// <summary>
-    /// Physical file provider
-    /// </summary>
-    public class AppFileProvider : IFileProvider
+    private readonly PhysicalFileProvider provider;
+
+    public AppFileProvider(IOptions<AppSettingsModel> appSettings)
     {
-        private readonly IOptions<AppSettingsModel> appSettings;
-        private PhysicalFileProvider? physicalFileProvider;
+        this.provider = new PhysicalFileProvider(appSettings.Value.Directory.WorkingDirectory);
+    }
 
-        public AppFileProvider(IOptions<AppSettingsModel> appSettings)
-        {
-            this.appSettings = appSettings;
-        }
+    public IDirectoryContents GetDirectoryContents(string subpath)
+    {
+        return this.provider.GetDirectoryContents(subpath);
+    }
 
-        public IDirectoryContents GetDirectoryContents(string subpath)
-        {
-            return this.Provider.GetDirectoryContents(subpath);
-        }
+    public IFileInfo GetFileInfo(string subpath)
+    {
+        return this.provider.GetFileInfo(subpath);
+    }
 
-        public IFileInfo GetFileInfo(string subpath)
-        {
-            return this.Provider.GetFileInfo(subpath);
-        }
-
-        public IChangeToken Watch(string filter)
-        {
-            return this.Provider.Watch(filter);
-        }
-
-        private PhysicalFileProvider Provider => this.physicalFileProvider ??= new PhysicalFileProvider(this.appSettings.Value.Directory.WorkingDirectory);
+    public IChangeToken Watch(string filter)
+    {
+        return this.provider.Watch(filter);
     }
 }

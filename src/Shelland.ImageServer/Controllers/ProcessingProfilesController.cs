@@ -1,60 +1,46 @@
 ﻿// Created on 31/05/2021 19:47 by Andrey Laserson
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Shelland.ImageServer.Core.Models.Domain;
-using Shelland.ImageServer.DataAccess.Abstract.Repository;
+using Microsoft.FeatureManagement.Mvc;
+using Shelland.ImageServer.AppServices.Services.Abstract.Data;
+using Shelland.ImageServer.Core.Other;
 using Shelland.ImageServer.Models.Dto.Request;
-using Shelland.ImageServer.Models.Dto.Response;
 
-namespace Shelland.ImageServer.Controllers
+namespace Shelland.ImageServer.Controllers;
+
+[Route("processing-profiles")]
+public class ProcessingProfilesController : BaseAppController
 {
-    [Route("processing-profiles")]
-    public class ProcessingProfilesController : BaseAppController
+    private readonly IProcessingProfileDataService processingProfileDataService;
+
+    public ProcessingProfilesController(IProcessingProfileDataService processingProfileDataService)
     {
-        private readonly IProcessingProfileRepository processingProfileRepository;
-        private readonly IMapper mapper;
+        this.processingProfileDataService = processingProfileDataService;
+    }
 
-        public ProcessingProfilesController(IProcessingProfileRepository processingProfileRepository, IMapper mapper)
-        {
-            this.processingProfileRepository = processingProfileRepository;
-            this.mapper = mapper;
-        }
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var profiles = await this.processingProfileDataService.GetProfiles();
+        return Ok(profiles);
+    }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var profiles = await this.processingProfileRepository.GetProfiles();
-            var profileModels = this.mapper.Map<List<ProcessingProfileModel>>(profiles);
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var profile = await this.processingProfileDataService.GetById(id);
+        return OkOrNotFound(profile);
+    }
 
-            return Ok(new Response<IReadOnlyCollection<ProcessingProfileModel>>(profileModels));
-        }
-
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var profile = await this.processingProfileRepository.GetProfileById(id);
-
-            if (profile == null)
-            {
-                return NotFound();
-            }
-
-            var profileModel = this.mapper.Map<ProcessingProfileModel>(profile);
-            return Ok(new Response<ProcessingProfileModel>(profileModel));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Post([Required, FromForm] ProcessingProfileDto model)
-        {
-            var profile = await this.processingProfileRepository.Create(this.mapper.Map<ProcessingProfileModel>(model));
-            var profileModel = this.mapper.Map<ProcessingProfileModel>(profile);
-
-            return Ok(new Response<ProcessingProfileModel>(profileModel));
-        }
+    [HttpPost]
+    [FeatureGate(Constants.FeatureFlags.ProcessingProfiles)]
+    public async Task<IActionResult> Post([Required, FromForm] CreateProcessingProfileRequestDto model)
+    {
+        var profile = await this.processingProfileDataService.Create(model.Name, model.Parameters.Select(x => x.ToDomain()).ToList().AsReadOnly());
+        return Ok(profile);
     }
 }

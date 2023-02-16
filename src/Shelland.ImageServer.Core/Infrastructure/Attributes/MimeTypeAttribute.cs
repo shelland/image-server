@@ -2,12 +2,11 @@
 
 using System.ComponentModel;
 
-namespace Shelland.ImageServer.Core.Infrastructure.Attributes
+namespace Shelland.ImageServer.Core.Infrastructure.Attributes;
+
+public class MimeTypeAttribute : DescriptionAttribute
 {
-    public class MimeTypeAttribute : DescriptionAttribute
+    public MimeTypeAttribute(string description) : base(description)
     {
-        public MimeTypeAttribute(string description) : base(description)
-        {
-        }
     }
 }

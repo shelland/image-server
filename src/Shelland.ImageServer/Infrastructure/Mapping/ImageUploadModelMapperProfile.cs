@@ -4,13 +4,12 @@ using AutoMapper;
 using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
 
-namespace Shelland.ImageServer.Infrastructure.Mapping
+namespace Shelland.ImageServer.Infrastructure.Mapping;
+
+public class ImageUploadModelMapperProfile : Profile
 {
-    public class ImageUploadModelMapperProfile : Profile
+    public ImageUploadModelMapperProfile()
     {
-        public ImageUploadModelMapperProfile()
-        {
-            CreateMap<ImageUploadDbModel, ImageUploadModel>().ReverseMap();
-        }
+        CreateMap<ImageUploadDbModel, ImageUploadModel>().ReverseMap();
     }
 }

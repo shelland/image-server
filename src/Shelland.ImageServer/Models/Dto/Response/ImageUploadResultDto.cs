@@ -4,15 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Shelland.ImageServer.Models.Dto.Response
-{
-    public class ImageUploadResultDto
-    {
-        public Guid Id { get; set; }
+namespace Shelland.ImageServer.Models.Dto.Response;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string OriginalFileUrl { get; set; } = string.Empty;
-
-        public List<ImageThumbnailResultDto> Thumbnails { get; set; } = new();
-    }
-}
+public record ImageUploadResultDto(
+    Guid Id,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? OriginalFileUrl,
+    IReadOnlyCollection<ImageThumbnailResultDto> Thumbnails
+);

@@ -7,31 +7,30 @@ using ImageMagick;
 using ImageMagick.Formats;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
-namespace Shelland.ImageServer.AppServices.Logic
+namespace Shelland.ImageServer.AppServices.Logic;
+
+/// <summary>
+/// JPEG writing strategy. Includes some specific JPEG-related features
+/// </summary>
+public class JpegWritingStrategy : IImageWritingStrategy
 {
-    /// <summary>
-    /// JPEG writing strategy. Includes some specific JPEG-related features
-    /// </summary>
-    public class JpegWritingStrategy : IImageWritingStrategy
+    private readonly int quality;
+
+    public JpegWritingStrategy(int quality)
     {
-        private readonly int quality;
+        this.quality = quality;
+    }
 
-        public JpegWritingStrategy(int quality)
-        {
-            this.quality = quality;
-        }
-
-        public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
-        {
-            image.Quality = this.quality;
-            image.Interlace = Interlace.Jpeg;
-            image.AdaptiveBlur(0.05);
+    public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
+    {
+        image.Quality = this.quality;
+        image.Interlace = Interlace.Jpeg;
+        image.AdaptiveBlur(0.05);
             
-            await image.WriteAsync(outputStream, new JpegWriteDefines
-            {
-                SamplingFactor = JpegSamplingFactor.Ratio420,
-                DctMethod = JpegDctMethod.Float
-            }, cancellationToken);
-        }
+        await image.WriteAsync(outputStream, new JpegWriteDefines
+        {
+            SamplingFactor = JpegSamplingFactor.Ratio420,
+            DctMethod = JpegDctMethod.Float
+        }, cancellationToken);
     }
 }

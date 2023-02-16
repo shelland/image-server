@@ -5,20 +5,15 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
+namespace Shelland.ImageServer.AppServices.Services.Abstract.Common;
+
+/// <summary>
+/// Disk cache service
+/// </summary>
+public interface IDiskCacheService
 {
     /// <summary>
-    /// Disk cache service
+    /// Checks if file was locally cached. If not, execute a func and save a result stream
     /// </summary>
-    public interface IDiskCacheService
-    {
-        /// <summary>
-        /// Checks if file was locally cached. If not, execute a func and save a result stream
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="func"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func, CancellationToken cancellationToken);
-    }
+    Task<Stream> GetOrAdd(string url, Func<Task<Stream>> func, CancellationToken cancellationToken);
 }

@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim AS base
 WORKDIR /
 EXPOSE 5000
 
-ENV OPENCV_VERSION=4.7.0
+ENV OPENCV_VERSION=4.8.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Add mirrors

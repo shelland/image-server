@@ -5,28 +5,27 @@ using System.Collections.Generic;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Enums;
 
-namespace Shelland.ImageServer.Core.Models.Other
+namespace Shelland.ImageServer.Core.Models.Other;
+
+public class ImageUploadParamsModel
 {
-    public class ImageUploadParamsModel
-    {
-        /// <summary>
-        /// Input thumbnails
-        /// </summary>
-        public List<ImageThumbnailParamsModel> Thumbnails { get; set; } = new();
+    /// <summary>
+    /// Input thumbnails
+    /// </summary>
+    public List<ImageThumbnailParamsModel> Thumbnails { get; set; } = new();
 
-        /// <summary>
-        /// Image lifetime
-        /// </summary>
-        public int? Lifetime { get; set; }
+    /// <summary>
+    /// Image lifetime
+    /// </summary>
+    public int? Lifetime { get; set; }
 
-        /// <summary>
-        /// Output image format. JPEG is used by default
-        /// </summary>
-        public OutputImageFormat OutputFormat { get; set; } = OutputImageFormat.Jpeg;
+    /// <summary>
+    /// Output image format. JPEG is used by default
+    /// </summary>
+    public OutputImageFormat OutputFormat { get; set; } = OutputImageFormat.Jpeg;
 
-        /// <summary>
-        /// Profile identifier
-        /// </summary>
-        public Guid? ProfileId { get; set; }
-    }
+    /// <summary>
+    /// Profile identifier
+    /// </summary>
+    public Guid? ProfileId { get; set; }
 }

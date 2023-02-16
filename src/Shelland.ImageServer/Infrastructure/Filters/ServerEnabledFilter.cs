@@ -3,31 +3,30 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Options;
-using Shelland.ImageServer.Core.Models.Preferences;
+using Microsoft.FeatureManagement;
+using Shelland.ImageServer.Core.Other;
 
-namespace Shelland.ImageServer.Infrastructure.Filters
+namespace Shelland.ImageServer.Infrastructure.Filters;
+
+public class ServerEnabledFilter : IAsyncActionFilter
 {
-    public class ServerEnabledFilter : IAsyncActionFilter
+    private readonly IFeatureManager featureManager;
+    
+    public ServerEnabledFilter(IFeatureManager featureManager)
     {
-        private readonly IOptions<AppSettingsModel> options;
+        this.featureManager = featureManager;
+    }
 
-        public ServerEnabledFilter(IOptions<AppSettingsModel> options)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var isEnabled = await this.featureManager.IsEnabledAsync(Constants.FeatureFlags.Server);
+
+        if (!isEnabled)
         {
-            this.options = options;
+            context.HttpContext.Response.StatusCode = (int) HttpStatusCode.ServiceUnavailable;
+            return;
         }
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-        {
-            var isEnabled = this.options.Value.Common.IsServerEnabled;
-
-            if (!isEnabled)
-            {
-                context.HttpContext.Response.StatusCode = (int) HttpStatusCode.ServiceUnavailable;
-                return;
-            }
-
-            await next();
-        }
+        await next();
     }
 }

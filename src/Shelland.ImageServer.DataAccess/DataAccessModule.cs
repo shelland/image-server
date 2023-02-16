@@ -5,18 +5,17 @@ using Shelland.ImageServer.DataAccess.Abstract.Repository;
 using Shelland.ImageServer.DataAccess.Context;
 using Shelland.ImageServer.DataAccess.Repository;
 
-namespace Shelland.ImageServer.DataAccess
+namespace Shelland.ImageServer.DataAccess;
+
+public static class DataAccessModule
 {
-    public static class DataAccessModule
+    public static IServiceCollection AddDataAccessModule(this IServiceCollection serviceCollection)
     {
-        public static IServiceCollection AddDataAccessModule(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddSingleton<AppDbContext>();
+        serviceCollection.AddSingleton<AppDbContext>();
 
-            serviceCollection.AddSingleton<IImageUploadRepository, ImageUploadRepository>();
-            serviceCollection.AddSingleton<IProcessingProfileRepository, ProcessingProfileRepository>();
+        serviceCollection.AddSingleton<IImageUploadRepository, ImageUploadRepository>();
+        serviceCollection.AddSingleton<IProcessingProfileRepository, ProcessingProfileRepository>();
 
-            return serviceCollection;
-        }
+        return serviceCollection;
     }
 }

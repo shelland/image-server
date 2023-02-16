@@ -5,41 +5,30 @@ using System.Collections.Generic;
 using Shelland.ImageServer.Core.Models.Base;
 using Shelland.ImageServer.Core.Models.Domain;
 
-namespace Shelland.ImageServer.Core.Models.Data
+namespace Shelland.ImageServer.Core.Models.Data;
+
+/// <summary>
+/// Database entity that represents a thumbnail processing result
+/// </summary>
+public class ImageUploadDbModel : BaseModel<Guid>
 {
     /// <summary>
-    /// Database entity that represents a thumbnail processing result
+    /// User IP address
     /// </summary>
-    public class ImageUploadDbModel : BaseModel
-    {
-        public ImageUploadDbModel()
-        {
-            CreateDate = DateTimeOffset.UtcNow;
-        }
+    public string? IpAddress { get; set; }
 
-        /// <summary>
-        /// Unique upload ID
-        /// </summary>
-        public Guid UploadId { get; set; }
+    /// <summary>
+    /// Original file path
+    /// </summary>
+    public string OriginalFilePath { get; set; } = string.Empty;
 
-        /// <summary>
-        /// User IP address
-        /// </summary>
-        public string? IpAddress { get; set; }
+    /// <summary>
+    /// Generated thumbnails
+    /// </summary>
+    public IReadOnlyCollection<ImageThumbnailResultModel> Thumbnails { get; set; } = null!;
 
-        /// <summary>
-        /// Original file path
-        /// </summary>
-        public string OriginalFilePath { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Generated thumbnails
-        /// </summary>
-        public List<ImageThumbnailResultModel> Thumbnails { get; set; } = new();
-
-        /// <summary>
-        /// Expiration date
-        /// </summary>
-        public DateTimeOffset? ExpiresAt { get; set; }
-    }
+    /// <summary>
+    /// Expiration date
+    /// </summary>
+    public DateTime? ExpiresAtUtc { get; set; }
 }

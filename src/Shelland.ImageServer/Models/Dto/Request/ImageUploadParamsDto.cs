@@ -6,12 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Infrastructure.ModelBinding;
 
-namespace Shelland.ImageServer.Models.Dto.Request
-{
-    public record ImageUploadParamsDto(
-        [ModelBinder(typeof(JsonBodyModelBinder))] IReadOnlyList<ImageThumbnailParamsDto> Thumbnails,
-        int? Lifetime,
-        OutputImageFormat? OutputFormat,
-        Guid? ProfileId
-    );
-}
+namespace Shelland.ImageServer.Models.Dto.Request;
+
+public record ImageUploadParamsDto(
+    [ModelBinder(typeof(JsonBodyModelBinder))] IReadOnlyCollection<ImageThumbnailParamsDto> Thumbnails,
+    int? Lifetime,
+    OutputImageFormat? OutputFormat,
+    Guid? ProfileId
+);

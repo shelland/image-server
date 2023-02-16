@@ -4,94 +4,79 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Data;
-using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
 using Shelland.ImageServer.DataAccess.Context;
+using Shelland.ImageServer.DataAccess.Models;
 
-namespace Shelland.ImageServer.DataAccess.Repository
+namespace Shelland.ImageServer.DataAccess.Repository;
+
+/// <summary>
+/// <inheritdoc />
+/// </summary>
+public class ImageUploadRepository : IImageUploadRepository
 {
+    private readonly AppDbContext context;
+
+    public ImageUploadRepository(AppDbContext context)
+    {
+        this.context = context;
+    }
+
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public class ImageUploadRepository : IImageUploadRepository
+    public async Task<ImageUploadDbModel?> GetById(Guid id)
     {
-        private readonly AppDbContext context;
+        var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
+        var upload = await collection.Query().Where(x => x.Id == id).SingleOrDefaultAsync();
 
-        public ImageUploadRepository(AppDbContext context)
+        return upload;
+    }
+
+    /// <summary>
+    /// <inheritdoc />
+    /// </summary>
+    public async Task Delete(Guid id)
+    {
+        var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
+        await collection.DeleteAsync(id);
+    }
+
+    /// <summary>
+    /// <inheritdoc />
+    /// </summary>
+    public async Task<IReadOnlyCollection<ImageUploadDbModel>> GetExpiredUploads(DateTime utcNow)
+    {
+        var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
+        var expiredUploads = await collection.Query()
+            .Where(x => x.ExpiresAtUtc != null && x.ExpiresAtUtc <= utcNow)
+            .ToListAsync();
+
+        return expiredUploads;
+    }
+
+    /// <summary>
+    /// <inheritdoc />
+    /// </summary>
+    public async Task<ImageUploadDbModel> Create(CreateImageUploadContext ctx)
+    {
+        var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
+
+        await collection.EnsureIndexAsync(x => x.Id, unique: true);
+        await collection.EnsureIndexAsync(x => x.ExpiresAtUtc);
+
+        var dbModel = new ImageUploadDbModel
         {
-            this.context = context;
-        }
+            Id = ctx.Id,
+            OriginalFilePath = ctx.OriginalFilePath,
+            Thumbnails = ctx.Thumbnails,
+            IpAddress = ctx.IpAddress,
+            ExpiresAtUtc = ctx.ExpirationDate,
+            CreateDateUtc = ctx.Now
+        };
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<ImageUploadDbModel?> GetById(Guid id)
-        {
-            var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
-            await collection.EnsureIndexAsync(x => x.UploadId);
+        await collection.InsertAsync(dbModel);
 
-            var upload = await collection.Query().Where(x => x.UploadId == id).FirstOrDefaultAsync();
-
-            return upload;
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<ImageUploadDbModel> Create(ImageUploadDbModel dbModel)
-        {
-            var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
-
-            await collection.EnsureIndexAsync(x => x.UploadId);
-            await collection.InsertAsync(dbModel);
-
-            return dbModel;
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task Delete(int id)
-        {
-            var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
-            await collection.DeleteAsync(id);
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<IReadOnlyList<ImageUploadDbModel>> GetExpiredUploads()
-        {
-            var collection = this.context.Database.GetCollection<ImageUploadDbModel>();
-            var expiredUploads = await collection.Query()
-                .Where(x => x.ExpiresAt != null && x.ExpiresAt <= DateTimeOffset.UtcNow)
-                .ToListAsync();
-
-            return expiredUploads;
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<ImageUploadDbModel> Create(
-            StoragePathModel storagePath, 
-            List<ImageThumbnailResultModel> thumbnails, 
-            string? ipAddress, int? lifetime)
-        {
-            DateTimeOffset? expirationDate = lifetime.HasValue ? DateTimeOffset.UtcNow.AddSeconds(lifetime.Value) : null;
-
-            var dbModel = new ImageUploadDbModel
-            {
-                UploadId = storagePath.Key,
-                OriginalFilePath = storagePath.FilePath,
-                Thumbnails = thumbnails,
-                IpAddress = ipAddress,
-                ExpiresAt = expirationDate
-            };
-
-            await this.Create(dbModel);
-
-            return dbModel;
-        }
+        return dbModel;
     }
 }

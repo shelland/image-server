@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using ImageMagick;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
-namespace Shelland.ImageServer.AppServices.Logic
+namespace Shelland.ImageServer.AppServices.Logic;
+
+/// <summary>
+/// Generic writing strategy for GIF and PNG files
+/// </summary>
+public class GenericWritingStrategy : IImageWritingStrategy
 {
-    /// <summary>
-    /// Generic writing strategy for GIF and PNG files
-    /// </summary>
-    public class GenericWritingStrategy : IImageWritingStrategy
+    public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
     {
-        public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
-        {
-            await image.WriteAsync(outputStream, cancellationToken);
-        }
+        await image.WriteAsync(outputStream, cancellationToken);
     }
 }

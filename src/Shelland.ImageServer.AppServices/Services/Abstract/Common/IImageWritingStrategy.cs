@@ -5,13 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 
-namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
+namespace Shelland.ImageServer.AppServices.Services.Abstract.Common;
+
+/// <summary>
+/// Defines a format dependent image writing strategy
+/// </summary>
+public interface IImageWritingStrategy
 {
-    /// <summary>
-    /// Defines a format dependent image writing strategy
-    /// </summary>
-    public interface IImageWritingStrategy
-    {
-        Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken);
-    }
+    Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken);
 }

@@ -4,18 +4,27 @@ using Ardalis.GuardClauses;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Models.Enums;
 
-namespace Shelland.ImageServer.Core.Infrastructure.Extensions
-{
-    public static class GuardClauseExtensions
-    {
-        public static IGuardClause PositiveCondition(this IGuardClause clause, bool condition)
-        {
-            if (condition)
-            {
-                throw new AppFlowException(AppFlowExceptionType.InvalidParameters);
-            }
+namespace Shelland.ImageServer.Core.Infrastructure.Extensions;
 
-            return clause;
+public static class GuardClauseExtensions
+{
+    public static IGuardClause True(this IGuardClause clause, bool condition)
+    {
+        if (condition)
+        {
+            throw new AppFlowException(AppFlowExceptionType.InvalidParameters);
         }
+
+        return clause;
+    }
+
+    public static IGuardClause False(this IGuardClause clause, bool condition)
+    {
+        if (!condition)
+        {
+            throw new AppFlowException(AppFlowExceptionType.InvalidParameters);
+        }
+
+        return clause;
     }
 }

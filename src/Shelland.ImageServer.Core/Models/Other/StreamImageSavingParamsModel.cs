@@ -2,10 +2,9 @@
 
 using System.IO;
 
-namespace Shelland.ImageServer.Core.Models.Other
+namespace Shelland.ImageServer.Core.Models.Other;
+
+public class StreamImageSavingParamsModel : BaseImageSavingParamsModel
 {
-    public class StreamImageSavingParamsModel : BaseImageSavingParamsModel
-    {
-        public Stream OutputStream { get; set; } = null!;
-    }
+    public Stream OutputStream { get; set; } = null!;
 }

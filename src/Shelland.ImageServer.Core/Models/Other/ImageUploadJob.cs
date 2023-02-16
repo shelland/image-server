@@ -2,14 +2,10 @@
 
 using System.IO;
 
-namespace Shelland.ImageServer.Core.Models.Other
-{
-    public class ImageUploadJob
-    {
-        public Stream Stream { get; set; } = null!;
+namespace Shelland.ImageServer.Core.Models.Other;
 
-        public ImageUploadParamsModel Params { get; set; } = null!;
-
-        public string? IpAddress { get; set; }
-    }
-}
+public record ImageUploadJob(
+    Stream Stream,
+    ImageUploadParamsModel Params,
+    string? IpAddress
+);

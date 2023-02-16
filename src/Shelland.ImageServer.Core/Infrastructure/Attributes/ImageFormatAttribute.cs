@@ -2,12 +2,11 @@
 
 using System.ComponentModel;
 
-namespace Shelland.ImageServer.Core.Infrastructure.Attributes
+namespace Shelland.ImageServer.Core.Infrastructure.Attributes;
+
+public class ImageFormatAttribute : DescriptionAttribute
 {
-    public class ImageFormatAttribute : DescriptionAttribute
+    public ImageFormatAttribute(string description) : base(description)
     {
-        public ImageFormatAttribute(string description) : base(description)
-        {
-        }
     }
 }

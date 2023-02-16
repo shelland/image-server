@@ -4,14 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shelland.ImageServer.Core.Models.Preferences;
 
-namespace Shelland.ImageServer.Infrastructure.Extensions
+namespace Shelland.ImageServer.Infrastructure.Extensions;
+
+public static class OptionsExtensions
 {
-    public static class OptionsExtensions
+    public static IServiceCollection AddConfigOptions(this IServiceCollection collection, IConfiguration configuration)
     {
-        public static IServiceCollection AddConfigOptions(this IServiceCollection collection, IConfiguration configuration)
-        {
-            collection.Configure<AppSettingsModel>(configuration);
-            return collection;
-        }
+        collection.Configure<AppSettingsModel>(configuration);
+        return collection;
     }
 }

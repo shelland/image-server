@@ -2,14 +2,13 @@
 
 using System;
 
-namespace Shelland.ImageServer.Core.Models.Domain
-{
-    /// <summary>
-    /// Represents a single image thumbnail storage
-    /// </summary>
-    public record StoragePathModel(
-        Guid Key,
-        string FilePath,
-        string UrlPath
-    );
-}
+namespace Shelland.ImageServer.Core.Models.Domain;
+
+/// <summary>
+/// Represents a single image thumbnail storage
+/// </summary>
+public record StoragePathModel(
+    Guid Key,
+    string FilePath,
+    string UrlPath
+);

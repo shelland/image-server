@@ -5,16 +5,12 @@ using System.Threading.Tasks;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Other;
 
-namespace Shelland.ImageServer.AppServices.Services.Abstract.Common
+namespace Shelland.ImageServer.AppServices.Services.Abstract.Common;
+
+public interface IImageThumbnailService
 {
-    public interface IImageThumbnailService
-    {
-        /// <summary>
-        /// Starts a processing of uploaded image
-        /// </summary>
-        /// <param name="uploadJob"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob, CancellationToken cancellationToken);
-    }
+    /// <summary>
+    /// Starts a processing of uploaded image
+    /// </summary>
+    Task<ImageUploadResultModel> ProcessThumbnails(ImageUploadJob uploadJob, CancellationToken cancellationToken);
 }

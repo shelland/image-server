@@ -1,5 +1,7 @@
 ﻿// Created on 03/02/2023 16:11 by shell
 
+using System.Text.Json.Serialization;
+
 namespace Shelland.ImageServer.Core.Models.Domain;
 
 public record FaceDetectionResultModel(
@@ -7,5 +9,5 @@ public record FaceDetectionResultModel(
     int Y1,
     int X2,
     int Y2,
-    string? ImageUrl = null
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? ImageUrl = null
 );

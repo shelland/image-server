@@ -3,19 +3,16 @@
 using AutoMapper;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Models.Dto.Request;
-using Shelland.ImageServer.Models.Dto.Response;
 
-namespace Shelland.ImageServer.Infrastructure.Mapping
+namespace Shelland.ImageServer.Infrastructure.Mapping;
+
+public class ThumbnailModelMapperProfile : Profile
 {
-    public class ThumbnailModelMapperProfile : Profile
+    public ThumbnailModelMapperProfile()
     {
-        public ThumbnailModelMapperProfile()
-        {
-            CreateMap<ImageThumbnailParamsDto, ImageThumbnailParamsModel>()
-                .ForMember(x => x.Watermark, x => x.MapFrom((src, _, _, ctx) => ctx.Mapper.Map<WatermarkParams>(src.Watermark)));
+        CreateMap<ImageThumbnailParamsDto, ImageThumbnailParamsModel>()
+            .ForMember(x => x.Watermark, x => x.MapFrom((src, _, _, ctx) => ctx.Mapper.Map<WatermarkParamsModel>(src.Watermark)));
 
-            CreateMap<ImageThumbnailResultModel, ImageThumbnailResultDto>();
-            CreateMap<WatermarkParamsDto, WatermarkParams>();
-        }
+        CreateMap<WatermarkParamsDto, WatermarkParamsModel>();
     }
 }

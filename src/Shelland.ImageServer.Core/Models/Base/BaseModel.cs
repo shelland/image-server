@@ -2,21 +2,20 @@
 
 using System;
 
-namespace Shelland.ImageServer.Core.Models.Base
+namespace Shelland.ImageServer.Core.Models.Base;
+
+/// <summary>
+/// Base model for all entities
+/// </summary>
+public class BaseModel<TKey> where TKey : struct
 {
     /// <summary>
-    /// Base model for all entities
+    /// Entity unique identifier
     /// </summary>
-    public class BaseModel
-    {
-        /// <summary>
-        /// Entity unique identifier
-        /// </summary>
-        public int Id { get; set; }
+    public TKey Id { get; set; }
 
-        /// <summary>
-        /// Entity create date
-        /// </summary>
-        public DateTimeOffset CreateDate { get; set; }
-    }
+    /// <summary>
+    /// Entity create date
+    /// </summary>
+    public DateTime CreateDateUtc { get; set; }
 }

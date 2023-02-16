@@ -10,91 +10,90 @@ using Shelland.ImageServer.Core.Infrastructure.Extensions;
 using Shelland.ImageServer.Core.Models.Enums;
 using Shelland.ImageServer.Core.Models.Other;
 
-namespace Shelland.ImageServer.AppServices.Services.Processing
+namespace Shelland.ImageServer.AppServices.Services.Processing;
+
+/// <summary>
+/// <inheritdoc />
+/// </summary>
+public class ImageProcessingService : IImageProcessingService
 {
+    private readonly ILogger<ImageProcessingService> logger;
+
+    public ImageProcessingService(ILogger<ImageProcessingService> logger)
+    {
+        this.logger = logger;
+    }
+
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public class ImageProcessingService : IImageProcessingService
+    public MagickImage Process(ImageProcessingJob job)
     {
-        private readonly ILogger<ImageProcessingService> logger;
-
-        public ImageProcessingService(ILogger<ImageProcessingService> logger)
+        try
         {
-            this.logger = logger;
-        }
+            // Check if both sizes are valid.
+            Guard.Against.True(job.ThumbnailParams.Width == null && job.ThumbnailParams.Height == null);
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public MagickImage Process(ImageProcessingJob job)
-        {
-            try
+            // Clone a source image
+            var image = (MagickImage) job.Image.Clone();
+
+            // If any parameter of Resize function == 0 then another size will be used in respect with aspect ratio
+            var imageSize = new MagickGeometry(job.ThumbnailParams.Width ?? 0, job.ThumbnailParams.Height ?? 0)
             {
-                // Check if both sizes are valid.
-                Guard.Against.PositiveCondition(job.ThumbnailParams.Width == null && job.ThumbnailParams.Height == null);
+                IgnoreAspectRatio = job.ThumbnailParams.IsFixedSize
+            };
 
-                // Clone a source image
-                var image = (MagickImage) job.Image.Clone();
+            image.Interpolate = PixelInterpolateMethod.Bilinear;
 
-                // If any parameter of Resize function == 0 then another size will be used in respect with aspect ratio
-                var imageSize = new MagickGeometry(job.ThumbnailParams.Width ?? 0, job.ThumbnailParams.Height ?? 0)
-                {
-                    IgnoreAspectRatio = job.ThumbnailParams.IsFixedSize
-                };
+            // Resize the image
+            image.Resize(imageSize);
 
-                image.Interpolate = PixelInterpolateMethod.Bilinear;
-
-                // Resize the image
-                image.Resize(imageSize);
-
-                // Check if any effect was requested and apply it if so
-                if (job.ThumbnailParams.Effect.HasValue)
-                {
-                    ApplyEffect(image, job.ThumbnailParams.Effect.Value);
-                }
-
-                // Remove image metadata if such setting is set
-                if (!job.Settings.KeepMetadata ?? true)
-                {
-                    image.Strip();
-                }
-
-                return image;
-            }
-            catch (Exception ex)
+            // Check if any effect was requested and apply it if so
+            if (job.ThumbnailParams.Effect.HasValue)
             {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.GenericError);
+                ApplyEffect(image, job.ThumbnailParams.Effect.Value);
             }
-        }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public void AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity)
-        {
-            // Check if opacity is between 0 and 100
-            Guard.Against.OutOfRange(opacity, nameof(opacity), 0, 100);
-
-            watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (double) opacity / 100);
-            srcImage.Composite(watermarkImage, Gravity.Southwest, CompositeOperator.Over);
-        }
-
-        private static void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)
-        {
-            switch (effect)
+            // Remove image metadata if such setting is set
+            if (!job.Settings.KeepMetadata ?? true)
             {
-                case ThumbnailEffectType.Grayscale:
-
-                    image.Grayscale();
-                    break;
-
-                case ThumbnailEffectType.Sepia:
-
-                    image.SepiaTone();
-                    break;
+                image.Strip();
             }
+
+            return image;
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, ex.Message);
+            throw new AppFlowException(AppFlowExceptionType.GenericError);
+        }
+    }
+
+    /// <summary>
+    /// <inheritdoc />
+    /// </summary>
+    public void AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity)
+    {
+        // Check if opacity is between 0 and 100
+        Guard.Against.OutOfRange(opacity, nameof(opacity), 0, 100);
+
+        watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (double) opacity / 100);
+        srcImage.Composite(watermarkImage, Gravity.Southwest, CompositeOperator.Over);
+    }
+
+    private static void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)
+    {
+        switch (effect)
+        {
+            case ThumbnailEffectType.Grayscale:
+
+                image.Grayscale();
+                break;
+
+            case ThumbnailEffectType.Sepia:
+
+                image.SepiaTone();
+                break;
         }
     }
 }

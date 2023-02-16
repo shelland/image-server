@@ -4,19 +4,11 @@ using System;
 using System.Collections.Generic;
 using Shelland.ImageServer.Core.Models.Base;
 
-namespace Shelland.ImageServer.Core.Models.Domain
+namespace Shelland.ImageServer.Core.Models.Domain;
+
+public class ProcessingProfileModel : BaseModel<Guid>
 {
-    public class ProcessingProfileModel : BaseModel
-    {
-        public ProcessingProfileModel()
-        {
-            this.ProfileId = Guid.NewGuid();
-        }
+    public string Name { get; set; } = string.Empty;
 
-        public string Name { get; set; } = string.Empty;
-
-        public List<ImageThumbnailParamsModel> Parameters { get; set; } = new();
-        
-        public Guid ProfileId { get; set; }
-    }
+    public IReadOnlyCollection<ImageThumbnailParamsModel> Parameters { get; set; } = null!;
 }

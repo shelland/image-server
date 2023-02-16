@@ -7,7 +7,5 @@ public interface ILinkService
     /// <summary>
     /// URL normalization (slashes, etc.)
     /// </summary>
-    /// <param name="originalUrl"></param>
-    /// <returns></returns>
     string PrepareWebPath(string originalUrl);
 }

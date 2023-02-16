@@ -1,15 +1,10 @@
 ﻿// Created on 09/02/2021 15:07 by Andrey Laserson
 
-namespace Shelland.ImageServer.Models.Dto.Response
-{
-    public class ImageThumbnailResultDto
-    {
-        public int Width { get; set; }
+namespace Shelland.ImageServer.Models.Dto.Response;
 
-        public int Height { get; set; }
-
-        public string DiskPath { get; set; } = string.Empty;
-
-        public string Url { get; set; } = string.Empty;
-    }
-}
+public record ImageThumbnailResultDto(
+    int Width,
+    int Height,
+    string DiskPath, 
+    string Url
+);

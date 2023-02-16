@@ -2,23 +2,22 @@
 
 using Shelland.ImageServer.Core.Infrastructure.Attributes;
 
-namespace Shelland.ImageServer.Core.Models.Enums
+namespace Shelland.ImageServer.Core.Models.Enums;
+
+/// <summary>
+/// Output image format
+/// </summary>
+public enum OutputImageFormat
 {
-    /// <summary>
-    /// Output image format
-    /// </summary>
-    public enum OutputImageFormat
-    {
-        [ImageFormat("jpg")]
-        [MimeType("image/jpeg")]
-        Jpeg,
+    [ImageFormat("jpg")]
+    [MimeType("image/jpeg")]
+    Jpeg,
 
-        [ImageFormat("png")]
-        [MimeType("image/png")]
-        Png,
+    [ImageFormat("png")]
+    [MimeType("image/png")]
+    Png,
 
-        [ImageFormat("gif")]
-        [MimeType("image/gif")]
-        Gif
-    }
+    [ImageFormat("gif")]
+    [MimeType("image/gif")]
+    Gif
 }

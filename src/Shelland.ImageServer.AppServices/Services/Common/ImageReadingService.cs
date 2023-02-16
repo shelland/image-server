@@ -15,63 +15,62 @@ using Shelland.ImageServer.Core.Models.Enums;
 
 #endregion
 
-namespace Shelland.ImageServer.AppServices.Services.Common
+namespace Shelland.ImageServer.AppServices.Services.Common;
+
+/// <summary>
+/// <inheritdoc />
+/// </summary>
+public class ImageReadingService : IImageReadingService
 {
+    private readonly INetworkService networkService;
+    private readonly ILogger<ImageReadingService> logger;
+    private readonly IDiskCacheService diskCacheService;
+
+    public ImageReadingService(
+        INetworkService networkService,
+        ILogger<ImageReadingService> logger,
+        IDiskCacheService diskCacheService)
+    {
+        this.networkService = networkService;
+        this.logger = logger;
+        this.diskCacheService = diskCacheService;
+    }
+
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public class ImageReadingService : IImageReadingService
+    public async Task<MagickImage> Read(Stream stream)
     {
-        private readonly INetworkService networkService;
-        private readonly ILogger<ImageReadingService> logger;
-        private readonly IDiskCacheService diskCacheService;
-
-        public ImageReadingService(
-            INetworkService networkService,
-            ILogger<ImageReadingService> logger,
-            IDiskCacheService diskCacheService)
+        try
         {
-            this.networkService = networkService;
-            this.logger = logger;
-            this.diskCacheService = diskCacheService;
+            var image = new MagickImage();
+            await image.ReadAsync(stream);
+
+            return image;
         }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<MagickImage> Read(Stream stream)
+        catch (Exception ex)
         {
-            try
-            {
-                var image = new MagickImage();
-                await image.ReadAsync(stream);
-
-                return image;
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
-            }
+            this.logger.LogError(ex, ex.Message);
+            throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
         }
+    }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task<MagickImage> Read(string url, CancellationToken cancellationToken)
+    /// <summary>
+    /// <inheritdoc />
+    /// </summary>
+    public async Task<MagickImage> Read(string url, CancellationToken cancellationToken)
+    {
+        try
         {
-            try
-            {
-                await using var imageStream = await this.diskCacheService.GetOrAdd(url, async () => 
-                    await this.networkService.DownloadAsStream(url, cancellationToken), cancellationToken);
+            await using var imageStream = await this.diskCacheService.GetOrAdd(url, async () => 
+                await this.networkService.DownloadAsStream(url, cancellationToken), cancellationToken);
 
-                return await this.Read(imageStream);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
-            }
+            return await this.Read(imageStream);
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, ex.Message);
+            throw new AppFlowException(AppFlowExceptionType.InvalidImageFormat);
         }
     }
 }

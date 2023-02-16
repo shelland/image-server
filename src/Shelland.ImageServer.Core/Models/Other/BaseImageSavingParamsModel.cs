@@ -2,12 +2,11 @@
 
 using Shelland.ImageServer.Core.Models.Enums;
 
-namespace Shelland.ImageServer.Core.Models.Other
-{
-    public class BaseImageSavingParamsModel
-    {
-        public OutputImageFormat? Format { get; set; }
+namespace Shelland.ImageServer.Core.Models.Other;
 
-        public int Quality { get; set; }
-    }
+public class BaseImageSavingParamsModel
+{
+    public OutputImageFormat? Format { get; set; }
+
+    public int Quality { get; set; }
 }
