@@ -5,10 +5,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NetVips;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Data;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
@@ -114,7 +114,7 @@ public class ImageThumbnailService : IImageThumbnailService
     /// </summary>
     private async Task<IReadOnlyCollection<ImageThumbnailResultModel>> GenerateThumbnails(
         ImageUploadJob uploadJob,
-        MagickImage sourceImage,
+        Image sourceImage,
         StoragePathModel storagePath,
         CancellationToken cancellationToken)
     {

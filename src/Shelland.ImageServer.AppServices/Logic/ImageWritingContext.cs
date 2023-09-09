@@ -3,7 +3,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
+using NetVips;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
 namespace Shelland.ImageServer.AppServices.Logic;
@@ -20,7 +20,7 @@ public class ImageWritingContext
         this.writingStrategy = writingStrategy;
     }
 
-    public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
+    public async Task Write(Image image, Stream outputStream, CancellationToken cancellationToken)
     {
         await this.writingStrategy.Write(image, outputStream, cancellationToken);
     }

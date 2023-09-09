@@ -1,11 +1,13 @@
 #region Usings
 
+using System;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NetVips;
 using Shelland.ImageServer.Infrastructure.Extensions;
 using Shelland.ImageServer.Infrastructure.Extensions.Pipeline;
 
@@ -38,7 +40,7 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IMapper mapper)
+    public void Configure(IApplicationBuilder app, IMapper mapper, IHostApplicationLifetime hostApplicationLifetime)
     {
         app.AddRateLimitingPipeline(this.configuration);
         app.UseForwardedHeaders();
@@ -54,10 +56,18 @@ public class Startup
         app.UseRouting();
         app.UseAuthorization();
         app.UseAppCachedStaticFiles(this.configuration);
-            
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+        });
+
+        hostApplicationLifetime.ApplicationStarted.Register(() =>
+        {
+            if (ModuleInitializer.VipsInitialized)
+            {
+                throw ModuleInitializer.Exception;
+            }
         });
     }
 }

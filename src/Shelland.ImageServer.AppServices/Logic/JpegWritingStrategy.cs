@@ -3,8 +3,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
-using ImageMagick.Formats;
+using NetVips;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
 namespace Shelland.ImageServer.AppServices.Logic;
@@ -21,16 +20,18 @@ public class JpegWritingStrategy : IImageWritingStrategy
         this.quality = quality;
     }
 
-    public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
+    public async Task Write(Image image, Stream outputStream, CancellationToken cancellationToken)
     {
-        image.Quality = this.quality;
-        image.Interlace = Interlace.Jpeg;
-        image.AdaptiveBlur(0.05);
-            
-        await image.WriteAsync(outputStream, new JpegWriteDefines
-        {
-            SamplingFactor = JpegSamplingFactor.Ratio420,
-            DctMethod = JpegDctMethod.Float
-        }, cancellationToken);
+        await Task.Run(() => image.JpegsaveStream(outputStream, this.quality, interlace: true, trellisQuant: true), cancellationToken);
+
+        //image.Quality = this.quality;
+        //image.Interlace = Interlace.Jpeg;
+        //image.AdaptiveBlur(0.05);
+
+        //await image.WriteAsync(outputStream, new JpegWriteDefines
+        //{
+        //    SamplingFactor = JpegSamplingFactor.Ratio420,
+        //    DctMethod = JpegDctMethod.Float
+        //}, cancellationToken);
     }
 }

@@ -3,7 +3,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
+using NetVips;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
@@ -12,5 +12,5 @@ namespace Shelland.ImageServer.AppServices.Services.Abstract.Common;
 /// </summary>
 public interface IImageWritingStrategy
 {
-    Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken);
+    Task Write(Image image, Stream outputStream, CancellationToken cancellationToken);
 }

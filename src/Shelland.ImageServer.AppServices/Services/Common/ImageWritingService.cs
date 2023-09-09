@@ -6,9 +6,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
 using Microsoft.Extensions.Logging;
 using Microsoft.IO;
+using NetVips;
 using Shelland.ImageServer.AppServices.Logic;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Storage;
@@ -43,7 +43,7 @@ public class ImageWritingService : IImageWritingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public async Task WriteToDisk(MagickImage image, DiskImageSavingParamsModel savingParams, CancellationToken cancellationToken)
+    public async Task WriteToDisk(Image image, DiskImageSavingParamsModel savingParams, CancellationToken cancellationToken)
     {
         try
         {
@@ -62,7 +62,7 @@ public class ImageWritingService : IImageWritingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public async Task WriteToStream(MagickImage image, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
+    public async Task WriteToStream(Image image, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
     {
         try
         {
@@ -80,7 +80,7 @@ public class ImageWritingService : IImageWritingService
 
     #region Private methods
 
-    private async Task<RecyclableMemoryStream> GetOutputStream(MagickImage image, BaseImageSavingParamsModel savingParams, CancellationToken cancellationToken)
+    private async Task<RecyclableMemoryStream> GetOutputStream(Image image, BaseImageSavingParamsModel savingParams, CancellationToken cancellationToken)
     {
         var imageStream = new RecyclableMemoryStream(this.recyclableMemoryStreamManager);
         var outputFormat = savingParams.Format ?? OutputImageFormat.Jpeg;
@@ -98,7 +98,7 @@ public class ImageWritingService : IImageWritingService
         return imageStream;
     }
 
-    private static MagickFormat ToMagickFormat(OutputImageFormat outputFormat)
+    private static OutputImageFormat ToMagickFormat(OutputImageFormat outputFormat)
     {
         return outputFormat switch
         {

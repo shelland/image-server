@@ -6,8 +6,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
 using Microsoft.Extensions.Logging;
+using NetVips;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Networking;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
@@ -39,14 +39,11 @@ public class ImageReadingService : IImageReadingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public async Task<MagickImage> Read(Stream stream)
+    public async Task<Image> Read(Stream stream)
     {
         try
         {
-            var image = new MagickImage();
-            await image.ReadAsync(stream);
-
-            return image;
+            return await Task.Run(() => Image.NewFromStream(stream));
         }
         catch (Exception ex)
         {
@@ -58,7 +55,7 @@ public class ImageReadingService : IImageReadingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public async Task<MagickImage> Read(string url, CancellationToken cancellationToken)
+    public async Task<Image> Read(string url, CancellationToken cancellationToken)
     {
         try
         {

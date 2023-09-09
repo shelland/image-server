@@ -2,8 +2,8 @@
 
 using System;
 using Ardalis.GuardClauses;
-using ImageMagick;
 using Microsoft.Extensions.Logging;
+using NetVips;
 using Shelland.ImageServer.AppServices.Services.Abstract.Processing;
 using Shelland.ImageServer.Core.Infrastructure.Exceptions;
 using Shelland.ImageServer.Core.Infrastructure.Extensions;
@@ -27,7 +27,7 @@ public class ImageProcessingService : IImageProcessingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public MagickImage Process(ImageProcessingJob job)
+    public Image Process(ImageProcessingJob job)
     {
         try
         {
@@ -35,18 +35,18 @@ public class ImageProcessingService : IImageProcessingService
             Guard.Against.True(job.ThumbnailParams.Width == null && job.ThumbnailParams.Height == null);
 
             // Clone a source image
-            var image = (MagickImage) job.Image.Clone();
+            var image = job.Image.ThumbnailImage(
+                width: job.ThumbnailParams.Width ?? 0,
+                height: job.ThumbnailParams.Height ?? 0,
+                size: job.ThumbnailParams.IsFixedSize ? Enums.Size.Force : Enums.Size.Both
+            );
 
-            // If any parameter of Resize function == 0 then another size will be used in respect with aspect ratio
-            var imageSize = new MagickGeometry(job.ThumbnailParams.Width ?? 0, job.ThumbnailParams.Height ?? 0)
-            {
-                IgnoreAspectRatio = job.ThumbnailParams.IsFixedSize
-            };
+            
 
-            image.Interpolate = PixelInterpolateMethod.Bilinear;
+            // image.Interpolate = PixelInterpolateMethod.Bilinear;
 
             // Resize the image
-            image.Resize(imageSize);
+            // image.Resize(imageSize);
 
             // Check if any effect was requested and apply it if so
             if (job.ThumbnailParams.Effect.HasValue)
@@ -57,7 +57,13 @@ public class ImageProcessingService : IImageProcessingService
             // Remove image metadata if such setting is set
             if (!job.Settings.KeepMetadata ?? true)
             {
-                image.Strip();
+                // TODO
+                // image.Strip();
+            }
+
+            foreach (var item in image.GetFields())
+            {
+                image.Resize()
             }
 
             return image;
@@ -72,22 +78,22 @@ public class ImageProcessingService : IImageProcessingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public void AddWatermark(MagickImage srcImage, MagickImage watermarkImage, int opacity)
+    public void AddWatermark(Image srcImage, Image watermarkImage, int opacity)
     {
         // Check if opacity is between 0 and 100
         Guard.Against.OutOfRange(opacity, nameof(opacity), 0, 100);
 
-        watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (double) opacity / 100);
+        watermarkImage.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (double)opacity / 100);
         srcImage.Composite(watermarkImage, Gravity.Southwest, CompositeOperator.Over);
     }
 
-    private static void ApplyEffect(IMagickImage image, ThumbnailEffectType effect)
+    private static void ApplyEffect(Image image, ThumbnailEffectType effect)
     {
         switch (effect)
         {
             case ThumbnailEffectType.Grayscale:
 
-                image.Grayscale();
+                image
                 break;
 
             case ThumbnailEffectType.Sepia:

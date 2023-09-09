@@ -3,7 +3,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
+using NetVips;
 
 namespace Shelland.ImageServer.AppServices.Services.Abstract.Common;
 
@@ -12,10 +12,10 @@ public interface IImageReadingService
     /// <summary>
     /// Loads an image from input stream
     /// </summary>
-    Task<MagickImage> Read(Stream stream);
+    Task<Image> Read(Stream stream);
 
     /// <summary>
     /// Loads an image from URL
     /// </summary>
-    Task<MagickImage> Read(string url, CancellationToken cancellationToken);
+    Task<Image> Read(string url, CancellationToken cancellationToken);
 }
