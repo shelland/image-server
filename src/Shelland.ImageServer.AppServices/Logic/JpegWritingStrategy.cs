@@ -24,7 +24,7 @@ public class JpegWritingStrategy : IImageWritingStrategy
     public async Task Write(MagickImage image, Stream outputStream, CancellationToken cancellationToken)
     {
         image.Quality = this.quality;
-        image.Interlace = Interlace.Jpeg;
+        image.Settings.Interlace = Interlace.Jpeg;
         image.AdaptiveBlur(0.05);
             
         await image.WriteAsync(outputStream, new JpegWriteDefines
