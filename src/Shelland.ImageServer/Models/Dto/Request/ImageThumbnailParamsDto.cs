@@ -6,10 +6,10 @@ using Shelland.ImageServer.Core.Models.Enums;
 namespace Shelland.ImageServer.Models.Dto.Request;
 
 public record ImageThumbnailParamsDto(
-    int? Width,
-    int? Height,
+    uint? Width,
+    uint? Height,
     ThumbnailEffectType? Effect,
-    int? Quality,
+    uint? Quality,
     WatermarkParamsDto? Watermark
 )
 {

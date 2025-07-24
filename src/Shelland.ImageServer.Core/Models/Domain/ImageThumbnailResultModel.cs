@@ -3,8 +3,8 @@
 namespace Shelland.ImageServer.Core.Models.Domain;
 
 public record ImageThumbnailResultModel(
-    int Width,
-    int Height,
+    uint Width,
+    uint Height,
     string DiskPath,
     string Url
 );

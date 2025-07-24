@@ -23,7 +23,7 @@ public interface IFileService
     /// <summary>
     /// Prepares a path object for thumbnails
     /// </summary>
-    ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, int width, int height);
+    ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, uint width, uint height);
 
     /// <summary>
     /// Write a memory stream to the disk

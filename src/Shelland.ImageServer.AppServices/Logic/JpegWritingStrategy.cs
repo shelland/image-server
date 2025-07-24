@@ -14,9 +14,9 @@ namespace Shelland.ImageServer.AppServices.Logic;
 /// </summary>
 public class JpegWritingStrategy : IImageWritingStrategy
 {
-    private readonly int quality;
+    private readonly uint quality;
 
-    public JpegWritingStrategy(int quality)
+    public JpegWritingStrategy(uint quality)
     {
         this.quality = quality;
     }

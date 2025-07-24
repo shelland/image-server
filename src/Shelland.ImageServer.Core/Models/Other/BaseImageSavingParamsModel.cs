@@ -8,5 +8,5 @@ public class BaseImageSavingParamsModel
 {
     public OutputImageFormat? Format { get; set; }
 
-    public int Quality { get; set; }
+    public uint Quality { get; set; }
 }

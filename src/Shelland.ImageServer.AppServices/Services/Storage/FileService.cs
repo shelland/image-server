@@ -74,7 +74,7 @@ public class FileService : IFileService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, int width, int height)
+    public ImageThumbPathsModel PrepareThumbFilePath(StoragePathModel originalPath, OutputImageFormat format, uint width, uint height)
     {
         // Prepare a disk path
         var diskPath = $"{Path.ChangeExtension(originalPath.FilePath, null)}_thumb_{width}x{height}.{format.GetImageFormat()}";

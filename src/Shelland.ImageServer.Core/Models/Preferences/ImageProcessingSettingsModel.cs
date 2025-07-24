@@ -4,7 +4,7 @@ namespace Shelland.ImageServer.Core.Models.Preferences;
 
 public class ImageProcessingSettingsModel
 {
-    public int? JpegQuality { get; set; }
+    public uint? JpegQuality { get; set; }
 
     public bool? KeepMetadata { get; set; }
 }

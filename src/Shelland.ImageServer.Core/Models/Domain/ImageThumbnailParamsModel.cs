@@ -13,12 +13,12 @@ public class ImageThumbnailParamsModel
     /// <summary>
     /// Output width
     /// </summary>
-    public int? Width { get; set; }
+    public uint? Width { get; set; }
 
     /// <summary>
     /// Output height
     /// </summary>
-    public int? Height { get; set; }
+    public uint? Height { get; set; }
 
     /// <summary>
     /// Effects to apply
@@ -28,7 +28,7 @@ public class ImageThumbnailParamsModel
     /// <summary>
     /// Output quality (JPEG only)
     /// </summary>
-    public int? Quality { get; set; }
+    public uint? Quality { get; set; }
 
     /// <summary>
     /// Defines if we should ignore aspect ratio while processing

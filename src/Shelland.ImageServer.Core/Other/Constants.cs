@@ -4,7 +4,7 @@ namespace Shelland.ImageServer.Core.Other;
 
 public static class Constants
 {
-    public const int DefaultJpegQuality = 100;
+    public const uint DefaultJpegQuality = 100;
     public const int DefaultCacheDuration = 86400;
     public const int ExpiredUploadsServiceRunInterval = 60; // seconds
     public const int DefaultWatermarkOpacity = 50; // %s
