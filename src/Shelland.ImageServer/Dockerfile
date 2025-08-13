@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /
 EXPOSE 5000
 
-ENV OPENCV_VERSION=4.11.0
+ENV OPENCV_VERSION=4.12.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Add mirrors

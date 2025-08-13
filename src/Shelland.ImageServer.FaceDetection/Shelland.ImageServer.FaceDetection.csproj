@@ -16,7 +16,7 @@
 
     <ItemGroup>
         <PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
     </ItemGroup>
 
     <ItemGroup>
