@@ -39,12 +39,12 @@ public class ImageReadingService : IImageReadingService
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public async Task<MagickImage> Read(Stream stream)
+    public async Task<MagickImage> Read(Stream stream, CancellationToken cancellationToken)
     {
         try
         {
             var image = new MagickImage();
-            await image.ReadAsync(stream);
+            await image.ReadAsync(stream, cancellationToken);
 
             return image;
         }
@@ -65,7 +65,7 @@ public class ImageReadingService : IImageReadingService
             await using var imageStream = await this.diskCacheService.GetOrAdd(url, async () => 
                 await this.networkService.DownloadAsStream(url, cancellationToken), cancellationToken);
 
-            return await this.Read(imageStream);
+            return await this.Read(imageStream, cancellationToken);
         }
         catch (Exception ex)
         {

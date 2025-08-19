@@ -45,7 +45,7 @@ public class ImageConvertingService : IImageConvertingService
     /// </summary>
     public async Task ImageToFormat(Stream inputStream, StreamImageSavingParamsModel savingParams, CancellationToken cancellationToken)
     {
-        var inputImage = await this.imageReadingService.Read(inputStream);
+        var inputImage = await this.imageReadingService.Read(inputStream, cancellationToken);
         await this.imageWritingService.WriteToStream(inputImage, savingParams, cancellationToken);
     }
 }

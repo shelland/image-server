@@ -87,7 +87,7 @@ public class ImageThumbnailService : IImageThumbnailService
 
         // Load a new image and save it since loading it each time is extremely expensive
         // All image processing routines will clone it and use - it is about 10x times faster
-        using var sourceImage = await this.imageReadingService.Read(uploadJob.Stream);
+        using var sourceImage = await this.imageReadingService.Read(uploadJob.Stream, cancellationToken);
 
         // Process requested thumbnails
         var thumbnails = await this.GenerateThumbnails(uploadJob, sourceImage, storagePath, cancellationToken);

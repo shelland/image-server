@@ -12,7 +12,7 @@ public interface IImageReadingService
     /// <summary>
     /// Loads an image from input stream
     /// </summary>
-    Task<MagickImage> Read(Stream stream);
+    Task<MagickImage> Read(Stream stream, CancellationToken cancellationToken);
 
     /// <summary>
     /// Loads an image from URL

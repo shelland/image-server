@@ -1,6 +1,7 @@
 ﻿// Created on 14/02/2021 21:32 by Andrey Laserson
 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ImageMagick;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ public class MetadataController : BaseAppController
 
     [HttpPost]
     [FeatureGate(Constants.FeatureFlags.Metadata)]
-    public async Task<IActionResult> Post()
+    public async Task<IActionResult> Post(CancellationToken cancellationToken)
     {
         var file = this.GetDefaultFile();
 
@@ -31,7 +32,7 @@ public class MetadataController : BaseAppController
         }
 
         await using var imageStream = file.OpenReadStream();
-        var image = await this.imageReadingService.Read(imageStream);
+        var image = await this.imageReadingService.Read(imageStream, cancellationToken);
 
         var profile = image.GetExifProfile();
 
