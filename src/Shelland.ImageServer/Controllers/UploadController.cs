@@ -64,19 +64,19 @@ public class UploadController : BaseAppController
         );
 
         var result = await this.imageThumbnailService.ProcessThumbnails(job, cancellationToken);
-        var response = this.mapper.Map<ImageUploadResultDto>(result);
+        var response = this.mapper.Map<ImageUploadResultModel, ImageUploadResultDto>(result);
 
         return Ok(response);
     }
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get([FromRoute] Guid id)
     {
         var upload = await this.imageUploadDataService.GetById(id);
         return OkOrNotFound(upload);
     }
 
-    [HttpDelete("{id:Guid}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         var upload = await this.imageUploadDataService.GetById(id);

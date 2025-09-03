@@ -1,12 +1,14 @@
 ﻿// Created on 10/02/2021 0:45 by Andrey Laserson
 
-using System.Collections.Generic;
 using AutoMapper;
+using JetBrains.Annotations;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Models.Dto.Response;
+using System.Collections.Generic;
 
 namespace Shelland.ImageServer.Infrastructure.Mapping;
 
+[UsedImplicitly]
 public class ImageUploadResultModelMapperProfile : Profile
 {
     public ImageUploadResultModelMapperProfile()

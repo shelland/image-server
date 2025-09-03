@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Data;
+using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.Core.Models.Other;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
@@ -50,13 +51,13 @@ public class ImageUploadDataService : IImageUploadDataService
             ExpirationDate: expirationDate)
         );
 
-        return this.mapper.Map<ImageUploadModel>(dbEntity);
+        return this.mapper.Map<ImageUploadDbModel, ImageUploadModel>(dbEntity);
     }
 
     public async Task<ImageUploadModel?> GetById(Guid id)
     {
         var upload = await this.repository.GetById(id);
-        return this.mapper.Map<ImageUploadModel>(upload);
+        return this.mapper.Map<ImageUploadDbModel?, ImageUploadModel>(upload);
     }
 
     public async Task Delete(Guid id)
@@ -67,6 +68,6 @@ public class ImageUploadDataService : IImageUploadDataService
     public async Task<IReadOnlyCollection<ImageUploadModel>> GetExpiredUploads()
     {
         var uploads = await this.repository.GetExpiredUploads(this.dateService.NowUtc);
-        return this.mapper.Map<IReadOnlyCollection<ImageUploadModel>>(uploads);
+        return this.mapper.Map<IReadOnlyCollection<ImageUploadDbModel>, IReadOnlyCollection<ImageUploadModel>>(uploads);
     }
 }

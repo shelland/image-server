@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Shelland.ImageServer.AppServices.Services.Abstract.Common;
 using Shelland.ImageServer.AppServices.Services.Abstract.Data;
+using Shelland.ImageServer.Core.Models.Data;
 using Shelland.ImageServer.Core.Models.Domain;
 using Shelland.ImageServer.DataAccess.Abstract.Repository;
 using Shelland.ImageServer.DataAccess.Models;
@@ -35,13 +36,13 @@ public class ProcessingProfileDataService : IProcessingProfileDataService
     public async Task<IReadOnlyCollection<ProcessingProfileModel>> GetProfiles()
     {
         var profiles = await this.repository.GetProfiles();
-        return this.mapper.Map<IReadOnlyCollection<ProcessingProfileModel>>(profiles);
+        return this.mapper.Map<IReadOnlyCollection<ProcessingProfileDbModel>, IReadOnlyCollection<ProcessingProfileModel>>(profiles);
     }
 
     public async Task<ProcessingProfileModel?> GetById(Guid id)
     {
         var profile = await this.repository.GetProfileById(id);
-        return this.mapper.Map<ProcessingProfileModel>(profile);
+        return this.mapper.Map<ProcessingProfileDbModel?, ProcessingProfileModel>(profile);
     }
 
     public async Task<ProcessingProfileModel> Create(string name, IReadOnlyCollection<ImageThumbnailParamsModel> thumbnailParams)
@@ -53,6 +54,6 @@ public class ProcessingProfileDataService : IProcessingProfileDataService
             Parameters: thumbnailParams)
         );
 
-        return this.mapper.Map<ProcessingProfileModel>(dbEntity);
+        return this.mapper.Map<ProcessingProfileDbModel, ProcessingProfileModel>(dbEntity);
     }
 }

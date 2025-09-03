@@ -1,7 +1,6 @@
 ﻿// Created on 23/02/2021 11:28 by Andrey Laserson
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -35,14 +34,16 @@ public class UploadExpirationHandlingService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(Constants.ExpiredUploadsServiceRunInterval));
+
+        while (await timer.WaitForNextTickAsync(stoppingToken))
         {
             this.logger.LogInformation("Running an image expiration job");
 
             // Fetch all uploads that are expired at this time
             var expiredUploads = await this.imageUploadDataService.GetExpiredUploads();
 
-            if (expiredUploads.Any())
+            if (expiredUploads.Count != 0)
             {
                 this.logger.LogInformation("Found {Count} expired uploads", expiredUploads.Count);
 
@@ -55,8 +56,6 @@ public class UploadExpirationHandlingService : BackgroundService
             {
                 this.logger.LogInformation("No expired uploads to remove");
             }
-
-            await Task.Delay(TimeSpan.FromSeconds(Constants.ExpiredUploadsServiceRunInterval), stoppingToken);
         }
     }
 
