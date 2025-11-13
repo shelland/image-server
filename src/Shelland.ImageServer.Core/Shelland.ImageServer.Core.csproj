@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Platforms>x64</Platforms>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
-        <PackageReference Include="Magick.NET-Q8-x64" Version="14.8.2" />
+        <PackageReference Include="Magick.NET-Q8-x64" Version="14.9.1" />
         <PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
     </ItemGroup>
 

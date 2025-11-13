@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /
 EXPOSE 5000
 
@@ -7,6 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Add mirrors
 # RUN sed -i 's/htt[p|ps]:\/\/archive.ubuntu.com\/ubuntu\//mirror:\/\/mirrors.ubuntu.com\/mirrors.txt/g' /etc/apt/sources.list
+
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install OpenCV dependencies
 RUN apt-get update && apt-get -y install --no-install-recommends \
@@ -99,7 +101,7 @@ RUN mkdir /opencvsharp/make && cd /opencvsharp/make && \
     rm -rf /opencv_contrib && \
     cp /opencvsharp/make/OpenCvSharpExtern/libOpenCvSharpExtern.so /usr/lib/
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["Shelland.ImageServer/Shelland.ImageServer.csproj", "Shelland.ImageServer/"]
 COPY ["Shelland.ImageServer.Core/Shelland.ImageServer.Core.csproj", "Shelland.ImageServer.Core/"]
