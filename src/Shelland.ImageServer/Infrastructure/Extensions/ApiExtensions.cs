@@ -21,20 +21,20 @@ public static class ApiExtensions
         // Add controllers and JSON support
         services.AddControllers(opts =>
         {
-            opts.Filters.Add<ExceptionFilter>();
             opts.Filters.Add<ServerEnabledFilter>();
         }).AddJsonOptions(opts =>
         {
             opts.JsonSerializerOptions.PropertyNameCaseInsensitive = JsonCommonOptions.Default.JsonSerializerOptions.PropertyNameCaseInsensitive;
             opts.JsonSerializerOptions.PropertyNamingPolicy = JsonCommonOptions.Default.JsonSerializerOptions.PropertyNamingPolicy;
             opts.JsonSerializerOptions.NumberHandling = JsonCommonOptions.Default.JsonSerializerOptions.NumberHandling;
+            opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonCommonOptions.Default.JsonSerializerOptions.DefaultIgnoreCondition;
         });
 
         services.AddHttpContextAccessor();
         services.AddFeatureManagement(configuration).UseDisabledFeaturesHandler(new DisabledFeatureHandler());
         services.AddSingleton<RecyclableMemoryStreamManager>();
 
-        // Check if CORS settings were enable
+        // Check if CORS settings were enabled
         if (isCorsEnabled)
         {
             services.AddCors();

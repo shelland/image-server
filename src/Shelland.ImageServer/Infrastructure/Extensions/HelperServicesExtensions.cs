@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shelland.ImageServer.AppServices;
 using Shelland.ImageServer.AppServices.Services.Abstract.Networking;
 using Shelland.ImageServer.AppServices.Services.Networking;
+using Shelland.ImageServer.Infrastructure.Other;
 
 namespace Shelland.ImageServer.Infrastructure.Extensions;
 
@@ -20,6 +21,8 @@ public static class HelperServicesExtensions
             opts.RegisterServicesFromAssemblyContaining(typeof(Startup))
                 .RegisterServicesFromAssemblyContaining(typeof(AppServicesModule));
         });
+
+        services.AddExceptionHandler<CustomExceptionHandler>();
 
         return services;
     }

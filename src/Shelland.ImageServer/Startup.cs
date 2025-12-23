@@ -40,13 +40,13 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IMapper mapper)
     {
+        if (!this.webHostEnvironment.IsDevelopment())
+        {
+            app.UseExceptionHandler(_ => { });
+        }
+
         app.AddRateLimitingPipeline(this.configuration);
         app.UseForwardedHeaders();
-
-        if (this.webHostEnvironment.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
 
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
@@ -54,10 +54,7 @@ public class Startup
         app.UseRouting();
         app.UseAuthorization();
         app.UseAppCachedStaticFiles(this.configuration);
-            
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

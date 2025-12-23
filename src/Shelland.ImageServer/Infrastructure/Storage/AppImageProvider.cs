@@ -1,6 +1,7 @@
 ﻿// Created on 14/02/2021 17:53 by Andrey Laserson
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -22,7 +23,6 @@ public class AppImageProvider : IImageProvider
     private readonly IFileProvider fileProvider;
     private readonly FormatUtilities formatUtilities;
     private readonly PathString requestPath;
-    private Func<HttpContext, bool>? match;
 
     public AppImageProvider(
         IOptions<AppSettingsModel> appSettings, 
@@ -58,10 +58,11 @@ public class AppImageProvider : IImageProvider
 
     public ProcessingBehavior ProcessingBehavior => ProcessingBehavior.CommandOnly;
 
+    [field: AllowNull, MaybeNull]
     public Func<HttpContext, bool> Match
     {
-        get => match ?? IsMatch;
-        set => match = value;
+        get => field ?? IsMatch;
+        set;
     }
 
     private bool IsMatch(HttpContext context) => context.Request.Path.StartsWithNormalizedSegments(requestPath, StringComparison.OrdinalIgnoreCase);

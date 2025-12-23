@@ -6,12 +6,7 @@ namespace Shelland.ImageServer.Models.Dto.Response;
 /// Base result wrapper
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Response<T>
-{
-    public Response(T data)
-    {
-        Data = data;
-    }
-
-    public T Data { get; set; }
-}
+public record Response<T>
+(
+    T Data
+) : BaseResponse(true);
